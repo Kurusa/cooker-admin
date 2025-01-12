@@ -4,27 +4,20 @@ namespace App\Core;
 
 class KTBootstrap
 {
-    // Init theme mode option from settings
-    public static function init()
+    public static function init(): void
     {
         KTBootstrap::initThemeMode();
         KTBootstrap::initThemeDirection();
         KTBootstrap::initLayout();
     }
 
-    // Init theme direction option (RTL or LTR) from settings
-    // Init RTL html attributes by checking if RTL is enabled.
-    // This function is being called for the html tag
-
-    public static function initThemeMode()
+    public static function initThemeMode(): void
     {
         setModeSwitch(config('settings.KT_THEME_MODE_SWITCH_ENABLED'));
         setModeDefault(config('settings.KT_THEME_MODE_DEFAULT'));
     }
 
-    // Init layout html attributes and classes
-
-    public static function initThemeDirection()
+    public static function initThemeDirection(): void
     {
         setDirection(config('settings.KT_THEME_DIRECTION'));
 
@@ -35,9 +28,7 @@ class KTBootstrap
         }
     }
 
-    // Main initialization
-
-    public static function initLayout()
+    public static function initLayout(): void
     {
         addHtmlAttribute('body', 'id', 'kt_app_body');
         addHtmlAttribute('body', 'data-kt-name', getName());

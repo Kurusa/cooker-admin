@@ -40,9 +40,9 @@ class SocialiteController extends Controller
         $user = User::updateOrCreate([
             'email' => $user->getEmail(),
         ], [
-            'name'     => $user->getName(),
+            'name' => $user->getName(),
             'password' => '',
-            'avatar'   => $user->getAvatar(),
+            'avatar' => $user->getAvatar(),
         ]);
 
         if ($user->markEmailAsVerified()) {

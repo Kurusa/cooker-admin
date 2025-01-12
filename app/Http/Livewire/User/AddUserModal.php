@@ -3,13 +3,13 @@
 namespace App\Http\Livewire\User;
 
 use App\Models\User;
-use Livewire\Component;
-use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Spatie\Permission\Models\Role;
 
 class AddUserModal extends Component
 {

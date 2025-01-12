@@ -13,7 +13,7 @@ class HelperServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $helperFiles = glob(app_path('Helpers').'/*.php');
+        $helperFiles = glob(app_path('Helpers') . '/*.php');
         foreach ($helperFiles as $file) {
             require_once $file;
         }

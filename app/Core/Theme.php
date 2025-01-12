@@ -148,8 +148,8 @@ class Theme
      */
     function getSvgIcon($path, $classNames = 'svg-icon')
     {
-        if (file_exists(public_path('assets/media/icons/'.$path))) {
-            return sprintf('<span class="%s">%s</span>', $classNames, file_get_contents(public_path('assets/media/icons/'.$path)));
+        if (file_exists(public_path('assets/media/icons/' . $path))) {
+            return sprintf('<span class="%s">%s</span>', $classNames, file_get_contents(public_path('assets/media/icons/' . $path)));
         }
 
         return '';
@@ -280,9 +280,9 @@ class Theme
      */
     function getGlobalAssets($type = 'js')
     {
-        return array_map(function($path) {
+        return array_map(function ($path) {
             return $this->extendCssFilename($path);
-        }, config('settings.KT_THEME_ASSETS.global.'.$type));
+        }, config('settings.KT_THEME_ASSETS.global.' . $type));
     }
 
     /**
@@ -348,7 +348,7 @@ class Theme
     {
         $files = [];
         foreach (self::$vendorFiles as $vendor) {
-            $vendors = config('settings.KT_THEME_VENDORS.'.$vendor);
+            $vendors = config('settings.KT_THEME_VENDORS.' . $vendor);
             if (isset($vendors[$type])) {
                 foreach ($vendors[$type] as $path) {
                     $files[] = $path;
@@ -401,17 +401,17 @@ class Theme
                 return json_decode(file_get_contents(public_path('icons.json')), true);
             });
 
-            $pathsNumber = data_get($icons, 'duotone-paths.'.$name, 0);
+            $pathsNumber = data_get($icons, 'duotone-paths.' . $name, 0);
 
-            $output = '<'.$tag.' class="ki-'.$type.' ki-'.$name.(!empty($class) ? " ".$class : '').'">';
+            $output = '<' . $tag . ' class="ki-' . $type . ' ki-' . $name . (!empty($class) ? " " . $class : '') . '">';
 
             for ($i = 0; $i < $pathsNumber; $i++) {
-                $output .= '<'.$tag.' class="path'.($i + 1).'"></'.$tag.'>';
+                $output .= '<' . $tag . ' class="path' . ($i + 1) . '"></' . $tag . '>';
             }
 
-            $output .= '</'.$tag.'>';
+            $output .= '</' . $tag . '>';
         } else {
-            $output = '<'.$tag.' class="ki-'.$type.' ki-'.$name.(!empty($class) ? " ".$class : '').'"></'.$tag.'>';
+            $output = '<' . $tag . ' class="ki-' . $type . ' ki-' . $name . (!empty($class) ? " " . $class : '') . '"></' . $tag . '>';
         }
 
         return $output;

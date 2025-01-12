@@ -1,11 +1,15 @@
 <?php
 
+use App\Core\Bootstrap\BootstrapAuth;
+use App\Core\Bootstrap\BootstrapDefault;
+use App\Core\Bootstrap\BootstrapSystem;
+
 return [
 
     'KT_THEME_BOOTSTRAP' => [
-        'default' => \App\Core\Bootstrap\BootstrapDefault::class,
-        'auth' => \App\Core\Bootstrap\BootstrapAuth::class,
-        'system' => \App\Core\Bootstrap\BootstrapSystem::class,
+        'default' => BootstrapDefault::class,
+        'auth' => BootstrapAuth::class,
+        'system' => BootstrapSystem::class,
     ],
 
     'KT_THEME' => 'metronic',

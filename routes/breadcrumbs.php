@@ -33,21 +33,3 @@ Breadcrumbs::for('user-management.users.show', function (BreadcrumbTrail $trail,
     $trail->parent('user-management.users.index');
     $trail->push(ucwords($user->name), route('user-management.users.show', $user));
 });
-
-// Home > Dashboard > User Management > Roles
-Breadcrumbs::for('user-management.roles.index', function (BreadcrumbTrail $trail) {
-    $trail->parent('user-management.index');
-    $trail->push('Roles', route('user-management.roles.index'));
-});
-
-// Home > Dashboard > User Management > Roles > [Role]
-Breadcrumbs::for('user-management.roles.show', function (BreadcrumbTrail $trail, Role $role) {
-    $trail->parent('user-management.roles.index');
-    $trail->push(ucwords($role->name), route('user-management.roles.show', $role));
-});
-
-// Home > Dashboard > User Management > Permission
-Breadcrumbs::for('user-management.permissions.index', function (BreadcrumbTrail $trail) {
-    $trail->parent('user-management.index');
-    $trail->push('Permissions', route('user-management.permissions.index'));
-});
