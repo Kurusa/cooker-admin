@@ -14,15 +14,19 @@ class IngredientsDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
+            ->rawColumns(['recipes_count'])
             ->addColumn('action', function (Ingredient $ingredient) {
                 return view('pages/apps/recipe/ingredients/columns._actions', compact('ingredient'));
+            })
+            ->editColumn('recipes_count', function (Ingredient $ingredient) {
+                return sprintf('<span class="badge badge-info">%d</span>', $ingredient->recipes_count);
             })
             ->setRowId('id');
     }
 
     public function query(Ingredient $model): QueryBuilder
     {
-        return $model->newQuery();
+        return $model->newQuery()->withCount('recipes');
     }
 
     public function html(): HtmlBuilder
@@ -42,7 +46,8 @@ class IngredientsDataTable extends DataTable
     {
         return [
             Column::make('title')->title('Title')->addClass('text-nowrap'),
-            Column::make('unit')->title('Unit')->searchable(false),
+            Column::make('unit')->title('Unit'),
+            Column::make('recipes_count')->title('Number of recipes')->searchable(false),
             Column::computed('action')
                 ->addClass('text-end text-nowrap')
                 ->exportable(false)

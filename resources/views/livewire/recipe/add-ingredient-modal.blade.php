@@ -9,7 +9,7 @@
             </div>
             <div class="modal-body px-5 my-7">
                 <form id="kt_modal_add_ingredient_form" class="form" wire:submit.prevent="submit">
-                    <input type="hidden" wire:model.defer="ingredient_id" name="ingredient_id" />
+                    <input type="hidden" wire:model.defer="ingredient_id" name="ingredient_id" value="{{ $ingredient_id }}"/>
                     <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_ingredient_scroll">
                         <div class="fv-row mb-7">
                             <label class="required fw-semibold fs-6 mb-2">Title</label>

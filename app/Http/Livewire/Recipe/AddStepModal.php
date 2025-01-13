@@ -8,13 +8,13 @@ use Livewire\Component;
 
 class AddStepModal extends Component
 {
-    public int $step_id;
-    public int $recipe_id;
-    public string $description;
-    public ?string $image_url;
-    public ?int $index;
+    public $step_id;
+    public $recipe_id;
+    public $description;
+    public $image_url;
+    public $index;
 
-    public bool $edit_mode = false;
+    public $edit_mode = false;
 
     protected array $rules = [
         'recipe_id' => 'required|integer',

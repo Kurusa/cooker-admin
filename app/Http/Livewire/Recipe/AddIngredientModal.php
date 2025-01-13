@@ -61,6 +61,17 @@ class AddIngredientModal extends Component
         $this->emit('success', __('Ingredient successfully deleted'));
     }
 
+    public function updateIngredient(int $id): void
+    {
+        $this->edit_mode = true;
+
+        $ingredient = Ingredient::find($id);
+
+        $this->ingredient_id = $ingredient->id;
+        $this->title = $ingredient->title;
+        $this->unit = $ingredient->unit;
+    }
+
     public function hydrate(): void
     {
         $this->resetErrorBag();

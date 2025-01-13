@@ -14,7 +14,10 @@ class StepsDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->rawColumns(['recipe_link'])
+            ->rawColumns(['step', 'recipe_link'])
+            ->editColumn('step', function (Step $step) {
+                return view('pages/apps.recipe.steps.columns._step', compact('step'));
+            })
             ->addColumn('action', function (Step $step) {
                 return view('pages/apps/recipe/steps/columns._actions', compact('step'));
             })
@@ -45,6 +48,7 @@ class StepsDataTable extends DataTable
     public function getColumns(): array
     {
         return [
+            Column::make('step')->addClass('d-flex align-items-center')->name('step_image'),
             Column::make('index')->title('Index')->addClass('text-nowrap'),
             Column::make('recipe_link')->title('Recipe ID')->searchable(false),
             Column::make('description')->title('Description'),
