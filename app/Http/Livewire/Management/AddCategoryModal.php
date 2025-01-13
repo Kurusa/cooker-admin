@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Category;
+namespace App\Http\Livewire\Management;
 
 use App\Models\Category;
 use Illuminate\Support\Facades\DB;

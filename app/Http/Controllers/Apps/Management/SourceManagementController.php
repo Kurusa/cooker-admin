@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Http\Controllers\Apps;
+namespace App\Http\Controllers\Apps\Management;
 
-use App\DataTables\SourcesDataTable;
+use App\DataTables\Management\SourcesDataTable;
 use App\Http\Controllers\Controller;
 
 class SourceManagementController extends Controller

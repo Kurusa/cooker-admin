@@ -1,8 +1,11 @@
 <?php
 
-use App\Http\Controllers\Apps\CategoryManagementController;
-use App\Http\Controllers\Apps\SourceManagementController;
-use App\Http\Controllers\Apps\UserManagementController;
+use App\Http\Controllers\Apps\Management\CategoryManagementController;
+use App\Http\Controllers\Apps\Management\SourceManagementController;
+use App\Http\Controllers\Apps\Management\UserManagementController;
+use App\Http\Controllers\Apps\Recipe\IngredientManagementController;
+use App\Http\Controllers\Apps\Recipe\RecipeManagementController;
+use App\Http\Controllers\Apps\Recipe\StepManagementController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -11,10 +14,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    Route::name('management.')->group(function () {
-        Route::resource('/management/users', UserManagementController::class);
-        Route::resource('/management/sources', SourceManagementController::class);
-        Route::resource('/management/categories', CategoryManagementController::class);
+    Route::name('management.')->prefix('management')->group(function () {
+        Route::resource('users', UserManagementController::class);
+        Route::resource('sources', SourceManagementController::class);
+        Route::resource('categories', CategoryManagementController::class);
+    });
+
+    Route::name('recipe.')->prefix('recipe')->group(function () {
+        Route::resource('recipes', RecipeManagementController::class);
+        Route::resource('ingredients', IngredientManagementController::class);
+        Route::resource('steps', StepManagementController::class);
     });
 });
 

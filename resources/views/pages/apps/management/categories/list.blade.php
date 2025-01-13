@@ -25,7 +25,7 @@
                     </button>
                 </div>
 
-                <livewire:category.add-category-modal></livewire:category.add-category-modal>
+                <livewire:management.add-category-modal></livewire:management.add-category-modal>
             </div>
         </div>
 

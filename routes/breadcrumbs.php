@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Source;
+use App\Models\Recipe;
 use App\Models\User;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
@@ -37,4 +37,31 @@ Breadcrumbs::for('management.sources.index', function (BreadcrumbTrail $trail) {
 Breadcrumbs::for('management.categories.index', function (BreadcrumbTrail $trail) {
     $trail->parent('management.index');
     $trail->push('Categories', route('management.categories.index'));
+});
+
+
+## Recipe
+
+Breadcrumbs::for('recipe.index', function (BreadcrumbTrail $trail) {
+    $trail->push('Recipe', route('recipe.recipes.index'));
+});
+
+Breadcrumbs::for('recipe.steps.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('recipe.index');
+    $trail->push('Steps', route('recipe.steps.index'));
+});
+
+Breadcrumbs::for('recipe.ingredients.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('recipe.index');
+    $trail->push('Categories', route('recipe.ingredients.index'));
+});
+
+Breadcrumbs::for('recipe.recipes.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('recipe.index');
+    $trail->push('Categories', route('recipe.recipes.index'));
+});
+
+Breadcrumbs::for('recipe.recipes.show', function (BreadcrumbTrail $trail, Recipe $recipe) {
+    $trail->parent('recipe.recipes.index');
+    $trail->push(ucwords($recipe->title), route('recipe.recipes.show', $recipe));
 });
