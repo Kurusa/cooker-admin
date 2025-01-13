@@ -45,8 +45,6 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'last_login_at' => \Illuminate\Support\Carbon::now()->toDateTimeString(),
-            'last_login_ip' => $request->getClientIp()
         ]);
 
         event(new Registered($user));

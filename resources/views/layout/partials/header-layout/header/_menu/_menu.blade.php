@@ -602,7 +602,7 @@
 					<!--begin:Menu link-->
 					<span class="menu-link">
 						<span class="menu-icon">{!! getIcon('shield-tick', 'fs-2') !!}</span>
-						<span class="menu-title">User Management</span>
+						<span class="menu-title">Management</span>
 						<span class="menu-arrow"></span>
 					</span>
 					<!--end:Menu link-->

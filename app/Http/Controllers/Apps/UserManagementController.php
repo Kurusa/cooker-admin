@@ -11,7 +11,7 @@ class UserManagementController extends Controller
 {
     public function index(UsersDataTable $dataTable)
     {
-        return $dataTable->render('pages/apps.user-management.users.list');
+        return $dataTable->render('pages/apps.management.users.list');
     }
 
     public function create()
@@ -26,7 +26,7 @@ class UserManagementController extends Controller
 
     public function show(User $user)
     {
-        return view('pages/apps.user-management.users.show', compact('user'));
+        return view('pages/apps.management.users.show', compact('user'));
     }
 
     public function edit(User $user)

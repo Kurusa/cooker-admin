@@ -19,19 +19,27 @@
                     </div>
                 </div>
             </div>
-            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('user-management.*') ? 'here show' : '' }}">
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('management.*') ? 'here show' : '' }}">
                 <span class="menu-link">
 					<span class="menu-icon">{!! getIcon('abstract-28', 'fs-2') !!}</span>
-					<span class="menu-title">User Management</span>
+					<span class="menu-title">Management</span>
 					<span class="menu-arrow"></span>
 				</span>
                 <div class="menu-sub menu-sub-accordion">
                     <div class="menu-item">
-                        <a class="menu-link {{ request()->routeIs('user-management.users.*') ? 'active' : '' }}" href="{{ route('user-management.users.index') }}">
+                        <a class="menu-link {{ request()->routeIs('management.users.*') ? 'active' : '' }}" href="{{ route('management.users.index') }}">
 							<span class="menu-bullet">
 								<span class="bullet bullet-dot"></span>
 							</span>
                             <span class="menu-title">Users</span>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('management.sources.*') ? 'active' : '' }}" href="{{ route('management.sources.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+                            <span class="menu-title">Sources</span>
                         </a>
                     </div>
                 </div>
