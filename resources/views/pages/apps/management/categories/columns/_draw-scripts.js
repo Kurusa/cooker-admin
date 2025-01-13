@@ -15,12 +15,12 @@ document.querySelectorAll('[data-kt-action="delete_row"]').forEach(function (ele
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                Livewire.emit('delete_source', this.getAttribute('data-kt-source-id'));
+                Livewire.emit('delete_category', this.getAttribute('data-kt-category-id'));
             }
         });
     });
 });
 
 Livewire.on('success', (message) => {
-    LaravelDataTables['sources-table'].ajax.reload();
+    LaravelDataTables['categories-table'].ajax.reload();
 });

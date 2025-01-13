@@ -11,6 +11,8 @@ class Source extends Model
         'url',
     ];
 
+    public $timestamps = false;
+
     public function recipes(): HasMany
     {
         return $this->hasMany(Recipe::class, 'source_id');

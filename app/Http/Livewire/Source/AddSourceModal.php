@@ -3,14 +3,8 @@
 namespace App\Http\Livewire\Source;
 
 use App\Models\Source;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Livewire\Component;
-use Livewire\WithFileUploads;
-use Spatie\Permission\Models\Role;
 
 class AddSourceModal extends Component
 {
@@ -46,44 +40,25 @@ class AddSourceModal extends Component
             $source = $this->source_id ? Source::find($this->source_id) : Source::create($data);
 
             if ($this->edit_mode) {
-                $this->emit('success', __('User updated'));
+                $source->update($data);
+
+                $this->emit('success', __('Source updated'));
             } else {
-                $this->emit('success', __('New user created'));
+                $this->emit('success', __('New source created'));
             }
         });
 
         $this->reset();
     }
 
-    public function deleteUser($id)
+    public function deleteSource(int $id): void
     {
-        // Prevent deletion of current user
-        if ($id == Auth::id()) {
-            $this->emit('error', 'User cannot be deleted');
-            return;
-        }
+        Source::destroy($id);
 
-        // Delete the user record with the specified ID
-        User::destroy($id);
-
-        // Emit a success event with a message
-        $this->emit('success', 'User successfully deleted');
+        $this->emit('success', 'Source successfully deleted');
     }
 
-    public function updateUser($id)
-    {
-        $this->edit_mode = true;
-
-        $user = User::find($id);
-
-        $this->source_id = $user->id;
-        $this->saved_avatar = $user->profile_photo_url;
-        $this->name = $user->name;
-        $this->email = $user->email;
-        $this->role = $user->roles?->first()->name ?? '';
-    }
-
-    public function hydrate()
+    public function hydrate(): void
     {
         $this->resetErrorBag();
         $this->resetValidation();

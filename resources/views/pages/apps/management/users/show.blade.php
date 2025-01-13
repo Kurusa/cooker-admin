@@ -2722,27 +2722,12 @@
         <!--end::Content-->
     </div>
     <!--end::Layout-->
-    <!--begin::Modals-->
-    <!--begin::Modal - Update user details-->
-    @include('pages/apps/user-management/users/modals/_update-details')
-    <!--end::Modal - Update user details-->
-    <!--begin::Modal - Add schedule-->
-    @include('pages/apps/user-management/users/modals/_add-schedule')
-    <!--end::Modal - Add schedule-->
-    <!--begin::Modal - Add one time password-->
-    @include('pages/apps/user-management/users/modals/_add-one-time-password')
-    <!--end::Modal - Add one time password-->
-    <!--begin::Modal - Update email-->
-    @include('pages/apps/user-management/users/modals/_update-email')
-    <!--end::Modal - Update email-->
-    <!--begin::Modal - Update password-->
-    @include('pages/apps/user-management/users/modals/_update-password')
-    <!--end::Modal - Update password-->
-    <!--begin::Modal - Add auth app-->
-    @include('pages/apps/user-management/users/modals/_add-auth-app')
-    <!--end::Modal - Add auth app-->
-    <!--begin::Modal - Add task-->
-    @include('pages/apps/user-management/users/modals/_add-task')
-    <!--end::Modal - Add task-->
-    <!--end::Modals-->
+
+    @include('pages/apps/management/users/modals/_update-details')
+    @include('pages/apps/management/users/modals/_add-schedule')
+    @include('pages/apps/management/users/modals/_add-one-time-password')
+    @include('pages/apps/management/users/modals/_update-email')
+    @include('pages/apps/management/users/modals/_update-password')
+    @include('pages/apps/management/users/modals/_add-auth-app')
+    @include('pages/apps/management/users/modals/_add-task')
 </x-default-layout>

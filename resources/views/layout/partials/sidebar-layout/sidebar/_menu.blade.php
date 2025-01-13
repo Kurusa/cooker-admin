@@ -42,6 +42,14 @@
                             <span class="menu-title">Sources</span>
                         </a>
                     </div>
+                    <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('management.categories.*') ? 'active' : '' }}" href="{{ route('management.categories.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+                            <span class="menu-title">Categories</span>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
