@@ -62,12 +62,4 @@ class UsersDataTable extends DataTable
                 ->width(60)
         ];
     }
-
-    /**
-     * Get the filename for export.
-     */
-    protected function filename(): string
-    {
-        return 'Users_' . date('YmdHis');
-    }
 }
