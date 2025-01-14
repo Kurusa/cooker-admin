@@ -28,6 +28,10 @@
                         {!! getIcon('plus', 'fs-2', '', 'i') !!}
                         Add ingredient
                     </button>
+                    <button type="button" class="btn btn-danger" data-kt-action="delete_all_ingredients" style="margin-left: 10px">
+                        {!! getIcon('plus', 'fs-2', '', 'i') !!}
+                        Delete all
+                    </button>
                 </div>
 
                 <livewire:recipe.add-ingredient-modal></livewire:ingredient.add-ingredient-modal>
@@ -55,8 +59,4 @@
             });
         </script>
     @endpush
-
-    <div id="ingredient-details-container" style="display: none;">
-        <livewire:recipe.view-ingredient-details />
-    </div>
 </x-default-layout>

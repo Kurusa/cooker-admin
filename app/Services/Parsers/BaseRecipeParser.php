@@ -52,6 +52,8 @@ abstract class BaseRecipeParser implements RecipeParserInterface
 
         $text = ltrim($text, '-');
 
+        $text = ltrim($text, ':');
+
         return $text;
     }
 
@@ -106,7 +108,7 @@ abstract class BaseRecipeParser implements RecipeParserInterface
 
     protected function parseIngredient(string $ingredient): array
     {
-        $pattern = '/^(.*?)\s*[–—:-]\s*(\d+(?:[.,]\d+)?)(?:\s*([^\d\s]+))?$/u';
+        $pattern = '/^(.*?)\s*[-–—:]\s*((?:\d+[.,]?\d*|\d+\/\d+)(?:-\d+[.,]?\d*|\d+\/\d+)?)\s*([^\d]+)?$/u';
 
         $title = trim($ingredient);
         $quantity = null;

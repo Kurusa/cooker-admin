@@ -69,19 +69,19 @@ class PatelnyaParser extends BaseRecipeParser
         }, $steps));
     }
 
+    public function parseImage(DOMXPath $xpath): ?string
+    {
+        $imageNode = $xpath->query(".//img[contains(@class, 'article-img-left')]")->item(0);
+        return $imageNode ? trim($imageNode->getAttribute('src')) : null;
+    }
+
     public function getSitemapUrl(): string
     {
-        return 'https://patelnya.com.ua/post-sitemap2.xml';
+        return 'https://patelnya.com.ua/post-sitemap.xml';
     }
 
     public function getSource(): Source
     {
         return Source::where('url', 'https://patelnya.com.ua')->first();
-    }
-
-    public function parseImage(DOMXPath $xpath): ?string
-    {
-        $imageNode = $xpath->query(".//img[contains(@class, 'article-img-left')]")->item(0);
-        return $imageNode ? trim($imageNode->getAttribute('src')) : null;
     }
 }

@@ -18,15 +18,18 @@ class IngredientsDataTable extends DataTable
             ->addColumn('action', function (Ingredient $ingredient) {
                 return view('pages/apps/recipe/ingredients/columns._actions', compact('ingredient'));
             })
-            ->editColumn('recipes_count', function (Ingredient $ingredient) {
-                return sprintf('<span class="badge badge-info">%d</span>', $ingredient->recipes_count);
-            })
             ->setRowId('id');
     }
 
     public function query(Ingredient $model): QueryBuilder
     {
-        return $model->newQuery()->withCount('recipes');
+        return $model->newQuery()
+            ->addSelect(['recipes_count' => function ($query) {
+                $query->selectRaw('COUNT(*)')
+                    ->from('recipe_ingredients')
+                    ->join('ingredient_units', 'recipe_ingredients.ingredient_unit_id', '=', 'ingredient_units.id')
+                    ->whereColumn('ingredient_units.ingredient_id', 'ingredients.id');
+            }]);
     }
 
     public function html(): HtmlBuilder
@@ -39,6 +42,7 @@ class IngredientsDataTable extends DataTable
             ->addTableClass('table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer text-gray-600 fw-semibold')
             ->setTableHeadClass('text-start text-muted fw-bold fs-7 text-uppercase gs-0')
             ->orderBy(1)
+            ->pageLength(100)
             ->drawCallback("function() {" . file_get_contents(resource_path('views/pages/apps/recipe/ingredients/columns/_draw-scripts.js')) . "}");
     }
 
@@ -47,7 +51,6 @@ class IngredientsDataTable extends DataTable
         return [
             Column::make('id')->title('ID'),
             Column::make('title')->title('Title')->addClass('text-nowrap'),
-            Column::make('recipes_count')->title('Number of recipes')->searchable(false),
             Column::computed('action')
                 ->addClass('text-end text-nowrap')
                 ->exportable(false)

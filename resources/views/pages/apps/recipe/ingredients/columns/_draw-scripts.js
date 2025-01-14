@@ -21,6 +21,25 @@ document.querySelectorAll('[data-kt-action="delete_row"]').forEach(function (ele
     });
 });
 
+$('[data-kt-action="delete_all_ingredients"]').on('click', function () {
+    Swal.fire({
+        text: 'Are you sure you want to remove all ingredients?',
+        icon: 'warning',
+        buttonsStyling: false,
+        showCancelButton: true,
+        confirmButtonText: 'Yes',
+        cancelButtonText: 'No',
+        customClass: {
+            confirmButton: 'btn btn-danger',
+            cancelButton: 'btn btn-secondary',
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Livewire.emit('delete_all_ingredients');
+        }
+    });
+})
+
 document.querySelectorAll('[data-kt-action="update_row"]').forEach(function (element) {
     element.addEventListener('click', function () {
         Livewire.emit('update_ingredient', this.getAttribute('data-kt-ingredient-id'));
@@ -40,21 +59,26 @@ $('#ingredients-table tbody tr').hover(
     }
 );
 
-$('#ingredients-table tbody').on('click', 'tr', function () {
+$('#ingredients-table tbody').off('click', 'tr').on('click', 'tr', function () {
     let tr = $(this);
     let row = window.LaravelDataTables['ingredients-table'].row(tr);
 
-    if (row.child.isShown()) {
+    if (tr.hasClass('shown')) {
         row.child.hide();
         tr.removeClass('shown');
     } else {
         let ingredientId = tr.attr('id');
-
-        tr.addClass('hover-highlight');
-
-        row.child($('#ingredient-details-container').html()).show();
-        Livewire.emit('show_ingredient_details', ingredientId);
-        tr.addClass('shown');
+        $.ajax({
+            url: `/recipe/ingredients/${ingredientId}/details`,
+            method: 'GET',
+            success: function (response) {
+                row.child(response.html).show();
+                tr.addClass('shown');
+            },
+            error: function (xhr) {
+                console.error('Error fetching details:', xhr.responseText);
+            }
+        });
     }
 });
 

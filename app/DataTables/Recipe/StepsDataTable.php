@@ -48,9 +48,9 @@ class StepsDataTable extends DataTable
     public function getColumns(): array
     {
         return [
-            Column::make('step')->addClass('d-flex align-items-center')->name('step_image'),
+            Column::make('step')->addClass('d-flex align-items-center')->name('image_url')->searchable(false),
             Column::make('index')->title('Index')->addClass('text-nowrap'),
-            Column::make('recipe_link')->title('Recipe ID')->searchable(false),
+            Column::make('recipe_link')->title('Recipe ID'),
             Column::make('description')->title('Description'),
             Column::computed('action')
                 ->addClass('text-end text-nowrap')

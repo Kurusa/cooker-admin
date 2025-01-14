@@ -3,6 +3,9 @@
 namespace App\Http\Livewire\Recipe;
 
 use App\Models\Ingredient;
+use App\Models\IngredientUnit;
+use App\Models\Recipe;
+use App\Models\RecipeIngredient;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -22,6 +25,7 @@ class AddIngredientModal extends Component
     protected $listeners = [
         'delete_ingredient' => 'deleteIngredient',
         'update_ingredient' => 'updateIngredient',
+        'delete_all_ingredients' => 'deleteAllIngredients',
     ];
 
     public function render()
@@ -70,6 +74,16 @@ class AddIngredientModal extends Component
         $this->ingredient_id = $ingredient->id;
         $this->title = $ingredient->title;
         $this->unit = $ingredient->unit;
+    }
+
+    public function deleteAllIngredients(): void
+    {
+        RecipeIngredient::query()->delete();
+        Recipe::query()->delete();
+        IngredientUnit::query()->delete();
+        Ingredient::query()->delete();
+
+        $this->emit('success', __('Ingredients successfully deleted'));
     }
 
     public function hydrate(): void

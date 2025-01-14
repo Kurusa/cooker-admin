@@ -25,6 +25,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::name('recipe.')->prefix('recipe')->group(function () {
         Route::resource('recipes', RecipeManagementController::class);
         Route::resource('ingredients', IngredientManagementController::class);
+        Route::get('ingredients/{ingredient}/details', [IngredientManagementController::class, 'getDetails']);
         Route::resource('steps', StepManagementController::class);
     });
 });

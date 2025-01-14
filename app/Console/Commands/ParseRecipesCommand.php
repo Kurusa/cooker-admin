@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands\Parsers;
+namespace App\Console\Commands;
 
 use App\Models\Category;
 use App\Models\Ingredient;
@@ -16,18 +16,16 @@ use Illuminate\Support\Facades\DB;
 class ParseRecipesCommand extends Command
 {
     protected $signature = 'parse:recipes {source}';
+
     protected $description = 'Parse recipes from a specific source';
 
     public function handle(): void
     {
-        $source = $this->argument('source');
-        $parser = RecipeParserFactory::make($source);
+        $parser = RecipeParserFactory::make($this->argument('source'));
 
         $sourceId = $parser->getSource()->id;
 
-        $urls = $parser->getSitemapUrls();
-
-        foreach ($urls as $url) {
+        foreach ($parser->getSitemapUrls() as $url) {
             if (Recipe::where('source_url', $url)->exists()) {
                 continue;
             }
