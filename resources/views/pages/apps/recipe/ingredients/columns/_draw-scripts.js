@@ -27,6 +27,37 @@ document.querySelectorAll('[data-kt-action="update_row"]').forEach(function (ele
     });
 });
 
+$('#ingredients-table tbody tr').hover(
+    function () {
+        if (!$(this).hasClass('shown')) {
+            $(this).addClass('hover-highlight');
+        }
+    },
+    function () {
+        if (!$(this).hasClass('shown')) {
+            $(this).removeClass('hover-highlight');
+        }
+    }
+);
+
+$('#ingredients-table tbody').on('click', 'tr', function () {
+    let tr = $(this);
+    let row = window.LaravelDataTables['ingredients-table'].row(tr);
+
+    if (row.child.isShown()) {
+        row.child.hide();
+        tr.removeClass('shown');
+    } else {
+        let ingredientId = tr.attr('id');
+
+        tr.addClass('hover-highlight');
+
+        row.child($('#ingredient-details-container').html()).show();
+        Livewire.emit('show_ingredient_details', ingredientId);
+        tr.addClass('shown');
+    }
+});
+
 Livewire.on('success', (message) => {
     LaravelDataTables['ingredients-table'].ajax.reload();
 });

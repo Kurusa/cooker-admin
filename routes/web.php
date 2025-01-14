@@ -1,9 +1,11 @@
 <?php
 
+use App\DataTables\Recipe\IngredientUnitsDataTable;
 use App\Http\Controllers\Apps\Management\CategoryManagementController;
 use App\Http\Controllers\Apps\Management\SourceManagementController;
 use App\Http\Controllers\Apps\Management\UserManagementController;
 use App\Http\Controllers\Apps\Recipe\IngredientManagementController;
+use App\Http\Controllers\Apps\Recipe\IngredientUnitManagementController;
 use App\Http\Controllers\Apps\Recipe\RecipeManagementController;
 use App\Http\Controllers\Apps\Recipe\StepManagementController;
 use App\Http\Controllers\DashboardController;

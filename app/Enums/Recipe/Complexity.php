@@ -25,4 +25,13 @@ enum Complexity: string
             self::HARD => '🔴',
         };
     }
+
+    public static function mapParsedValue(string $value): self
+    {
+        return match ($value) {
+            'складно' => self::HARD,
+            'елементарно', 'легко' => self::EASY,
+            default => self::MEDIUM,
+        };
+    }
 }

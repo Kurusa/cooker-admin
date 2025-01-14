@@ -1,4 +1,10 @@
 <x-default-layout>
+    <style>
+        .hover-highlight {
+            background-color: #f5f5f5 !important;
+        }
+    </style>
+
     @section('title')
         Ingredients
     @endsection
@@ -49,4 +55,8 @@
             });
         </script>
     @endpush
+
+    <div id="ingredient-details-container" style="display: none;">
+        <livewire:recipe.view-ingredient-details />
+    </div>
 </x-default-layout>

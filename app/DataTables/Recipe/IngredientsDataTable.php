@@ -45,8 +45,8 @@ class IngredientsDataTable extends DataTable
     public function getColumns(): array
     {
         return [
+            Column::make('id')->title('ID'),
             Column::make('title')->title('Title')->addClass('text-nowrap'),
-            Column::make('unit')->title('Unit'),
             Column::make('recipes_count')->title('Number of recipes')->searchable(false),
             Column::computed('action')
                 ->addClass('text-end text-nowrap')

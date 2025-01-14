@@ -53,7 +53,7 @@ Breadcrumbs::for('recipe.steps.index', function (BreadcrumbTrail $trail) {
 
 Breadcrumbs::for('recipe.ingredients.index', function (BreadcrumbTrail $trail) {
     $trail->parent('recipe.index');
-    $trail->push('Categories', route('recipe.ingredients.index'));
+    $trail->push('Ingredients', route('recipe.ingredients.index'));
 });
 
 Breadcrumbs::for('recipe.recipes.index', function (BreadcrumbTrail $trail) {

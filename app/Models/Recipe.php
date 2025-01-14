@@ -25,7 +25,6 @@ use Illuminate\Support\Collection;
  * @property string $ingredient_list
  * @property Collection $ingredients_collection
  * @property-read Collection $ingredients
- * @property string $is_popular
  * @property-read string $header
  */
 class Recipe extends Model
@@ -36,16 +35,14 @@ class Recipe extends Model
         'advice',
         'time',
         'portions',
-        'source_url',
+        'source_id',
         'category_id',
         'source_url',
         'image_url',
-        'is_popular',
     ];
 
     protected $casts = [
         'complexity' => Complexity::class,
-        'is_popular' => 'boolean',
         'rating' => 'integer',
     ];
 
@@ -71,7 +68,10 @@ class Recipe extends Model
 
     public function ingredients(): BelongsToMany
     {
-        return $this->belongsToMany(Ingredient::class, 'recipe_ingredients')->withPivot('quantity');
+        return $this->belongsToMany(Ingredient::class, 'recipe_ingredients', 'recipe_id', 'ingredient_unit_id')
+            ->withPivot('quantity')
+            ->using(RecipeIngredient::class)
+            ->with('unit');
     }
 
     public function category(): BelongsTo
@@ -88,7 +88,6 @@ class Recipe extends Model
     {
         parent::boot();
         static::addGlobalScope('order', function (Builder $builder) {
-            $builder->orderBy('is_popular', 'desc');
             $builder->orderByRaw("
                 CASE
                     WHEN complexity = 'easy' THEN 1

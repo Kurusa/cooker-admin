@@ -17,7 +17,6 @@ class AddRecipeModal extends Component
     public $source_url;
     public $category_id;
     public $image_url;
-    public $is_popular = false;
 
     public $edit_mode = false;
 
@@ -30,7 +29,6 @@ class AddRecipeModal extends Component
         'source_url' => 'nullable|url|max:255',
         'category_id' => 'required|integer|exists:categories,id',
         'image_url' => 'nullable|url|max:255',
-        'is_popular' => 'boolean',
     ];
 
     protected $listeners = [
@@ -57,7 +55,6 @@ class AddRecipeModal extends Component
                 'source_url' => $this->source_url,
                 'category_id' => $this->category_id,
                 'image_url' => $this->image_url,
-                'is_popular' => $this->is_popular,
             ];
 
             /** @var Recipe $recipe */
