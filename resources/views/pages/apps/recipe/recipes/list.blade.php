@@ -1,4 +1,11 @@
 <x-default-layout>
+    <style>
+        .card-header {
+            display: flex;
+            justify-content: space-around!important;
+        }
+    </style>
+
     @section('title')
         Recipes
     @endsection
@@ -7,46 +14,20 @@
         {{ Breadcrumbs::render('recipe.recipes.index') }}
     @endsection
 
-    <div class="card">
-        <div class="card-header border-0 pt-6">
-            <div class="card-title">
-                <div class="d-flex align-items-center position-relative my-1">
-                    {!! getIcon('magnifier', 'fs-3 position-absolute ms-5') !!}
-                    <input type="text" data-kt-recipe-table-filter="search" class="form-control form-control-solid w-250px ps-13" placeholder="Search recipe" id="recipeSearchInput"/>
-                </div>
-            </div>
-
-            <div class="card-toolbar">
-                <div class="d-flex justify-content-end" data-kt-recipe-table-toolbar="base">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_recipe">
-                        {!! getIcon('plus', 'fs-2', '', 'i') !!}
-                        Add recipe
-                    </button>
-                </div>
-
-                <livewire:recipe.add-recipe-modal></livewire:recipe.add-recipe-modal>
-            </div>
+    <form method="GET" action="{{ route('recipe.recipes.index') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search recipes..." value="{{ request('search') }}">
+            <button class="btn btn-primary" type="submit">Search</button>
         </div>
+    </form>
 
-        <div class="card-body py-4">
-            <div class="table-responsive">
-                {{ $dataTable->table() }}
-            </div>
-        </div>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-5 g-xl-9">
+        @foreach($recipes as $recipe)
+            @include('pages.apps.recipe.recipes.card')
+        @endforeach
     </div>
 
-    @push('scripts')
-        {{ $dataTable->scripts() }}
-        <script>
-            document.getElementById('recipeSearchInput').addEventListener('keyup', function () {
-                window.LaravelDataTables['recipes-table'].search(this.value).draw();
-            });
-            document.addEventListener('livewire:load', function () {
-                Livewire.on('success', function () {
-                    $('#kt_modal_add_recipe').modal('hide');
-                    window.LaravelDataTables['recipes-table'].ajax.reload();
-                });
-            });
-        </script>
-    @endpush
+    <div class="d-flex justify-content-center mt-4 mb-4">
+        {{ $recipes->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
+    </div>
 </x-default-layout>

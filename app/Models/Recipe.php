@@ -4,12 +4,12 @@ namespace App\Models;
 
 use App\Enums\Recipe\Complexity;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property int $id
@@ -46,32 +46,37 @@ class Recipe extends Model
         'rating' => 'integer',
     ];
 
-    protected function isPopular(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => $value ? '⭐ ' : '',
-        )->shouldCache();
-    }
-
-    protected function ingredientsCollection(): Attribute
-    {
-        return Attribute::make(
-            get: fn() => $this->ingredients->map(function ($ingredient) {
-                return [
-                    'title' => $ingredient->title,
-                    'quantity' => $ingredient->pivot->quantity,
-                    'unit' => $ingredient->unit,
-                ];
-            })
-        )->shouldCache();
-    }
-
     public function ingredients(): BelongsToMany
     {
         return $this->belongsToMany(Ingredient::class, 'recipe_ingredients', 'recipe_id', 'ingredient_unit_id')
             ->withPivot('quantity')
             ->using(RecipeIngredient::class)
             ->with('unit');
+    }
+
+    public function getDetailedIngredients(): array
+    {
+        $query = "
+            SELECT
+                recipes.id AS recipe_id,
+                ingredients.title AS ingredient_title,
+                recipe_ingredients.quantity,
+                units.title AS unit_title
+            FROM
+                recipes
+            JOIN
+                recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id
+            JOIN
+                ingredient_units ON recipe_ingredients.ingredient_unit_id = ingredient_units.id
+            JOIN
+                ingredients ON ingredient_units.ingredient_id = ingredients.id
+            JOIN
+                units ON ingredient_units.unit_id = units.id
+            WHERE
+                recipes.id = :recipe_id
+        ";
+
+        return DB::select($query, ['recipe_id' => $this->id]);
     }
 
     public function category(): BelongsTo
@@ -82,6 +87,11 @@ class Recipe extends Model
     public function steps(): HasMany
     {
         return $this->hasMany(Step::class);
+    }
+
+    public function hasImage(): bool
+    {
+        return !empty($this->image_url);
     }
 
     protected static function boot(): void

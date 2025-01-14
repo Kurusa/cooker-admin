@@ -8,24 +8,6 @@
         {{ Breadcrumbs::render('dashboard') }}
     @endsection
 
-    <!--begin::Row-->
-    <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
-        <div class="col-md-6 col-lg-6 col-xl-6 col-xxl-3 mb-md-5 mb-xl-10">
-            @include('partials/widgets/lists/_widget-26')
-        </div>
-    </div>
-    <!--end::Row-->
-
-    <!--begin::Row-->
-    <div class="row gx-5 gx-xl-10">
-        <div class="col-xl-6 mb-5 mb-xl-10">
-            @include('partials/widgets/tables/_widget-16')
-        </div>
-        <!--end::Col-->
-    </div>
-    <!--end::Row-->
-
-    <!--begin::Row-->
     <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
         <!--begin::Col-->
         <div class="col-xxl-6">
@@ -38,15 +20,4 @@
         </div>
         <!--end::Col-->
     </div>
-    <!--end::Row-->
-
-    <!--begin::Row-->
-    <div class="row g-5 g-xl-10 mb-5 mb-xl-10">
-        <!--begin::Col-->
-        <div class="col-xl-8">
-            @include('partials/widgets/tables/_widget-14')
-        </div>
-        <!--end::Col-->
-    </div>
-    <!--end::Row-->
 </x-default-layout>
