@@ -5,7 +5,6 @@ use App\Http\Controllers\Apps\Management\CategoryManagementController;
 use App\Http\Controllers\Apps\Management\SourceManagementController;
 use App\Http\Controllers\Apps\Management\UserManagementController;
 use App\Http\Controllers\Apps\Recipe\IngredientManagementController;
-use App\Http\Controllers\Apps\Recipe\IngredientUnitManagementController;
 use App\Http\Controllers\Apps\Recipe\RecipeManagementController;
 use App\Http\Controllers\Apps\Recipe\StepManagementController;
 use App\Http\Controllers\DashboardController;
@@ -24,6 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::name('recipe.')->prefix('recipe')->group(function () {
         Route::resource('recipes', RecipeManagementController::class);
+        Route::get('recipes/{recipe}/reparse', [RecipeManagementController::class, 'reparse']);
         Route::resource('ingredients', IngredientManagementController::class);
         Route::get('ingredients/{ingredient}/details', [IngredientManagementController::class, 'getDetails']);
         Route::resource('steps', StepManagementController::class);

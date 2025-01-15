@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\DB;
 
 class ParseRecipesCommand extends Command
 {
-    protected $signature = 'parse:recipes {source}';
+    protected $signature = 'parse:recipes {source} {recipeId?}';
 
     protected $description = 'Parse recipes from a specific source';
 
@@ -25,8 +25,16 @@ class ParseRecipesCommand extends Command
 
         $sourceId = $parser->getSource()->id;
 
-        foreach ($parser->getSitemapUrls() as $url) {
-            if (Recipe::where('source_url', $url)->exists()) {
+        $urls = $parser->getSitemapUrls();
+
+        if ($recipeId = $this->argument('recipeId')) {
+            /** @var Recipe $recipe */
+            $recipe = Recipe::find($recipeId);
+            $urls = [$recipe->source_url];
+        }
+
+        foreach ($urls as $url) {
+            if (Recipe::where('source_url', $url)->exists() && !$this->argument('recipeId')) {
                 continue;
             }
 

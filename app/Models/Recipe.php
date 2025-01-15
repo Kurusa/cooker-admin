@@ -64,13 +64,13 @@ class Recipe extends Model
                 units.title AS unit_title
             FROM
                 recipes
-            JOIN
+            LEFT JOIN
                 recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id
-            JOIN
+            LEFT JOIN
                 ingredient_units ON recipe_ingredients.ingredient_unit_id = ingredient_units.id
-            JOIN
+            LEFT JOIN
                 ingredients ON ingredient_units.ingredient_id = ingredients.id
-            JOIN
+            LEFT JOIN
                 units ON ingredient_units.unit_id = units.id
             WHERE
                 recipes.id = :recipe_id

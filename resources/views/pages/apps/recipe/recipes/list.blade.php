@@ -2,7 +2,7 @@
     <style>
         .card-header {
             display: flex;
-            justify-content: space-around!important;
+            justify-content: space-around !important;
         }
     </style>
 
@@ -30,4 +30,41 @@
     <div class="d-flex justify-content-center mt-4 mb-4">
         {{ $recipes->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
     </div>
+
+    @push('scripts')
+        <script>
+            document.querySelectorAll('[data-kt-action="reparse_recipe"]').forEach(function (element) {
+                element.addEventListener('click', function () {
+                    let a = $(this);
+                    let recipeId = a.attr('data-kt-id');
+
+                    Swal.fire({
+                        text: 'Are you sure you want to reparse this recipe?',
+                        icon: 'warning',
+                        buttonsStyling: false,
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                        customClass: {
+                            confirmButton: 'btn btn-danger',
+                            cancelButton: 'btn btn-secondary',
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: `/recipe/recipes/${recipeId}/reparse`,
+                                method: 'GET',
+                                success: function (response) {
+                                    location.reload()
+                                },
+                                error: function (xhr) {
+                                    console.error('Error fetching details:', xhr.responseText);
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
+    @endpush
 </x-default-layout>

@@ -39,6 +39,10 @@ class PatelnyaParser extends BaseRecipeParser
     public function parseIngredients(DOMXPath $xpath): array
     {
         $rawIngredients = $this->extractMultipleValues($xpath, ".//div[@class='list-ingredient old-list']//ul[@class='ingredient']/li");
+        if (!count($rawIngredients)) {
+            $rawIngredients = $this->extractMultipleValues($xpath, ".//div[@class='list-ingredient old-list']//ul/li");
+        }
+
         return $this->formatIngredients($rawIngredients);
     }
 
@@ -47,20 +51,30 @@ class PatelnyaParser extends BaseRecipeParser
         $steps = [];
 
         $listItems = $xpath->query(".//div[@class='e-instructions step-instructions instructions']//ol/li");
-        if ($listItems->length > 0) {
-            foreach ($listItems as $item) {
-                $steps[] = $item->textContent;
-            }
+        foreach ($listItems as $item) {
+            $steps[] = $item->textContent;
         }
 
         $paragraphs = $xpath->query(".//div[@class='e-instructions step-instructions instructions']/p");
-        if ($paragraphs->length > 0) {
-            foreach ($paragraphs as $index => $paragraph) {
-                if ($index === 0) {
-                    continue;
-                }
+        foreach ($paragraphs as $index => $paragraph) {
+            if ($index === 0) {
+                continue;
+            }
 
-                $steps[] = substr($paragraph->textContent, 3);
+            $steps[] = substr($paragraph->textContent, 3);
+        }
+
+        $brs = $xpath->query("//div[@class='e-instructions step-instructions instructions']/p");
+        foreach ($brs as $node) {
+            $text = $node->textContent;
+            if (stripos($text, 'Готуємо так:') !== false) {
+                $text = preg_replace('/^.*Готуємо так:/iu', '', $text);
+                $steps = array_merge($steps, array_filter(
+                        array_map('trim', explode("\n",
+                                substr(str_replace('<br>', "\n", $text), 3))
+                        )
+                    )
+                );
             }
         }
 
