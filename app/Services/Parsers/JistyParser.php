@@ -64,7 +64,13 @@ class JistyParser extends BaseRecipeParser
     public function parseImage(DOMXPath $xpath): ?string
     {
         $imageNode = $xpath->query(".//figure[@class='aligncenter size-large']/img")->item(0);
-        return 'https://jisty.com.ua' . trim($imageNode?->getAttribute('data-src'));
+        if (!$imageNode) {
+            $imageNode = $xpath->query(".//div[@class='thumbnail text-center mb-20']/img")->item(0);
+        }
+
+        $src = trim($imageNode?->getAttribute('data-src'));
+
+        return 'https://jisty.com.ua' . $src;
     }
 
     public function getSitemapUrl(): string

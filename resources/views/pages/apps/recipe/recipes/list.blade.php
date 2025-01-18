@@ -44,7 +44,10 @@
     </div>
 
     <div class="d-flex justify-content-center mt-4 mb-4">
-        {{ $recipes->appends(['search' => request('search')])->links('pagination::bootstrap-4') }}
+        {{ $recipes->appends([
+            'search' => request('search'),
+            'source' => request('source'),
+        ])->links('pagination::bootstrap-4') }}
     </div>
 
     @push('scripts')

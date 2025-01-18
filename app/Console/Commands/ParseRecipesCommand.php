@@ -30,7 +30,12 @@ class ParseRecipesCommand extends Command
         $urls = $this->defineUrlsToParse($parser);
 
         foreach ($urls as $url) {
-            if (Recipe::where('source_url', $url)->exists() && !$this->argument('recipeId')) {
+            if (
+                (
+                    !$this->argument('recipeId') &&
+                    !$this->argument('recipeUrl')
+                ) &&
+                Recipe::where('source_url', $url)->exists()) {
                 continue;
             }
 

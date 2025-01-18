@@ -14,6 +14,7 @@ class RecipeParserFactory
             'fayni' => new FayniReceptyParser(),
             'jisty' => new JistyParser(),
             'novastrava' => new NovaStravaParser(),
+            'rud' => new RudParser(),
             default => throw new InvalidArgumentException("Unknown parser source: {$source}")
         };
     }

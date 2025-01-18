@@ -25,7 +25,7 @@ class RecipeManagementController extends Controller
         }
 
         $query->orderBy('created_at', 'desc');
-        $recipes = $query->paginate(12);
+        $recipes = $query->paginate(50);
 
         return view('pages/apps.recipe.recipes.list', compact('recipes'));
     }
