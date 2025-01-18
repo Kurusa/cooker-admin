@@ -13,7 +13,7 @@ class RecipeParserFactory
             'patelnya' => new PatelnyaParser(),
             'fayni' => new FayniReceptyParser(),
             'jisty' => new JistyParser(),
-            'nova-strava' => new NovaStravaParser(),
+            'novastrava' => new NovaStravaParser(),
             default => throw new InvalidArgumentException("Unknown parser source: {$source}")
         };
     }

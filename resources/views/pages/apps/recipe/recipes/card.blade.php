@@ -1,12 +1,12 @@
 <div class="col-md-4">
-    <div class="card card-flush h-md-100 recipe-card">
+    <div class="card card-flush h-md-100 recipe-card" style="position: relative;">
         <input type="checkbox"
                class="form-check-input recipe-checkbox position-absolute"
                id="checkbox-{{ $recipe->id }}"
                data-recipe-id="{{ $recipe->id }}"
-               style="top: 10px; left: 10px; z-index: 10;">
+               style="top: 10px; left: 10px; z-index: 10; width: 20px; height: 20px;">
 
-        <div class="card-header">
+        <div class="card-header" style="padding-left: 40px;"> <!-- Додаємо відступ для чекбокса -->
             <div class="card-title">
                 @include('pages.apps.recipe.recipes.partials.title')
                 <a href="{{ $recipe->source_url }}" target="_blank" class="d-flex align-items-center text-primary opacity-75-hover fs-6 fw-semibold">

@@ -31,7 +31,7 @@
                     data-kt-action="reparse-recipes-button"
                     id="reparse-recipes-button"
                     type="button">
-                Reparse
+                Reparse (<span id="selected-count">0</span>)
             </button>
             <button class="btn btn-primary" type="submit">Search</button>
         </div>
@@ -70,8 +70,18 @@
                             $.ajax({
                                 url: `/recipe/recipes/${recipeId}/reparse`,
                                 method: 'GET',
-                                success: function (response) {
-                                    location.reload()
+                                success: function () {
+                                    Swal.fire({
+                                        text: 'Success',
+                                        icon: 'success',
+                                        buttonsStyling: false,
+                                        confirmButtonText: 'OK',
+                                        customClass: {
+                                            confirmButton: 'btn btn-primary',
+                                        }
+                                    }).then(() => {
+                                        location.reload();
+                                    });
                                 },
                                 error: function (xhr) {
                                     console.error('Error fetching details:', xhr.responseText);
@@ -84,6 +94,20 @@
 
             document.addEventListener('DOMContentLoaded', function () {
                 const recipeCards = document.querySelectorAll('.recipe-card');
+                const checkboxes = document.querySelectorAll('.recipe-checkbox');
+                const reparseButton = document.getElementById('reparse-recipes-button');
+                const selectedCount = document.getElementById('selected-count');
+
+                const updateReparseButtonVisibility = () => {
+                    const selected = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+                    selectedCount.textContent = selected.length;
+
+                    if (selected.length > 0) {
+                        reparseButton.classList.remove('d-none');
+                    } else {
+                        reparseButton.classList.add('d-none');
+                    }
+                };
 
                 recipeCards.forEach(card => {
                     card.addEventListener('click', function (event) {
@@ -101,81 +125,69 @@
                     });
                 });
 
-                const updateReparseButtonVisibility = () => {
-                    const selectedCheckboxes = document.querySelectorAll('.recipe-checkbox:checked');
-                    const reparseButton = document.getElementById('reparse-recipes-button');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateReparseButtonVisibility);
+                });
 
-                    if (selectedCheckboxes.length > 0) {
-                        reparseButton.classList.remove('d-none');
-                    } else {
-                        reparseButton.classList.add('d-none');
+                reparseButton.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    const selectedIds = Array.from(checkboxes)
+                        .filter(checkbox => checkbox.checked)
+                        .map(checkbox => checkbox.getAttribute('data-recipe-id'));
+
+                    if (selectedIds.length === 0) {
+                        Swal.fire({
+                            text: 'Please select at least one recipe to reparse.',
+                            icon: 'warning',
+                            buttonsStyling: false,
+                            confirmButtonText: 'OK',
+                            customClass: {
+                                confirmButton: 'btn btn-primary',
+                            }
+                        });
+                        return;
                     }
-                };
 
-                updateReparseButtonVisibility();
-            });
-
-            document.getElementById('reparse-recipes-button').addEventListener('click', function (event) {
-                event.preventDefault();
-
-                const selectedIds = Array.from(document.querySelectorAll('.recipe-checkbox:checked'))
-                    .map(checkbox => checkbox.getAttribute('data-recipe-id'));
-
-                if (selectedIds.length === 0) {
                     Swal.fire({
-                        text: 'Please select at least one recipe to reparse.',
+                        text: 'Are you sure you want to reparse the selected recipes?',
                         icon: 'warning',
                         buttonsStyling: false,
-                        confirmButtonText: 'OK',
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
                         customClass: {
-                            confirmButton: 'btn btn-primary',
+                            confirmButton: 'btn btn-danger',
+                            cancelButton: 'btn btn-secondary',
                         }
-                    });
-                    return;
-                }
-
-                Swal.fire({
-                    text: 'Are you sure you want to reparse the selected recipes?',
-                    icon: 'warning',
-                    buttonsStyling: false,
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes',
-                    cancelButtonText: 'No',
-                    customClass: {
-                        confirmButton: 'btn btn-danger',
-                        cancelButton: 'btn btn-secondary',
-                    }
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        fetch('/recipe/recipes/reparse', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({recipe_ids: selectedIds})
-                        })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '/recipe/recipes/reparse',
+                                method: 'POST',
+                                data: {recipe_ids: selectedIds},
+                                success: function () {
                                     Swal.fire({
-                                        text: data.message,
+                                        text: 'Success',
                                         icon: 'success',
                                         buttonsStyling: false,
                                         confirmButtonText: 'OK',
                                         customClass: {
                                             confirmButton: 'btn btn-primary',
                                         }
+                                    }).then(() => {
+                                        location.reload();
                                     });
-                                    location.reload()
-                                } else {
-                                    console.error('Error:', data);
+                                },
+                                error: function (xhr) {
+                                    console.error('Error:', xhr.responseText);
                                 }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
                             });
-                    }
+                        }
+                    });
                 });
+
+                updateReparseButtonVisibility();
             });
         </script>
     @endpush

@@ -37,7 +37,7 @@ class RecipeManagementController extends Controller
             'recipeId' => $recipe->id,
         ]);
 
-        return response()->json();
+        return response()->json(['success' => true]);
     }
 
     public function reparseByIds(Request $request)
@@ -53,6 +53,6 @@ class RecipeManagementController extends Controller
             ]);
         }
 
-        return response()->json();
+        return response()->json(['success' => true]);
     }
 }
