@@ -14,6 +14,7 @@ abstract class BaseRecipeParser implements RecipeParserInterface
     public function loadHtml(string $url): DOMXPath
     {
         $html = file_get_contents($url);
+
         $dom = new DOMDocument();
         libxml_use_internal_errors(true);
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
@@ -53,6 +54,8 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         $text = ltrim($text, '-');
 
         $text = ltrim($text, ':');
+
+        $text = preg_replace('/\x{00A0}/u', '', $text);
 
         return $text;
     }
@@ -106,11 +109,20 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         return Complexity::mapParsedValue($complexity);
     }
 
+    protected function formatIngredients(array $ingredients): array
+    {
+        $parsedIngredients = [];
+        foreach ($ingredients as $ingredient) {
+            $parsedIngredients[] = $this->parseIngredient($this->cleanText($ingredient));
+        }
+
+        return $parsedIngredients;
+    }
+
     protected function parseIngredient(string $ingredient): array
     {
-        $pattern = '/^(.*?)\s*[-–—:]\s*((?:\d+[.,]?\d*|\d+\/\d+)(?:-\d+[.,]?\d*|\d+\/\d+)?)\s*([^\d]+)?$/u';
-
-        $title = trim($ingredient);
+        $pattern = '/^(?:(.*?)\s*[-–—:]\s*)?(\d+[.,]?\d*|\d+\/\d+)(?:\s*([^\d]+)?)$/u';
+        $title = $ingredient;
         $quantity = null;
         $unit = null;
 
@@ -134,14 +146,5 @@ abstract class BaseRecipeParser implements RecipeParserInterface
             'quantity' => $quantity,
             'unit' => $unit,
         ];
-    }
-
-    protected function formatIngredients(array $ingredients): array
-    {
-        $parsedIngredients = [];
-        foreach ($ingredients as $ingredient) {
-            $parsedIngredients[] = $this->parseIngredient($ingredient);
-        }
-        return $parsedIngredients;
     }
 }

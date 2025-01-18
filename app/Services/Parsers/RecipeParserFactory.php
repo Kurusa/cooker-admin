@@ -11,6 +11,9 @@ class RecipeParserFactory
     {
         return match ($source) {
             'patelnya' => new PatelnyaParser(),
+            'fayni' => new FayniReceptyParser(),
+            'jisty' => new JistyParser(),
+            'nova-strava' => new NovaStravaParser(),
             default => throw new InvalidArgumentException("Unknown parser source: {$source}")
         };
     }

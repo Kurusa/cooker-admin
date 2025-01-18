@@ -1,6 +1,5 @@
 <?php
 
-use App\DataTables\Recipe\IngredientUnitsDataTable;
 use App\Http\Controllers\Apps\Management\CategoryManagementController;
 use App\Http\Controllers\Apps\Management\SourceManagementController;
 use App\Http\Controllers\Apps\Management\UserManagementController;
@@ -18,15 +17,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::name('management.')->prefix('management')->group(function () {
         Route::resource('users', UserManagementController::class);
         Route::resource('sources', SourceManagementController::class);
-        Route::resource('categories', CategoryManagementController::class);
+        Route::get('categories', [CategoryManagementController::class, 'index'])->name('categories.index');
     });
 
     Route::name('recipe.')->prefix('recipe')->group(function () {
         Route::resource('recipes', RecipeManagementController::class);
-        Route::get('recipes/{recipe}/reparse', [RecipeManagementController::class, 'reparse']);
+        Route::get('recipes/{recipe}/reparse', [RecipeManagementController::class, 'reparseRecipe']);
+        Route::post('recipes/reparse', [RecipeManagementController::class, 'reparseByIds']);
+
         Route::resource('ingredients', IngredientManagementController::class);
         Route::get('ingredients/{ingredient}/details', [IngredientManagementController::class, 'getDetails']);
-        Route::resource('steps', StepManagementController::class);
+        Route::get('steps', [StepManagementController::class, 'index'])->name('steps.index');
     });
 });
 

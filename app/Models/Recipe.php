@@ -46,6 +46,11 @@ class Recipe extends Model
         'rating' => 'integer',
     ];
 
+    public function source(): BelongsTo
+    {
+        return $this->belongsTo(Source::class);
+    }
+
     public function ingredients(): BelongsToMany
     {
         return $this->belongsToMany(Ingredient::class, 'recipe_ingredients', 'recipe_id', 'ingredient_unit_id')

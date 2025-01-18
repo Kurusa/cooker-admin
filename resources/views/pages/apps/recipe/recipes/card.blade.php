@@ -1,5 +1,11 @@
 <div class="col-md-4">
-    <div class="card card-flush h-md-100">
+    <div class="card card-flush h-md-100 recipe-card">
+        <input type="checkbox"
+               class="form-check-input recipe-checkbox position-absolute"
+               id="checkbox-{{ $recipe->id }}"
+               data-recipe-id="{{ $recipe->id }}"
+               style="top: 10px; left: 10px; z-index: 10;">
+
         <div class="card-header">
             <div class="card-title">
                 @include('pages.apps.recipe.recipes.partials.title')

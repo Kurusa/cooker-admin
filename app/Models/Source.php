@@ -9,6 +9,7 @@ class Source extends Model
 {
     protected $fillable = [
         'url',
+        'title',
     ];
 
     public $timestamps = false;
