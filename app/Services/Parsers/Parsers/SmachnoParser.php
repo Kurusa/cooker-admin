@@ -4,18 +4,19 @@ namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
 use App\Services\Parsers\BaseRecipeParser;
+use App\Services\Parsers\Formatters\CleanText;
 use DOMXPath;
 
 class SmachnoParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//h1[@itemprop='name']") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//h1[@itemprop='name']") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return 'unknown';
+        return '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -65,7 +66,7 @@ class SmachnoParser extends BaseRecipeParser
             $image = trim($imageNode->item(0)?->nodeValue ?? '');
 
             $steps[] = [
-                'description' => $this->cleanText($description),
+                'description' => CleanText::cleanText($description),
                 'imageUrl' => $image ? 'https://www.smachno.in.ua/' . $image : '',
             ];
         }

@@ -27,7 +27,6 @@
                     </span>
                 </a>
             </div>
-            <div class="w-100"></div>
             @include('pages.apps.recipe.recipes.partials.attributes')
         </div>
         <div class="card-body pt-1">

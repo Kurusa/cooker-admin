@@ -51,18 +51,18 @@ class ParseRecipesCommand extends Command
                     $steps = $parser->parseSteps($xpath);
                     $ingredients = $parser->parseIngredients($xpath);
 
-                    dd([
-                        'title' => $title,
-                        'complexity' => $parser->parseComplexity($xpath),
-                        'time' => $parser->parseCookingTime($xpath),
-                        'portions' => $parser->parsePortions($xpath),
-                        'source_url' => $url,
-                        'source_id' => $source->id,
-                        'category_id' => $category->id,
-                        'image_url' => $parser->parseImage($xpath),
-                        'ingredients' => $ingredients,
-                        'steps' => $steps,
-                    ]);
+//                    dd([
+//                        'title' => $title,
+//                        'complexity' => $parser->parseComplexity($xpath),
+//                        'time' => $parser->parseCookingTime($xpath),
+//                        'portions' => $parser->parsePortions($xpath),
+//                        'source_url' => $url,
+//                        'source_id' => $source->id,
+//                        'category_id' => $category->id,
+//                        'image_url' => $parser->parseImage($xpath),
+//                        'ingredients' => $ingredients,
+//                        'steps' => $steps,
+//                    ]);
 
                     if (!mb_strlen($title)) {
                         $this->error("Title can't be empty");
@@ -102,7 +102,7 @@ class ParseRecipesCommand extends Command
                     }
                 });
             } catch (Exception $e) {
-                $this->error("Failed to save recipe: {$e->getMessage()} {$e->getTraceAsString()}. Url: {$url}");
+                $this->error("Failed to save recipe: {$e->getMessage()}. Url: {$url}");
                 continue;
             }
         }
@@ -171,18 +171,14 @@ class ParseRecipesCommand extends Command
         Source $source,
     ): array
     {
-        $urls = $parser->getSitemapUrls($source);
-
         if ($recipeId = $this->argument('recipeId')) {
             /** @var Recipe $recipe */
             $recipe = Recipe::find($recipeId);
-            $urls = [$recipe->source_url];
+            return [$recipe->source_url];
+        } elseif ($url = $this->argument('recipeUrl')) {
+            return [$url];
+        } else {
+            return $parser->getFilteredSitemapUrls($source);
         }
-
-        if ($url = $this->argument('recipeUrl')) {
-            $urls = [$url];
-        }
-
-        return $urls;
     }
 }

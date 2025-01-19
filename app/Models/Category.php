@@ -18,6 +18,8 @@ class Category extends Model
         'title',
     ];
 
+    public $timestamps = false;
+
     public function recipes(): HasMany
     {
         return $this->hasMany(Recipe::class);

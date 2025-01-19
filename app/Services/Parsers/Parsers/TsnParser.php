@@ -10,12 +10,12 @@ class TsnParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, "//h1[@class='c-card__title']//span") ?? '';
+        return $this->extractCleanSingleValue($xpath, "//h1[@class='c-card__title']//span") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//span[@class='post-cat bg-warning']") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//span[@class='post-cat bg-warning']") ?? '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -83,7 +83,7 @@ class TsnParser extends BaseRecipeParser
 
                     foreach ($listItems as $item) {
                         $ingredients[] = [
-                            'title' => $this->cleanText($item->textContent),
+                            'title' => CleanText::cleanText($item->textContent),
                         ];
                     }
                 }
@@ -98,13 +98,13 @@ class TsnParser extends BaseRecipeParser
         $steps = [];
         $stepNodes = $xpath->query("//div[@data-content='']/ol/li");
         foreach ($stepNodes as $node) {
-            $steps[] = $this->cleanText($node->textContent);
+            $steps[] = CleanText::cleanText($node->textContent);
         }
 
         if (empty($steps)) {
             $paragraphNodes = $xpath->query("//div[@data-content='']/p");
             foreach ($paragraphNodes as $node) {
-                $text = $this->cleanText($node->textContent);
+                $text = CleanText::cleanText($node->textContent);
 
                 if (preg_match('/^\d+\./', $text)) {
                     $text = preg_replace('/^\d+\.\s*/', '', $text);
@@ -118,7 +118,7 @@ class TsnParser extends BaseRecipeParser
             $isStepsStarted = false;
 
             foreach ($paragraphNodes as $node) {
-                $text = $this->cleanText($node->textContent);
+                $text = CleanText::cleanText($node->textContent);
                 if (!$isStepsStarted && stripos($text, 'приготування') !== false) {
                     $isStepsStarted = true;
                     continue;

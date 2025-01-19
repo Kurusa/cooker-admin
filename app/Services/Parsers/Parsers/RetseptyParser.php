@@ -10,13 +10,12 @@ class RetseptyParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//h1[@class='entry-title']") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//h1[@class='entry-title']") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        $link = $xpath->query("//div[@class='cat-links']/a")->item(0);
-        return $link ? trim($link->textContent) : '';
+        return $this->extractCleanSingleValue($xpath, "//div[@class='cat-links']/a") ?? '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -37,7 +36,7 @@ class RetseptyParser extends BaseRecipeParser
 
     public function parsePortions(DOMXPath $xpath): ?int
     {
-        return $this->extractSingleValue($xpath, ".//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']") ?? 0;
+        return $this->extractCleanSingleValue($xpath, ".//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']") ?? 0;
     }
 
     public function parseIngredients(DOMXPath $xpath): array
@@ -52,9 +51,9 @@ class RetseptyParser extends BaseRecipeParser
             $nameNode = $xpath->query(".//span[contains(@class, 'wprm-recipe-ingredient-name')]", $ingredientNode);
 
             $ingredients[] = [
-                'title' => $this->cleanText($nameNode->item(0)?->textContent),
-                'unit' => $this->cleanText($unitNode->item(0)?->textContent ?? ''),
-                'quantity' => $this->cleanText($amountNode->item(0)?->textContent ?? ''),
+                'title' => CleanText::cleanText($nameNode->item(0)?->textContent),
+                'unit' => CleanText::cleanText($unitNode->item(0)?->textContent ?? ''),
+                'quantity' => CleanText::cleanText($amountNode->item(0)?->textContent ?? ''),
             ];
         }
 

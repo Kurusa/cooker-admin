@@ -10,12 +10,12 @@ class NovaStravaParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//h1[@class='sc_layouts_title_caption']") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//h1[@class='sc_layouts_title_caption']") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//a[@class='breadcrumbs_item cat_post']") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//a[@class='breadcrumbs_item cat_post']") ?? '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -25,15 +25,15 @@ class NovaStravaParser extends BaseRecipeParser
 
     public function parseCookingTime(DOMXPath $xpath): ?int
     {
-        $rawHours = $this->extractSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()") ?? 0;
-        $rawMinutes = $this->extractSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()") ?? 0;
+        $rawHours = $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()") ?? 0;
+        $rawMinutes = $this->extractCleanSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()") ?? 0;
 
-        return $this->formatCookingTime(($rawHours * 60) + $rawMinutes);
+        return ($rawHours * 60) + $rawMinutes;
     }
 
     public function parsePortions(DOMXPath $xpath): ?int
     {
-        return $this->extractSingleValue($xpath, ".//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']");
+        return $this->extractCleanSingleValue($xpath, ".//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']");
     }
 
     public function parseIngredients(DOMXPath $xpath): array

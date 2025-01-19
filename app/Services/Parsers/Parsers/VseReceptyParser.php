@@ -12,12 +12,12 @@ class VseReceptyParser extends BaseRecipeParser
     {
         $class = 'entry-title';
 
-        return $this->extractSingleValue($xpath, ".//h1[@class='$class']") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//h1[@class='$class']") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $xpath->query('//ul[@class="recipe-categories"]/li[@class="ctg-name"][last()]/a')->item(0)->textContent;
+        return $this->extractCleanSingleValue($xpath, '//ul[@class="recipe-categories"]/li[@class="ctg-name"][last()]/a') ?? '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -32,7 +32,7 @@ class VseReceptyParser extends BaseRecipeParser
 
     public function parseCookingTime(DOMXPath $xpath): ?int
     {
-        $timeText = $xpath->query("//span[@class='duration']")->item(0)->textContent;
+        $timeText = $xpath->query("//span[@class='duration']")->item(0)?->textContent;
 
         $totalMinutes = 0;
 
@@ -49,7 +49,13 @@ class VseReceptyParser extends BaseRecipeParser
 
     public function parsePortions(DOMXPath $xpath): ?int
     {
-        return str_replace('порції', '', ($this->extractSingleValue($xpath, ".//div[@class='recipe-feature_block recipe-portion']//span[@class='yield']") ?? ''));
+        $rawPortions = $this->extractCleanSingleValue($xpath, ".//div[@class='recipe-feature_block recipe-portion']//span[@class='yield']");
+
+        if ($rawPortions) {
+            return (int) str_replace(['порції', 'порцій', 'порція'], '', CleanText::cleanText($rawPortions));
+        }
+
+        return null;
     }
 
     public function parseIngredients(DOMXPath $xpath): array
@@ -62,13 +68,13 @@ class VseReceptyParser extends BaseRecipeParser
             $titleNode = $xpath->query(".//span[@class='recipe-ingredients_name']", $ingredientNode);
             $amountNode = $xpath->query(".//span[@class='recipe-ingredients_amount']", $ingredientNode);
 
-            $name = $this->cleanText($titleNode->item(0)?->textContent);
+            $name = CleanText::cleanText($titleNode->item(0)?->textContent);
 
             $valueNode = $xpath->query(".//span[@class='value']", $amountNode->item(0));
             $unitNode = $xpath->query(".//span[@class='type']", $amountNode->item(0));
 
-            $quantity = $this->cleanText($valueNode->item(0)?->textContent ?? '');
-            $unit = $this->cleanText($unitNode->item(0)?->textContent ?? '');
+            $quantity = CleanText::cleanText($valueNode->item(0)?->textContent ?? '');
+            $unit = CleanText::cleanText($unitNode->item(0)?->textContent ?? '');
 
             $ingredients[] = [
                 'title' => $name,
@@ -89,7 +95,7 @@ class VseReceptyParser extends BaseRecipeParser
         foreach ($stepNodes as $stepNode) {
             $textNode = $xpath->query(".//p[contains(@class, 'instruction')]", $stepNode);
             if ($textNode->length > 0) {
-                $steps[] = $this->cleanText($textNode->item(0)->textContent);
+                $steps[] = CleanText::cleanText($textNode->item(0)->textContent);
             }
         }
 
@@ -97,7 +103,7 @@ class VseReceptyParser extends BaseRecipeParser
             $stepNodes = $xpath->query("//h2[text()='Покроковий рецепт приготування']/following-sibling::ol//li");
 
             foreach ($stepNodes as $stepNode) {
-                $steps[] = $this->cleanText($stepNode->textContent);
+                $steps[] = CleanText::cleanText($stepNode->textContent);
             }
         }
 
@@ -114,8 +120,6 @@ class VseReceptyParser extends BaseRecipeParser
 
     public function urlRule(string $url): bool
     {
-        $headers = get_headers($url, 1);
-
-        return !str_contains($url, '.com/en/') && str_contains($headers[0], '200');
+        return !str_contains($url, '.com/en/');
     }
 }

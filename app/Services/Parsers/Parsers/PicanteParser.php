@@ -11,12 +11,12 @@ class PicanteParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//h1[@class='fn']") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//h1[@class='fn']") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//ol[@id='wo-breadcrumbs']/li[3]/a/span/text()") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//ol[@id='wo-breadcrumbs']/li[3]/a/span/text()") ?? '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -40,8 +40,8 @@ class PicanteParser extends BaseRecipeParser
         $ingredientNodes = $xpath->query("//ul[@class='ingredients']/li");
 
         foreach ($ingredientNodes as $node) {
-            $name = $this->cleanText($xpath->query(".//span[@class='name']", $node)->item(0)->textContent);
-            $amount = $this->cleanText($xpath->query(".//span[@class='amount']", $node)->item(0)->textContent);
+            $name = CleanText::cleanText($xpath->query(".//span[@class='name']", $node)->item(0)->textContent);
+            $amount = CleanText::cleanText($xpath->query(".//span[@class='amount']", $node)->item(0)->textContent);
 
             $ingredient = $amount ? "{$name}: {$amount}" : $name;
             $ingredients[] = $this->formatIngredient($ingredient);
@@ -60,7 +60,7 @@ class PicanteParser extends BaseRecipeParser
          * @var DOMNode $paragraphNode
          */
         foreach ($paragraphNodes as $paragraphNode) {
-            $description = $this->cleanText($paragraphNode->textContent);
+            $description = CleanText::cleanText($paragraphNode->textContent);
             if (preg_match('/^\d+\)/', $description)) {
                 $description = preg_replace('/^\d+\)\s*/', '', $description);
             }

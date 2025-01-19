@@ -3,7 +3,6 @@
 namespace App\Services\Parsers\Contracts;
 
 use App\Enums\Recipe\Complexity;
-use App\Models\Source;
 use DOMXPath;
 
 interface RecipeParserInterface

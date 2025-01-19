@@ -4,36 +4,42 @@ namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
 use App\Services\Parsers\BaseRecipeParser;
+use App\Services\Parsers\Formatters\CookingTimeFormatter;
 use DOMXPath;
 
 class PatelnyaParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//h1[@class='p-name name-title fn']") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//h1[@class='p-name name-title fn']") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//div[@class='title-detail']/a/span");
+        return $this->extractCleanSingleValue($xpath, ".//div[@class='title-detail']/a/span") ?? '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
     {
-        $rawComplexity = $this->extractSingleValue($xpath, ".//div[i/span[contains(text(), 'Рівень складності:')]]/i/span[@class='color-414141']");
-        return $this->formatComplexity($rawComplexity);
+        $rawComplexity = $this->extractCleanSingleValue($xpath, ".//div[i/span[contains(text(), 'Рівень складності:')]]/i/span[@class='color-414141']");
+        return Complexity::mapParsedValue($rawComplexity);
     }
 
     public function parseCookingTime(DOMXPath $xpath): ?int
     {
-        $rawTime = $this->extractSingleValue($xpath, ".//div[i[@class='duration']]/i/span[@class='color-414141 value-title']");
-        return $this->formatCookingTime($rawTime);
+        $rawTime = $this->extractCleanSingleValue($xpath, ".//div[i[@class='duration']]/i/span[@class='color-414141 value-title']");
+        return CookingTimeFormatter::formatCookingTime($rawTime);
     }
 
     public function parsePortions(DOMXPath $xpath): ?int
     {
-        $rawPortions = $this->extractSingleValue($xpath, ".//div[i/span[contains(text(), 'Кількість порцій:')]]/i/span[@class='color-414141 yield']");
-        return $this->formatPortions($rawPortions);
+        $rawPortions = $this->extractCleanSingleValue($xpath, ".//div[i/span[contains(text(), 'Кількість порцій:')]]/i/span[@class='color-414141 yield']");
+
+        if ($rawPortions) {
+            return (int) str_replace(['порцій', 'порція'], '', CleanText::cleanText($rawPortions));
+        }
+
+        return null;
     }
 
     public function parseIngredients(DOMXPath $xpath): array

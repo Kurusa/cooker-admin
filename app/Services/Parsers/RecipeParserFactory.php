@@ -12,6 +12,7 @@ use App\Services\Parsers\Parsers\RetseptyParser;
 use App\Services\Parsers\Parsers\RudParser;
 use App\Services\Parsers\Parsers\SmachnoParser;
 use App\Services\Parsers\Parsers\TsnParser;
+use App\Services\Parsers\Parsers\UaReceptParser;
 use App\Services\Parsers\Parsers\VseReceptyParser;
 use InvalidArgumentException;
 
@@ -30,6 +31,7 @@ class RecipeParserFactory
             'picante' => new PicanteParser(),
             'retsepty' => new RetseptyParser(),
             'vse-recepty' => new VseReceptyParser(),
+            'ua-recept' => new UaReceptParser(),
             default => throw new InvalidArgumentException("Unknown parser source: {$source}")
         };
     }

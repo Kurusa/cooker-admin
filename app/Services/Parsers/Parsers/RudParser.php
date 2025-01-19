@@ -10,7 +10,7 @@ class RudParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, "//h2[@itemprop='name']") ?? '';
+        return $this->extractCleanSingleValue($xpath, "//h2[@itemprop='name']") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string

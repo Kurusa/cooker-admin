@@ -4,22 +4,25 @@ namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
 use App\Services\Parsers\BaseRecipeParser;
+use App\Services\Parsers\Formatters\CleanText;
+use App\Services\Parsers\Formatters\IngredientFormatter;
+use DOMNode;
 use DOMXPath;
 
 class FayniReceptyParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        $class = "wprm-recipe-name wprm-block-text-bold";
+        $class = 'wprm-recipe-name wprm-block-text-bold';
 
-        return $this->extractSingleValue($xpath, ".//h2[@class='$class']") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//h2[@class='$class']");
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        $class = "trail-items";
+        $class = 'trail-items';
 
-        return $this->extractSingleValue($xpath, ".//ul[@class='$class']/li[2]/a/span/text()") ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//ul[@class='$class']/li[2]/a/span/text()");
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -29,8 +32,8 @@ class FayniReceptyParser extends BaseRecipeParser
 
     public function parseCookingTime(DOMXPath $xpath): ?int
     {
-        $rawHours = $this->extractSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()") ?? 0;
-        $rawMinutes = $this->extractSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()") ?? 0;
+        $rawHours = (int) $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()");
+        $rawMinutes = (int) $this->extractCleanSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()");
 
         return ($rawHours * 60) + $rawMinutes;
     }
@@ -46,20 +49,19 @@ class FayniReceptyParser extends BaseRecipeParser
         $ingredientNodes = $xpath->query("//ul[@class='$class']/li");
 
         $parsedIngredients = [];
+
+        /** @var DOMNode $node */
         foreach ($ingredientNodes as $node) {
-            $amountNode = $xpath->query(".//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $node);
-            $amount = $amountNode->length > 0 ? str_replace(',', '.', $this->cleanText($amountNode[0]->textContent)) : null;
+            $amountNode = $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $node);
 
-            $unitNode = $xpath->query(".//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $node);
-            $unit = $unitNode->length > 0 ? $this->translateUnit($this->cleanText($unitNode[0]->textContent)) : null;
+            $unit = $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $node);
 
-            $nameNode = $xpath->query(".//span[contains(@class, 'wprm-recipe-ingredient-name')]", $node);
-            $name = $nameNode->length > 0 ? $this->cleanText($nameNode[0]->textContent) : null;
+            $name = $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-name')]", $node);
 
             $parsedIngredients[] = [
                 'title' => $name,
-                'quantity' => $amount,
-                'unit' => $unit,
+                'quantity' => CleanText::cleanQuantity($amountNode),
+                'unit' => IngredientFormatter::translateUnit($unit),
             ];
         }
 
@@ -68,7 +70,7 @@ class FayniReceptyParser extends BaseRecipeParser
 
     public function parseSteps(DOMXPath $xpath): array
     {
-        return $this->extractMultipleValues($xpath, "//ul[@class='wprm-recipe-instructions']/li/div[@class='wprm-recipe-instruction-text']");
+        return array_unique($this->extractMultipleValues($xpath, "//ul[@class='wprm-recipe-instructions']/li/div[@class='wprm-recipe-instruction-text']"));
     }
 
     public function parseImage(DOMXPath $xpath): ?string
@@ -77,25 +79,27 @@ class FayniReceptyParser extends BaseRecipeParser
         return $imageNode?->getAttribute('data-wpfc-original-src');
     }
 
-    protected function translateUnit(?string $unit): ?string
-    {
-        $translations = [
-            'kg' => 'кг',
-            'g' => 'г',
-            'cups' => 'склянки',
-            'tbsp' => 'ст. л',
-            'tsp' => 'ч. л',
-            'ml' => 'мл',
-            'l' => 'л',
-            'qt' => 'шт',
-            'mg' => 'мг',
-        ];
-
-        return $translations[$unit] ?? $unit;
-    }
-
     public function urlRule(string $url): bool
     {
+        $disallowedPatterns = [
+            'fayni-recepty.com.ua/yak-',
+            '/blog',
+            'novyi-rik',
+            'novyy-rik',
+            'kvashena-kapusta-koryst',
+            'halva-koryst-ta-shkoda',
+            'pisni-stravy-na-pist',
+            'shcho-pryhotuvaty',
+            'sho-pryhotuvaty',
+            'sho-pyhotuvaty',
+        ];
+
+        foreach ($disallowedPatterns as $pattern) {
+            if (str_contains($url, $pattern)) {
+                return false;
+            }
+        }
+
         return true;
     }
 }
