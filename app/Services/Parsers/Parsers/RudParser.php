@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Services\Parsers;
+namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
-use App\Models\Source;
+use App\Services\Parsers\BaseRecipeParser;
 use DOMXPath;
 
 class RudParser extends BaseRecipeParser

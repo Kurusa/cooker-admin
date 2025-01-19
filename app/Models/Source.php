@@ -10,16 +10,15 @@ use Illuminate\Support\Collection;
  * @property int $id
  * @property string $url
  * @property string $title
- * @property string $sitemap_url
  *
  * @property Collection<Recipe> $recipes
+ * @property Collection<SourceSitemap> $sitemapUrls
  */
 class Source extends Model
 {
     protected $fillable = [
         'url',
         'title',
-        'sitemap_url',
     ];
 
     public $timestamps = false;
@@ -27,5 +26,10 @@ class Source extends Model
     public function recipes(): HasMany
     {
         return $this->hasMany(Recipe::class, 'source_id');
+    }
+
+    public function sitemapUrls(): HasMany
+    {
+        return $this->hasMany(SourceSitemap::class);
     }
 }

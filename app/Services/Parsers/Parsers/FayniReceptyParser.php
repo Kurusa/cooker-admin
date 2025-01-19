@@ -1,22 +1,25 @@
 <?php
 
-namespace App\Services\Parsers;
+namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
-use App\Models\Source;
-use DOMNodeList;
+use App\Services\Parsers\BaseRecipeParser;
 use DOMXPath;
 
 class FayniReceptyParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//h2[@class='wprm-recipe-name wprm-block-text-bold']") ?? '';
+        $class = "wprm-recipe-name wprm-block-text-bold";
+
+        return $this->extractSingleValue($xpath, ".//h2[@class='$class']") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $this->extractSingleValue($xpath, ".//ul[@class='trail-items']/li[2]/a/span/text()") ?? '';
+        $class = "trail-items";
+
+        return $this->extractSingleValue($xpath, ".//ul[@class='$class']/li[2]/a/span/text()") ?? '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -29,7 +32,7 @@ class FayniReceptyParser extends BaseRecipeParser
         $rawHours = $this->extractSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()") ?? 0;
         $rawMinutes = $this->extractSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()") ?? 0;
 
-        return $this->formatCookingTime(($rawHours * 60) + $rawMinutes);
+        return ($rawHours * 60) + $rawMinutes;
     }
 
     public function parsePortions(DOMXPath $xpath): ?int
@@ -39,24 +42,9 @@ class FayniReceptyParser extends BaseRecipeParser
 
     public function parseIngredients(DOMXPath $xpath): array
     {
-        $rawIngredients = $xpath->query("//ul[@class='wprm-recipe-ingredients']/li");
+        $class = 'wprm-recipe-ingredients';
+        $ingredientNodes = $xpath->query("//ul[@class='$class']/li");
 
-        return $this->formatFainyIngredients($xpath, $rawIngredients);
-    }
-
-    public function parseSteps(DOMXPath $xpath): array
-    {
-        return $this->extractMultipleValues($xpath, "//ul[@class='wprm-recipe-instructions']/li/div[@class='wprm-recipe-instruction-text']");
-    }
-
-    public function parseImage(DOMXPath $xpath): ?string
-    {
-        $imageNode = $xpath->query(".//img[@class='attachment-full size-full wp-post-image']")->item(0);
-        return trim($imageNode?->getAttribute('data-wpfc-original-src'));
-    }
-
-    protected function formatFainyIngredients(DOMXPath $xpath, DOMNodeList $ingredientNodes): array
-    {
         $parsedIngredients = [];
         foreach ($ingredientNodes as $node) {
             $amountNode = $xpath->query(".//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $node);
@@ -76,6 +64,17 @@ class FayniReceptyParser extends BaseRecipeParser
         }
 
         return $parsedIngredients;
+    }
+
+    public function parseSteps(DOMXPath $xpath): array
+    {
+        return $this->extractMultipleValues($xpath, "//ul[@class='wprm-recipe-instructions']/li/div[@class='wprm-recipe-instruction-text']");
+    }
+
+    public function parseImage(DOMXPath $xpath): ?string
+    {
+        $imageNode = $xpath->query(".//img[@class='attachment-full size-full wp-post-image']")->item(0);
+        return $imageNode?->getAttribute('data-wpfc-original-src');
     }
 
     protected function translateUnit(?string $unit): ?string

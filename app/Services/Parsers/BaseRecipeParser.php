@@ -3,6 +3,7 @@
 namespace App\Services\Parsers;
 
 use App\Enums\Recipe\Complexity;
+use App\Models\Source;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use DOMDocument;
 use DOMXPath;
@@ -20,22 +21,28 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         libxml_use_internal_errors(true);
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
         $dom->loadHTML($html);
+
+        //file_put_contents('storage/logs/html.html', $html);
+
         return new DOMXPath($dom);
     }
 
-    public function getSitemapUrls(string $sitemapUrl): array
+    public function getSitemapUrls(Source $source): array
     {
-        $sitemapElements = simplexml_load_file($sitemapUrl);
-
-        if (!$sitemapElements) {
-            throw new RuntimeException("Failed to load sitemap: {$sitemapUrl}");
-        }
-
         $urls = [];
-        foreach ($sitemapElements as $sitemapElement) {
-            $url = (string) $sitemapElement->loc;
-            if ($this->urlRule($url)) {
-                $urls[] = $url;
+
+        foreach ($source->sitemapUrls as $sitemap) {
+            $sitemapElements = simplexml_load_file($sitemap->sitemap_url);
+
+            if (!$sitemapElements) {
+                throw new RuntimeException("Failed to load sitemap: {$sitemap->sitemap_url}");
+            }
+
+            foreach ($sitemapElements as $sitemapElement) {
+                $url = (string) $sitemapElement->loc;
+                if ($this->urlRule($url)) {
+                    $urls[] = $url;
+                }
             }
         }
 
@@ -45,7 +52,6 @@ abstract class BaseRecipeParser implements RecipeParserInterface
     protected function cleanText(string $text): ?string
     {
         $text = trim($text);
-
         $text = ltrim($text);
 
         $text = mb_strtolower($text);
@@ -54,16 +60,18 @@ abstract class BaseRecipeParser implements RecipeParserInterface
 
         $text = rtrim($text, '.');
 
-        $text = ltrim($text, ' -');
-        $text = rtrim($text, ' -');
-
         $text = ltrim($text, '-');
+        $text = ltrim($text, '–');
         $text = rtrim($text, '-');
+        $text = rtrim($text, '–');
 
         $text = ltrim($text, ':');
         $text = rtrim($text, ':');
 
         $text = preg_replace('/\x{00A0}/u', '', $text);
+
+        $text = trim($text);
+        $text = ltrim($text);
 
         return $text;
     }

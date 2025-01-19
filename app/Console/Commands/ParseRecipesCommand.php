@@ -27,7 +27,7 @@ class ParseRecipesCommand extends Command
 
         $parser = RecipeParserFactory::make($source->title);
 
-        $urls = $this->defineUrlsToParse($parser, $source->sitemap_url);
+        $urls = $this->defineUrlsToParse($parser, $source);
 
         foreach ($urls as $url) {
             if (
@@ -51,18 +51,18 @@ class ParseRecipesCommand extends Command
                     $steps = $parser->parseSteps($xpath);
                     $ingredients = $parser->parseIngredients($xpath);
 
-//                    dd([
-//                        'title' => $title,
-//                        'complexity' => $parser->parseComplexity($xpath),
-//                        'time' => $parser->parseCookingTime($xpath),
-//                        'portions' => $parser->parsePortions($xpath),
-//                        'source_url' => $url,
-//                        'source_id' => $source->id,
-//                        'category_id' => $category->id,
-//                        'image_url' => $parser->parseImage($xpath),
-//                        'ingredients' => $ingredients,
-//                        'steps' => $steps,
-//                    ]);
+                    dd([
+                        'title' => $title,
+                        'complexity' => $parser->parseComplexity($xpath),
+                        'time' => $parser->parseCookingTime($xpath),
+                        'portions' => $parser->parsePortions($xpath),
+                        'source_url' => $url,
+                        'source_id' => $source->id,
+                        'category_id' => $category->id,
+                        'image_url' => $parser->parseImage($xpath),
+                        'ingredients' => $ingredients,
+                        'steps' => $steps,
+                    ]);
 
                     if (!mb_strlen($title)) {
                         $this->error("Title can't be empty");
@@ -168,10 +168,10 @@ class ParseRecipesCommand extends Command
 
     private function defineUrlsToParse(
         RecipeParserInterface $parser,
-        string $sitemapUrl,
+        Source $source,
     ): array
     {
-        $urls = $parser->getSitemapUrls($sitemapUrl);
+        $urls = $parser->getSitemapUrls($source);
 
         if ($recipeId = $this->argument('recipeId')) {
             /** @var Recipe $recipe */

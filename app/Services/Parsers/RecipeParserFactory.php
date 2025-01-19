@@ -3,6 +3,16 @@
 namespace App\Services\Parsers;
 
 use App\Services\Parsers\Contracts\RecipeParserInterface;
+use App\Services\Parsers\Parsers\FayniReceptyParser;
+use App\Services\Parsers\Parsers\JistyParser;
+use App\Services\Parsers\Parsers\NovaStravaParser;
+use App\Services\Parsers\Parsers\PatelnyaParser;
+use App\Services\Parsers\Parsers\PicanteParser;
+use App\Services\Parsers\Parsers\RetseptyParser;
+use App\Services\Parsers\Parsers\RudParser;
+use App\Services\Parsers\Parsers\SmachnoParser;
+use App\Services\Parsers\Parsers\TsnParser;
+use App\Services\Parsers\Parsers\VseReceptyParser;
 use InvalidArgumentException;
 
 class RecipeParserFactory
@@ -18,6 +28,8 @@ class RecipeParserFactory
             'tsn' => new TsnParser(),
             'smachno' => new SmachnoParser(),
             'picante' => new PicanteParser(),
+            'retsepty' => new RetseptyParser(),
+            'vse-recepty' => new VseReceptyParser(),
             default => throw new InvalidArgumentException("Unknown parser source: {$source}")
         };
     }
