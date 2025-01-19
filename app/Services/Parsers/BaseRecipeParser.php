@@ -6,10 +6,11 @@ use App\Enums\Recipe\Complexity;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use DOMDocument;
 use DOMXPath;
+use RuntimeException;
 
 abstract class BaseRecipeParser implements RecipeParserInterface
 {
-    abstract public function getSitemapUrl(): string;
+    abstract public function urlRule(string $url): bool;
 
     public function loadHtml(string $url): DOMXPath
     {
@@ -22,18 +23,20 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         return new DOMXPath($dom);
     }
 
-    public function getSitemapUrls(): array
+    public function getSitemapUrls(string $sitemapUrl): array
     {
-        $sitemapUrl = $this->getSitemapUrl();
         $sitemapElements = simplexml_load_file($sitemapUrl);
 
         if (!$sitemapElements) {
-            throw new \RuntimeException("Failed to load sitemap: {$sitemapUrl}");
+            throw new RuntimeException("Failed to load sitemap: {$sitemapUrl}");
         }
 
         $urls = [];
         foreach ($sitemapElements as $sitemapElement) {
-            $urls[] = (string) $sitemapElement->loc;
+            $url = (string) $sitemapElement->loc;
+            if ($this->urlRule($url)) {
+                $urls[] = $url;
+            }
         }
 
         return $urls;
@@ -43,17 +46,22 @@ abstract class BaseRecipeParser implements RecipeParserInterface
     {
         $text = trim($text);
 
+        $text = ltrim($text);
+
         $text = mb_strtolower($text);
 
         $text = rtrim($text, ',');
 
         $text = rtrim($text, '.');
 
+        $text = ltrim($text, ' -');
         $text = rtrim($text, ' -');
 
         $text = ltrim($text, '-');
+        $text = rtrim($text, '-');
 
         $text = ltrim($text, ':');
+        $text = rtrim($text, ':');
 
         $text = preg_replace('/\x{00A0}/u', '', $text);
 
@@ -113,13 +121,13 @@ abstract class BaseRecipeParser implements RecipeParserInterface
     {
         $parsedIngredients = [];
         foreach ($ingredients as $ingredient) {
-            $parsedIngredients[] = $this->parseIngredient($this->cleanText($ingredient));
+            $parsedIngredients[] = $this->formatIngredient($this->cleanText($ingredient));
         }
 
         return $parsedIngredients;
     }
 
-    protected function parseIngredient(string $ingredient): array
+    protected function formatIngredient(string $ingredient): array
     {
         $pattern = '/^(?:(.*?)\s*[-–—:]\s*)?(\d+[.,]?\d*|\d+\/\d+)(?:\s*([^\d]+)?)$/u';
         $title = $ingredient;
@@ -142,9 +150,9 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         }
 
         return [
-            'title' => $title,
-            'quantity' => $quantity,
-            'unit' => $unit,
+            'title' => $this->cleanText($title ?? ''),
+            'quantity' => $this->cleanText($quantity ?? ''),
+            'unit' => $this->cleanText($unit ?? ''),
         ];
     }
 }

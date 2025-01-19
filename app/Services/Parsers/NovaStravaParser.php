@@ -54,13 +54,8 @@ class NovaStravaParser extends BaseRecipeParser
         return str_replace('150', '370', trim($imageNode?->getAttribute('src')));
     }
 
-    public function getSitemapUrl(): string
+    public function urlRule(string $url): bool
     {
-        return 'https://novastrava.com/post-sitemap.xml';
-    }
-
-    public function getSource(): Source
-    {
-        return Source::where('url', 'https://novastrava.com')->first();
+        return true;
     }
 }

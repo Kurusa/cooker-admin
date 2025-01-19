@@ -3,7 +3,6 @@
 namespace App\Services\Parsers;
 
 use App\Enums\Recipe\Complexity;
-use App\Models\Source;
 use DOMXPath;
 
 class JistyParser extends BaseRecipeParser
@@ -73,25 +72,20 @@ class JistyParser extends BaseRecipeParser
         return 'https://jisty.com.ua' . $src;
     }
 
-    public function getSitemapUrl(): string
-    {
-        return 'https://jisty.com.ua/post-sitemap.xml';
-    }
-
-    public function getSource(): Source
-    {
-        return Source::where('url', 'https://jisty.com.ua')->first();
-    }
-
     protected function formatIngredients(array $ingredients): array
     {
         $parsedIngredients = [];
         foreach ($ingredients as $ingredient) {
             $ingredient = str_replace('(adsbygoogle=window.adsbygoogle||[]).push({})', '', $ingredient);
             $ingredient = str_replace('спеції: ', '', $ingredient);
-            $parsedIngredients[] = $this->parseIngredient($ingredient);
+            $parsedIngredients[] = $this->formatIngredient($ingredient);
         }
 
         return $parsedIngredients;
+    }
+
+    public function urlRule(string $url): bool
+    {
+        return true;
     }
 }

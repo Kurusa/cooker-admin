@@ -10,7 +10,7 @@ use Illuminate\Support\Collection;
  * @property int $id
  * @property string $title
  *
- * @property-read Collection<Recipe> $recipes
+ * @property Collection<Recipe> $recipes
  */
 class Category extends Model
 {

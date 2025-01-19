@@ -47,7 +47,10 @@
                         @foreach($ingredients as $ingredient)
                             <li>
                                 <span class="dropdown-item">
-                                    {{ $ingredient->ingredient_title }} - {{ $ingredient->quantity }} {{ $ingredient->unit_title }}
+                                    {{ $ingredient->ingredient_title }}
+                                    @if($ingredient->quantity || $ingredient->unit_title)
+                                        - {{ $ingredient->quantity }} {{ $ingredient->unit_title }}
+                                    @endif
                                 </span>
                             </li>
                         @endforeach

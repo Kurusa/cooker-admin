@@ -62,7 +62,7 @@ class RudParser extends BaseRecipeParser
 
             $rawIngredient = $ingredientName . ': ' . $ingredientQuantity;
 
-            $ingredients[] = $this->parseIngredient($rawIngredient);
+            $ingredients[] = $this->formatIngredient($rawIngredient);
         }
 
         return $ingredients;
@@ -95,25 +95,20 @@ class RudParser extends BaseRecipeParser
         return null;
     }
 
-    public function getSitemapUrl(): string
-    {
-        return 'https://rud.ua/sitemap.xml';
-    }
-
-    public function getSource(): Source
-    {
-        return Source::where('url', 'https://rud.ua')->first();
-    }
-
     protected function formatIngredients(array $ingredients): array
     {
         $parsedIngredients = [];
         foreach ($ingredients as $ingredient) {
             $ingredient = str_replace('(adsbygoogle=window.adsbygoogle||[]).push({})', '', $ingredient);
             $ingredient = str_replace('спеції: ', '', $ingredient);
-            $parsedIngredients[] = $this->parseIngredient($ingredient);
+            $parsedIngredients[] = $this->formatIngredient($ingredient);
         }
 
         return $parsedIngredients;
+    }
+
+    public function urlRule(string $url): bool
+    {
+        return true;
     }
 }

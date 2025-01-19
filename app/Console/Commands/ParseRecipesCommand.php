@@ -27,7 +27,7 @@ class ParseRecipesCommand extends Command
 
         $parser = RecipeParserFactory::make($source->title);
 
-        $urls = $this->defineUrlsToParse($parser);
+        $urls = $this->defineUrlsToParse($parser, $source->sitemap_url);
 
         foreach ($urls as $url) {
             if (
@@ -45,11 +45,24 @@ class ParseRecipesCommand extends Command
                 $xpath = $parser->loadHtml($url);
 
                 DB::transaction(function () use ($url, $parser, $xpath, $source) {
-                    $category = $this->getOrCreateCategory($parser->parseCategory($xpath));
+                    $category = Category::firstOrCreate(['title' => $parser->parseCategory($xpath)]);
 
                     $title = $parser->parseTitle($xpath);
                     $steps = $parser->parseSteps($xpath);
                     $ingredients = $parser->parseIngredients($xpath);
+
+//                    dd([
+//                        'title' => $title,
+//                        'complexity' => $parser->parseComplexity($xpath),
+//                        'time' => $parser->parseCookingTime($xpath),
+//                        'portions' => $parser->parsePortions($xpath),
+//                        'source_url' => $url,
+//                        'source_id' => $source->id,
+//                        'category_id' => $category->id,
+//                        'image_url' => $parser->parseImage($xpath),
+//                        'ingredients' => $ingredients,
+//                        'steps' => $steps,
+//                    ]);
 
                     if (!mb_strlen($title)) {
                         $this->error("Title can't be empty");
@@ -89,19 +102,10 @@ class ParseRecipesCommand extends Command
                     }
                 });
             } catch (Exception $e) {
-                $this->error("Failed to save recipe: {$e->getMessage()}. Url: {$url}");
+                $this->error("Failed to save recipe: {$e->getMessage()} {$e->getTraceAsString()}. Url: {$url}");
                 continue;
             }
         }
-    }
-
-    private function getOrCreateCategory(?string $categoryName): Category
-    {
-        if (!$categoryName) {
-            return Category::firstOrCreate(['title' => 'новинки']);
-        }
-
-        return Category::firstOrCreate(['title' => trim($categoryName)]);
     }
 
     private function attachStepsToRecipe(array $steps, Recipe $recipe): void
@@ -162,9 +166,12 @@ class ParseRecipesCommand extends Command
         return null;
     }
 
-    private function defineUrlsToParse(RecipeParserInterface $parser)
+    private function defineUrlsToParse(
+        RecipeParserInterface $parser,
+        string $sitemapUrl,
+    ): array
     {
-        $urls = $parser->getSitemapUrls();
+        $urls = $parser->getSitemapUrls($sitemapUrl);
 
         if ($recipeId = $this->argument('recipeId')) {
             /** @var Recipe $recipe */

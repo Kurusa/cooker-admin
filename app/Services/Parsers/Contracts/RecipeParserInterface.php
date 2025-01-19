@@ -23,6 +23,4 @@ interface RecipeParserInterface
     public function parseIngredients(DOMXPath $xpath): array;
 
     public function parseSteps(DOMXPath $xpath): array;
-
-    public function getSource(): Source;
 }

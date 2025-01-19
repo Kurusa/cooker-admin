@@ -15,6 +15,9 @@ class RecipeParserFactory
             'jisty' => new JistyParser(),
             'novastrava' => new NovaStravaParser(),
             'rud' => new RudParser(),
+            'tsn' => new TsnParser(),
+            'smachno' => new SmachnoParser(),
+            'picante' => new PicanteParser(),
             default => throw new InvalidArgumentException("Unknown parser source: {$source}")
         };
     }

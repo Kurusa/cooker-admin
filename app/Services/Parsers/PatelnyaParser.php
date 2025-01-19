@@ -89,13 +89,8 @@ class PatelnyaParser extends BaseRecipeParser
         return $imageNode ? trim($imageNode->getAttribute('src')) : null;
     }
 
-    public function getSitemapUrl(): string
+    public function urlRule(string $url): bool
     {
-        return 'https://patelnya.com.ua/post-sitemap.xml';
-    }
-
-    public function getSource(): Source
-    {
-        return Source::where('url', 'https://patelnya.com.ua')->first();
+        return true;
     }
 }

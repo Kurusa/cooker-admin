@@ -55,16 +55,6 @@ class FayniReceptyParser extends BaseRecipeParser
         return trim($imageNode?->getAttribute('data-wpfc-original-src'));
     }
 
-    public function getSitemapUrl(): string
-    {
-        return 'https://fayni-recepty.com.ua/post-sitemap.xml';
-    }
-
-    public function getSource(): Source
-    {
-        return Source::where('url', 'https://fayni-recepty.com.ua')->first();
-    }
-
     protected function formatFainyIngredients(DOMXPath $xpath, DOMNodeList $ingredientNodes): array
     {
         $parsedIngredients = [];
@@ -103,5 +93,10 @@ class FayniReceptyParser extends BaseRecipeParser
         ];
 
         return $translations[$unit] ?? $unit;
+    }
+
+    public function urlRule(string $url): bool
+    {
+        return true;
     }
 }
