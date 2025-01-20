@@ -9,7 +9,7 @@ interface RecipeParserInterface
 {
     public function parseTitle(DOMXPath $xpath): string;
 
-    public function parseImage(DOMXPath $xpath): ?string;
+    public function parseImage(DOMXPath $xpath): string;
 
     public function parseCategory(DOMXPath $xpath): string;
 

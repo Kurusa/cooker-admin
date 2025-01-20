@@ -6,7 +6,6 @@ use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
-use App\Services\Parsers\Formatters\IngredientFormatter;
 use DOMNode;
 use DOMXPath;
 
@@ -85,14 +84,18 @@ class JistyParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): ?string
+    public function parseImage(DOMXPath $xpath): string
     {
         $imageNode = $xpath->query(".//figure[@class='aligncenter size-large']/img")->item(0);
         if (!$imageNode) {
             $imageNode = $xpath->query(".//div[@class='thumbnail text-center mb-20']/img")->item(0);
         }
 
-        return 'https://jisty.com.ua' . $imageNode?->getAttribute('data-src');
+        if ($imageSrc = $imageNode?->getAttribute('data-src')) {
+            return 'https://jisty.com.ua' . $imageSrc;
+        }
+
+        return '';
     }
 
     public function urlRule(string $url): bool
@@ -105,6 +108,14 @@ class JistyParser extends BaseRecipeParser
             '-productiv-',
             'restoran-',
             'kuhar',
+            'najsmachnishih-retseptiv-mlintsiv',
+            'https://jisty.com.ua/kartoplya-z-sirom-na-garnir/',
+            'https://jisty.com.ua/ovochevij-chizburger/',
+            'https://jisty.com.ua/nokki-abo-sekretna-zbroya-proti-italijskih-mafiozi/',
+            'https://jisty.com.ua/sirnij-kreker/',
+            'https://jisty.com.ua/kavovij-liker/',
+            'retseptiv',
+            'retsepty',
         ];
 
         foreach ($disallowedPatterns as $pattern) {

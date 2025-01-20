@@ -6,7 +6,6 @@ use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
-use App\Services\Parsers\Formatters\IngredientFormatter;
 use DOMNode;
 use DOMXPath;
 
@@ -71,10 +70,10 @@ class FayniReceptyParser extends BaseRecipeParser
         return array_unique($this->extractMultipleValues($xpath, "//ul[@class='wprm-recipe-instructions']/li/div[@class='wprm-recipe-instruction-text']"));
     }
 
-    public function parseImage(DOMXPath $xpath): ?string
+    public function parseImage(DOMXPath $xpath): string
     {
         $imageNode = $xpath->query(".//img[@class='attachment-full size-full wp-post-image']")->item(0);
-        return $imageNode?->getAttribute('data-wpfc-original-src');
+        return $imageNode?->getAttribute('data-wpfc-original-src') ?? '';
     }
 
     public function urlRule(string $url): bool
