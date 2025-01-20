@@ -20,6 +20,7 @@ Breadcrumbs::for('management.index', function (BreadcrumbTrail $trail) {
     $trail->push('Management', route('management.users.index'));
 });
 
+## Users
 Breadcrumbs::for('management.users.index', function (BreadcrumbTrail $trail) {
     $trail->parent('management.index');
     $trail->push('Users', route('management.users.index'));
@@ -42,7 +43,6 @@ Breadcrumbs::for('management.categories.index', function (BreadcrumbTrail $trail
 
 
 ## Recipe
-
 Breadcrumbs::for('recipe.index', function (BreadcrumbTrail $trail) {
     $trail->push('Recipe', route('recipe.recipes.index'));
 });

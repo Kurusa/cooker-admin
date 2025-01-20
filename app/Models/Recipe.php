@@ -22,9 +22,10 @@ use Illuminate\Support\Facades\DB;
  * @property int $category_id
  * @property string|null $image_url
  *
+ * @property Source $source
  * @property string $ingredient_list
  * @property Collection $ingredients_collection
- * @property-read Collection $ingredients
+ * @property Collection<Ingredient> $ingredients
  * @property-read string $header
  */
 class Recipe extends Model

@@ -29,7 +29,7 @@ class RecipeManagementController extends Controller
         return view('pages/apps.recipe.recipes.list', compact('recipes'));
     }
 
-    public function reparseRecipe(Recipe $recipe)
+    public function reparse(Recipe $recipe)
     {
         Artisan::call('parse:recipes', [
             'source' => $recipe->source->title,
