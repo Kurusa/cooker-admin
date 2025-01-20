@@ -2,7 +2,9 @@
 
 namespace App\DataTables\Management;
 
+use App\Exceptions\UnknownSourceException;
 use App\Models\Source;
+use App\Services\Parsers\RecipeParserFactory;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -14,12 +16,23 @@ class SourcesDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->rawColumns(['url', 'recipes_count'])
+            ->rawColumns(['id', 'url', 'recipes_count'])
             ->editColumn('url', function (Source $source) {
                 return sprintf('<a href="%s" target="_blank">%s</a>', $source->url, $source->url);
             })
             ->editColumn('recipes_count', function (Source $source) {
-                return sprintf('<span class="badge badge-info">%d</span>', $source->recipes_count);
+                try {
+                    $parser = RecipeParserFactory::make($source->title);
+                    $unparsedUrlsCount = count($parser->getFilteredSitemapUrls($source));
+                } catch (UnknownSourceException) {
+                    $unparsedUrlsCount = '?';
+                }
+
+                return sprintf(
+                    '<span class="badge badge-info">%d %s</span>',
+                    $source->recipes_count,
+                    '(out of ' . $unparsedUrlsCount . ')',
+                );
             })
             ->addColumn('action', function (Source $source) {
                 return view('pages/apps.management.sources.columns._actions', compact('source'));
@@ -42,12 +55,14 @@ class SourcesDataTable extends DataTable
             ->addTableClass('table align-middle table-row-dashed fs-6 gy-5 dataTable no-footer text-gray-600 fw-semibold')
             ->setTableHeadClass('text-start text-muted fw-bold fs-7 text-uppercase gs-0')
             ->orderBy(1)
-            ->drawCallback("function() {" . file_get_contents(resource_path('views/pages/apps/management/sources/columns/_draw-scripts.js')) . "}");
+            ->drawCallback("function() {" . file_get_contents(resource_path('views/pages/apps/management/sources/columns/_draw-scripts.js')) . "}")
+            ->pageLength(20);
     }
 
     public function getColumns(): array
     {
         return [
+            Column::make('id')->title('ID'),
             Column::make('url')->title('Source URL')->addClass('text-nowrap'),
             Column::make('recipes_count')->title('Number of recipes')->searchable(false),
             Column::computed('action')

@@ -2,6 +2,7 @@
 
 namespace App\Services\Parsers;
 
+use App\Exceptions\UnknownSourceException;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\Parsers\Parsers\FayniReceptyParser;
 use App\Services\Parsers\Parsers\JistyParser;
@@ -32,7 +33,7 @@ class RecipeParserFactory
             'retsepty' => new RetseptyParser(),
             'vse-recepty' => new VseReceptyParser(),
             'ua-recept' => new UaReceptParser(),
-            default => throw new InvalidArgumentException("Unknown parser source: {$source}")
+            default => throw new UnknownSourceException(),
         };
     }
 }

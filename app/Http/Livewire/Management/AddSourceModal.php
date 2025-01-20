@@ -9,12 +9,14 @@ use Livewire\Component;
 class AddSourceModal extends Component
 {
     public $source_id;
+    public $title;
     public $url;
 
     public $edit_mode = true;
 
     protected $rules = [
         'url' => 'required|string',
+        'title' => 'required|string',
     ];
 
     protected $listeners = [
@@ -24,7 +26,7 @@ class AddSourceModal extends Component
 
     public function render()
     {
-        return view('livewire.source.add-source-modal');
+        return view('livewire.management.add-source-modal');
     }
 
     public function submit(): void
@@ -34,6 +36,7 @@ class AddSourceModal extends Component
         DB::transaction(function () {
             $data = [
                 'url' => $this->url,
+                'title' => $this->title,
             ];
 
             /** @var Source $source */

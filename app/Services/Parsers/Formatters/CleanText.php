@@ -24,6 +24,9 @@ class CleanText
         $text = str_replace('( ', ' (', $text);
         $text = str_replace(' )', ')', $text);
 
+        $text = str_replace(chr(160), '', $text);
+        $text = str_replace("\xC2\xA0", '', $text);
+
         return $text;
     }
 }

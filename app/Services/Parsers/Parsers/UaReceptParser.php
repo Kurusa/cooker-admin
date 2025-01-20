@@ -3,7 +3,10 @@
 namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
+use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
+use App\Services\Parsers\Formatters\CleanText;
+use DOMNode;
 use DOMXPath;
 
 class UaReceptParser extends BaseRecipeParser
@@ -17,7 +20,9 @@ class UaReceptParser extends BaseRecipeParser
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, "//div[@class='yoast-breadcrumbs']//span[2]/a/text()") ?? '';
+        $class = 'yoast-breadcrumbs';
+
+        return $this->extractCleanSingleValue($xpath, "//div[@class='$class']//span[2]/a/text()") ?? '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -34,7 +39,7 @@ class UaReceptParser extends BaseRecipeParser
     {
         $cookingTime = 0;
 
-        $cookingTime += $this->extractCleanSingleValue($xpath, '//div[contains(@class, "detail-item")]/span[text()="Час підготовки"]/following-sibling::p');
+        $cookingTime += (int) $this->extractCleanSingleValue($xpath, '//div[contains(@class, "detail-item")]/span[text()="Час підготовки"]/following-sibling::p');
 
         $cookingTime += (int) $this->extractCleanSingleValue($xpath, '//div[contains(@class, "detail-item")]/span[text()="Час приготування"]/following-sibling::p');
 
@@ -50,19 +55,27 @@ class UaReceptParser extends BaseRecipeParser
     {
         $ingredientNodes = $this->extractMultipleValues($xpath, "//ul[@class='ingredients-list layout-1-column']//li//p/text()");
 
-        return $this->formatIngredients($ingredientNodes);
+        $service = app(DeepseekService::class);
+        return $service->parseIngredients($ingredientNodes);
     }
 
     public function parseSteps(DOMXPath $xpath): array
     {
         $stepNodes = $xpath->query("//div[contains(@class, 'recipe-card-directions')]//li[contains(@class, 'direction-step')]//p");
 
+        /** @var DOMNode $stepNode */
         foreach ($stepNodes as $stepNode) {
             $description = $stepNode->textContent ?? '';
+            $nextSibling = $stepNode->nextSibling;
+            $imageUrl = '';
+            if ($nextSibling && $nextSibling->nodeName == 'img') {
+                $imageUrl = $nextSibling->attributes->getNamedItem('src')->textContent ?? '';
+            }
 
             if ($description) {
                 $steps[] = [
-                    'description' => $description,
+                    'description' => CleanText::cleanText($description),
+                    'imageUrl' => $imageUrl,
                 ];
             }
         }
@@ -75,24 +88,24 @@ class UaReceptParser extends BaseRecipeParser
                 $description = $xpath->query(".//strong", $stepNode)->item(0)->textContent ?? '';
                 $imageUrl = $xpath->query(".//img/@src", $stepNode)->item(0)->textContent ?? '';
 
-                if ($description || $imageUrl) {
+                if (mb_strlen($description)) {
                     $steps[] = [
-                        'description' => $description,
+                        'description' => CleanText::cleanText($description),
                         'imageUrl' => $imageUrl,
                     ];
                 }
             }
         }
 
-        return $steps;
+        return array_filter($steps);
     }
 
-    public function parseImage(DOMXPath $xpath): ?string
+    public function parseImage(DOMXPath $xpath): string
     {
         $class = 'wpzoom-recipe-card-image';
 
         $imageNode = $xpath->query(".//img[@class='$class']")->item(0);
-        return $imageNode?->getAttribute('src');
+        return $imageNode?->getAttribute('src') ?? '';
     }
 
     public function urlRule(string $url): bool

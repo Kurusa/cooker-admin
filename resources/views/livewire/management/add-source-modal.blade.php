@@ -17,6 +17,12 @@
                             @error('url')
                             <span class="text-danger">{{ $message }}</span> @enderror
                         </div>
+                        <div class="fv-row mb-7">
+                            <label class="required fw-semibold fs-6 mb-2">Title</label>
+                            <input type="text" wire:model.defer="title" name="title" class="form-control form-control-solid mb-3 mb-lg-0" placeholder="Title"/>
+                            @error('url')
+                            <span class="text-danger">{{ $message }}</span> @enderror
+                        </div>
                     </div>
                     <div class="text-center pt-15">
                         <button type="reset" class="btn btn-light me-3" data-bs-dismiss="modal" aria-label="Close" wire:loading.attr="disabled">Discard</button>

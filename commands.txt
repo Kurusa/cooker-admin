@@ -24,4 +24,3 @@ WHERE (SELECT COUNT(*)
    OR (SELECT COUNT(*)
        FROM recipe_steps
        WHERE recipe_steps.recipe_id = recipes.id) = 1;
-
