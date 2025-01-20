@@ -51,7 +51,7 @@ class ParseRecipesCommand extends Command
                     $steps = $parser->parseSteps($xpath);
                     $ingredients = $parser->parseIngredients($xpath);
 
-//                    dd([
+                    //                    dd([
 //                        'title' => $title,
 //                        'complexity' => $parser->parseComplexity($xpath),
 //                        'time' => $parser->parseCookingTime($xpath),
@@ -122,6 +122,10 @@ class ParseRecipesCommand extends Command
     private function attachIngredientsToRecipe(array $ingredients, Recipe $recipe): void
     {
         foreach ($ingredients as $ingredientData) {
+            if (!strlen($ingredientData['title'])) {
+                continue;
+            }
+
             /** @var Ingredient $ingredient */
             $ingredient = Ingredient::firstOrCreate(['title' => $ingredientData['title']]);
 

@@ -65,7 +65,7 @@ class TsnParser extends BaseRecipeParser
 
             $rawIngredient = $name . ': ' . $quantity;
 
-            $ingredients[] = $this->formatIngredient($rawIngredient);
+            $ingredients[] = IngredientFormatter::formatIngredient($rawIngredient);
         }
 
         if (empty($ingredients)) {

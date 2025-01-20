@@ -5,6 +5,7 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
+use App\Services\Parsers\Formatters\IngredientFormatter;
 use DOMXPath;
 
 class SmachnoParser extends BaseRecipeParser
@@ -47,7 +48,7 @@ class SmachnoParser extends BaseRecipeParser
             $amount = trim($amountNode->item(0)?->textContent ?? '');
 
             $ingredient = $amount ? "{$name}: {$amount}" : $name;
-            $ingredients[] = $this->formatIngredient($ingredient);
+            $ingredients[] = IngredientFormatter::formatIngredient($ingredient);
         }
 
         return $ingredients;

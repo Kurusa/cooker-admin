@@ -3,6 +3,7 @@
 namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
+use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\IngredientFormatter;
@@ -58,14 +59,11 @@ class FayniReceptyParser extends BaseRecipeParser
 
             $name = $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-name')]", $node);
 
-            $parsedIngredients[] = [
-                'title' => $name,
-                'quantity' => CleanText::cleanQuantity($amountNode),
-                'unit' => IngredientFormatter::translateUnit($unit),
-            ];
+            $parsedIngredients[] = CleanText::cleanText($name . ': ' . $amountNode . ' ' . $unit);
         }
 
-        return $parsedIngredients;
+        $service = app(DeepseekService::class);
+        return $service->parseIngredients($parsedIngredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array

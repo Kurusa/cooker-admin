@@ -28,6 +28,9 @@ class CleanText
         $text = ltrim($text);
 
         $text = str_replace(['“', '”', '„', '"', '‟', "’", "«", '»'], "'", $text);
+        $text = str_replace(' %', '%', $text);
+        $text = str_replace('( ', ' (', $text);
+        $text = str_replace(' )', ')', $text);
 
         return $text;
     }

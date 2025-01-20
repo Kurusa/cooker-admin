@@ -1,0 +1,15 @@
+// дублювання юнітів
+SET @unit1 = 'зубок';
+SET @unit2 = 'зубці';
+
+-- Отримуємо id для двох одиниць вимірювання за назвами
+SELECT @unit1_id := id FROM units WHERE title = @unit1 LIMIT 1;
+SELECT @unit2_id := id FROM units WHERE title = @unit2 LIMIT 1;
+
+-- Оновлюємо таблицю ingredient_units
+UPDATE ingredient_units
+SET unit_id = @unit2_id
+WHERE unit_id = @unit1_id;
+
+-- Видаляємо перший дублікований запис
+DELETE FROM units WHERE id = @unit1_id;

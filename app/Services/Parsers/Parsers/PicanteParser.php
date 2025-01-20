@@ -44,7 +44,7 @@ class PicanteParser extends BaseRecipeParser
             $amount = CleanText::cleanText($xpath->query(".//span[@class='amount']", $node)->item(0)->textContent);
 
             $ingredient = $amount ? "{$name}: {$amount}" : $name;
-            $ingredients[] = $this->formatIngredient($ingredient);
+            $ingredients[] = IngredientFormatter::formatIngredient($ingredient);
         }
 
         return $ingredients;

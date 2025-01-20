@@ -3,8 +3,10 @@
 namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
+use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
+use App\Services\Parsers\Formatters\IngredientFormatter;
 use DOMNode;
 use DOMXPath;
 
@@ -43,7 +45,16 @@ class JistyParser extends BaseRecipeParser
     {
         $rawIngredients = $this->extractMultipleValues($xpath, "//ul[@class='ingredients-list']/li");
 
-        return $this->formatIngredients($rawIngredients);
+        $parsedIngredients = [];
+        foreach ($rawIngredients as $ingredient) {
+            $ingredient = str_replace('(adsbygoogle=window.adsbygoogle||[]).push({})', '', $ingredient);
+            $ingredient = str_replace('спеції: ', '', $ingredient);
+
+            $parsedIngredients[] = CleanText::cleanText($ingredient);
+        }
+
+        $service = app(DeepseekService::class);
+        return $service->parseIngredients($parsedIngredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array
@@ -77,19 +88,6 @@ class JistyParser extends BaseRecipeParser
         }
 
         return 'https://jisty.com.ua' . $imageNode?->getAttribute('data-src');
-    }
-
-    protected function formatIngredients(array $ingredients): array
-    {
-        $parsedIngredients = [];
-        foreach ($ingredients as $ingredient) {
-            $ingredient = str_replace('(adsbygoogle=window.adsbygoogle||[]).push({})', '', $ingredient);
-            $ingredient = str_replace('спеції: ', '', $ingredient);
-
-            $parsedIngredients[] = $this->formatIngredient($ingredient);
-        }
-
-        return $parsedIngredients;
     }
 
     public function urlRule(string $url): bool

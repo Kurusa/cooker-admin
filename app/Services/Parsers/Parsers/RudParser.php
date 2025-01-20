@@ -62,7 +62,7 @@ class RudParser extends BaseRecipeParser
 
             $rawIngredient = $ingredientName . ': ' . $ingredientQuantity;
 
-            $ingredients[] = $this->formatIngredient($rawIngredient);
+            $ingredients[] = IngredientFormatter::formatIngredient($rawIngredient);
         }
 
         return $ingredients;
@@ -101,7 +101,7 @@ class RudParser extends BaseRecipeParser
         foreach ($ingredients as $ingredient) {
             $ingredient = str_replace('(adsbygoogle=window.adsbygoogle||[]).push({})', '', $ingredient);
             $ingredient = str_replace('спеції: ', '', $ingredient);
-            $parsedIngredients[] = $this->formatIngredient($ingredient);
+            $parsedIngredients[] = IngredientFormatter::formatIngredient($ingredient);
         }
 
         return $parsedIngredients;
