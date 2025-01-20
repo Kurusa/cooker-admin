@@ -29,51 +29,33 @@ class ParseRecipesCommand extends Command
 
         $urls = $this->defineUrlsToParse($parser, $source);
 
-        foreach ($urls as $url) {
-            if (
-                (
-                    !$this->argument('recipeId') &&
-                    !$this->argument('recipeUrl')
-                ) &&
-                Recipe::where('source_url', $url)->exists()) {
-                continue;
-            }
+        $progressBar = $this->output->createProgressBar(count($urls));
+        $progressBar->start();
 
-            $this->info("Processing: $url");
+        foreach ($urls as $url) {
+            $this->info(PHP_EOL . "Processing: $url");
 
             try {
                 $xpath = $parser->loadHtml($url);
 
-                DB::transaction(function () use ($url, $parser, $xpath, $source) {
+                DB::transaction(function () use ($url, $parser, $xpath, $source, $progressBar) {
+                    $timeStart = microtime(true);
+
                     $category = Category::firstOrCreate(['title' => $parser->parseCategory($xpath)]);
 
                     $title = $parser->parseTitle($xpath);
-                    $steps = $parser->parseSteps($xpath);
-                    $ingredients = $parser->parseIngredients($xpath);
-
-                    //                    dd([
-//                        'title' => $title,
-//                        'complexity' => $parser->parseComplexity($xpath),
-//                        'time' => $parser->parseCookingTime($xpath),
-//                        'portions' => $parser->parsePortions($xpath),
-//                        'source_url' => $url,
-//                        'source_id' => $source->id,
-//                        'category_id' => $category->id,
-//                        'image_url' => $parser->parseImage($xpath),
-//                        'ingredients' => $ingredients,
-//                        'steps' => $steps,
-//                    ]);
-
                     if (!mb_strlen($title)) {
                         $this->error("Title can't be empty");
                         return;
                     }
 
+                    $steps = $parser->parseSteps($xpath);
                     if (!count($steps)) {
                         $this->error("Steps can't be empty");
                         return;
                     }
 
+                    $ingredients = $parser->parseIngredients($xpath);
                     if (!count($ingredients)) {
                         $this->error("Ingredients can't be empty");
                         return;
@@ -100,17 +82,26 @@ class ParseRecipesCommand extends Command
 
                         $this->info("Recipe saved: {$recipe->title}");
                     }
+
+                    $this->info('Execution time: ' . (microtime(true) - $timeStart) . 'sec');
+                    $progressBar->advance();
                 });
             } catch (Exception $e) {
                 $this->error("Failed to save recipe: {$e->getMessage()}. Url: {$url}");
                 continue;
             }
         }
+
+        $progressBar->finish();
     }
 
     private function attachStepsToRecipe(array $steps, Recipe $recipe): void
     {
         foreach ($steps as $step) {
+            if (!$step || (isset($step['description']) && !mb_strlen($step['description']))) {
+                continue;
+            }
+
             Step::create([
                 'recipe_id' => $recipe->id,
                 'description' => $step['description'] ?? $step,

@@ -62,6 +62,7 @@ class JistyParser extends BaseRecipeParser
         $stepNodes = $xpath->query("//ul[@class='directions-list']/li[@class='direction-step']");
 
         $steps = [];
+        $descriptions = [];
 
         /** @var DOMNode $stepNode */
         foreach ($stepNodes as $stepNode) {
@@ -71,10 +72,14 @@ class JistyParser extends BaseRecipeParser
                 $imageUrl = 'https://jisty.com.ua' . $imageSrc;
             }
 
-            $steps[] = [
-                'description' => CleanText::cleanText($stepNode->textContent),
-                'image_url' => $imageUrl,
-            ];
+            $description = CleanText::cleanText($stepNode->textContent);
+            if (!isset($descriptions[$description])) {
+                $steps[] = [
+                    'description' => $description,
+                    'image_url' => $imageUrl,
+                ];
+                $descriptions[$description] = true;
+            }
         }
 
         return $steps;

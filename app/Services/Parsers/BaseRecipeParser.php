@@ -2,6 +2,7 @@
 
 namespace App\Services\Parsers;
 
+use App\Models\Recipe;
 use App\Models\Source;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\Parsers\Formatters\CleanText;
@@ -34,11 +35,9 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         foreach ($source->sitemapUrls as $sitemap) {
             $sitemapElements = simplexml_load_file($sitemap->sitemap_url);
 
-            echo 'Processing: ' . $sitemap->sitemap_url . PHP_EOL;
-
             foreach ($sitemapElements as $sitemapElement) {
                 $url = (string) $sitemapElement->loc;
-                if ($this->urlRule($url)) {
+                if ($this->urlRule($url) && !Recipe::where('source_url', $url)->exists()) {
                     $urls[] = $url;
                 }
             }
