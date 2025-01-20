@@ -39,6 +39,8 @@ class ParseRecipesCommand extends Command
                 $xpath = $parser->loadHtml($url);
 
                 DB::transaction(function () use ($url, $parser, $xpath, $source, $progressBar) {
+                    DB::statement('SELECT GET_LOCK(?, -1)', ['parse_recipe_lock']);
+
                     $timeStart = microtime(true);
 
                     $category = Category::firstOrCreate(['title' => $parser->parseCategory($xpath)]);
@@ -89,6 +91,8 @@ class ParseRecipesCommand extends Command
             } catch (Exception $e) {
                 $this->error("Failed to save recipe: {$e->getMessage()}. Url: {$url}");
                 continue;
+            } finally {
+                DB::statement('SELECT RELEASE_LOCK(?)', ['parse_recipe_lock']);
             }
         }
 

@@ -8,12 +8,16 @@ use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
 use DOMNode;
 use DOMXPath;
+use Exception;
 
 class JistyParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
         $class = 'post-title mb-30';
+        if ($this->hasMoreThanOneRecipeOnPage($xpath, $class)) {
+            throw new Exception('There is more than one recipe on page');
+        }
 
         return $this->extractCleanSingleValue($xpath, ".//h1[@class='$class']");
     }
@@ -109,13 +113,16 @@ class JistyParser extends BaseRecipeParser
             'restoran-',
             'kuhar',
             'najsmachnishih-retseptiv-mlintsiv',
+            // продебажити
             'https://jisty.com.ua/kartoplya-z-sirom-na-garnir/',
             'https://jisty.com.ua/ovochevij-chizburger/',
             'https://jisty.com.ua/nokki-abo-sekretna-zbroya-proti-italijskih-mafiozi/',
             'https://jisty.com.ua/sirnij-kreker/',
             'https://jisty.com.ua/kavovij-liker/',
+            // кілька рецептів на сторінці
             'retseptiv',
             'retsepty',
+            'variantiv',
         ];
 
         foreach ($disallowedPatterns as $pattern) {
@@ -125,5 +132,11 @@ class JistyParser extends BaseRecipeParser
         }
 
         return true;
+    }
+
+    private function hasMoreThanOneRecipeOnPage(DOMXPath $xpath, string $class): bool
+    {
+        return $xpath->query(".//h1[@class='{$class}']")->length > 1 ||
+            $xpath->query(".//h2[@class='has-text-align-center wp-block-heading']")->length > 1;
     }
 }
