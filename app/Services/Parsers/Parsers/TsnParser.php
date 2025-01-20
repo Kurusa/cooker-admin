@@ -3,7 +3,10 @@
 namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
+use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
+use App\Services\Parsers\Formatters\CleanText;
+use App\Services\Parsers\Formatters\CookingTimeFormatter;
 use DOMXPath;
 
 class TsnParser extends BaseRecipeParser
@@ -33,17 +36,7 @@ class TsnParser extends BaseRecipeParser
 
         $timeText = trim($timeNode->item(0)->textContent);
 
-        $totalMinutes = 0;
-
-        if (preg_match('/(\d+)\s*(година|години|год)/iu', $timeText, $matches)) {
-            $totalMinutes += (int) $matches[1] * 60;
-        }
-
-        if (preg_match('/(\d+)\s*(хвилина|хвилини|хв)/iu', $timeText, $matches)) {
-            $totalMinutes += (int) $matches[1];
-        }
-
-        return $totalMinutes;
+        return CookingTimeFormatter::formatCookingTime($timeText);
     }
 
     public function parsePortions(DOMXPath $xpath): int
@@ -60,12 +53,10 @@ class TsnParser extends BaseRecipeParser
             $nameNode = $xpath->query(".//dt", $node);
             $quantityNode = $xpath->query(".//dd", $node);
 
-            $name = trim($nameNode->item(0)?->textContent ?? '');
-            $quantity = trim($quantityNode->item(0)?->textContent ?? '');
-
-            $rawIngredient = $name . ': ' . $quantity;
-
-            $ingredients[] = IngredientFormatter::formatIngredient($rawIngredient);
+            $ingredients[] = implode(':', [
+                $nameNode->item(0)?->textContent ?? '',
+                $quantityNode->item(0)?->textContent ?? '',
+            ]);
         }
 
         if (empty($ingredients)) {
@@ -82,15 +73,14 @@ class TsnParser extends BaseRecipeParser
                     $listItems = $xpath->query(".//li", $nextElement);
 
                     foreach ($listItems as $item) {
-                        $ingredients[] = [
-                            'title' => CleanText::cleanText($item->textContent),
-                        ];
+                        $ingredients[] = CleanText::cleanText($item->textContent);
                     }
                 }
             }
         }
 
-        return $ingredients;
+        $service = app(DeepseekService::class);
+        return $service->parseIngredients($ingredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array
@@ -137,11 +127,11 @@ class TsnParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): ?string
+    public function parseImage(DOMXPath $xpath): string
     {
         $imageNode = $xpath->query("//img[@class='c-card__embed__img']");
-        $src = $imageNode->item(0)->getAttribute('src');
-        return trim($src);
+
+        return $imageNode->item(0)->getAttribute('src');
     }
 
     public function urlRule(string $url): bool

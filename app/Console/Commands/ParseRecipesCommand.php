@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\IngredientUnit;
 use App\Models\Recipe;
+use App\Models\RecipeIngredient;
 use App\Models\Source;
 use App\Models\Step;
 use App\Models\Unit;
@@ -83,6 +84,14 @@ class ParseRecipesCommand extends Command
                         $this->attachIngredientsToRecipe($ingredients, $recipe);
 
                         $this->info("Recipe saved: {$recipe->title}");
+                    }
+
+                    if ($this->argument('recipeId')) {
+                        $recipe->steps()->delete();
+                        $this->attachStepsToRecipe($steps, $recipe);
+
+                        RecipeIngredient::where('recipe_id', $recipe->id)->delete();
+                        $this->attachIngredientsToRecipe($ingredients, $recipe);
                     }
 
                     $this->info('Execution time: ' . (microtime(true) - $timeStart) . 'sec');

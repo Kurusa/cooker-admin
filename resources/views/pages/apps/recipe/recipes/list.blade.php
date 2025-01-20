@@ -27,6 +27,16 @@
                 @endforeach
             </select>
 
+            <select name="filter" class="form-select">
+                <option value="">Filter</option>
+                <option value="one_step" {{ request('filter') == 'one_step' ? 'selected' : '' }}>
+                    One step
+                </option>
+                <option value="one_ingredient" {{ request('filter') == 'one_ingredient' ? 'selected' : '' }}>
+                    One ingredient
+                </option>
+            </select>
+
             <button class="btn btn-warning d-none"
                     data-kt-action="reparse-recipes-button"
                     id="reparse-recipes-button"
@@ -53,6 +63,7 @@
         {{ $recipes->appends([
             'search' => request('search'),
             'source' => request('source'),
+            'filter' => request('filter'),
         ])->links('pagination::bootstrap-4') }}
     </div>
 

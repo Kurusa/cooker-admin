@@ -90,6 +90,18 @@ class PicanteParser extends BaseRecipeParser
 
     public function urlRule(string $url): bool
     {
-        return str_contains($url, 'uk/recipes');
+        return str_contains($url, 'uk/recipes') && $this->urlExists($url);
+    }
+
+    private function urlExists(string $url): bool
+    {
+        $handle = curl_init($url);
+        curl_setopt($handle, CURLOPT_RETURNTRANSFER, TRUE);
+
+        curl_exec($handle);
+        $httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+        curl_close($handle);
+
+        return $httpCode >= 200 && $httpCode <= 400;
     }
 }

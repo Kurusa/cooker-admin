@@ -42,7 +42,9 @@ class RetseptyParser extends BaseRecipeParser
 
     public function parsePortions(DOMXPath $xpath): int
     {
-        return $this->extractCleanSingleValue($xpath, ".//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']") ?? 1;
+        $portions = (int) $this->extractCleanSingleValue($xpath, ".//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']");
+
+        return $portions > 0 ? $portions : 1;
     }
 
     public function parseIngredients(DOMXPath $xpath): array
@@ -57,7 +59,7 @@ class RetseptyParser extends BaseRecipeParser
             $nameNode = $xpath->query(".//span[contains(@class, 'wprm-recipe-ingredient-name')]", $ingredientNode);
 
             $ingredient = CleanText::cleanText($nameNode->item(0)?->textContent) . ': ' . CleanText::cleanText($amountNode->item(0)?->textContent ?? '')
-            . ' ' . CleanText::cleanText($unitNode->item(0)?->textContent ?? '');
+                . ' ' . CleanText::cleanText($unitNode->item(0)?->textContent ?? '');
             $ingredients[] = $ingredient;
         }
 

@@ -3,9 +3,9 @@
 namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
+use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
-use App\Services\Parsers\Formatters\IngredientFormatter;
 use DOMXPath;
 
 class SmachnoParser extends BaseRecipeParser
@@ -47,11 +47,11 @@ class SmachnoParser extends BaseRecipeParser
             $name = trim($nameNode->item(0)?->textContent ?? '');
             $amount = trim($amountNode->item(0)?->textContent ?? '');
 
-            $ingredient = $amount ? "{$name}: {$amount}" : $name;
-            $ingredients[] = IngredientFormatter::formatIngredient($ingredient);
+            $ingredients[] = $amount ? "{$name}: {$amount}" : $name;
         }
 
-        return $ingredients;
+        $service = app(DeepseekService::class);
+        return $service->parseIngredients($ingredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array
@@ -75,14 +75,19 @@ class SmachnoParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): ?string
+    public function parseImage(DOMXPath $xpath): string
     {
         $imageNode = $xpath->query(".//img[@itemprop='photo']")->item(0);
-        return 'https://www.smachno.in.ua/' . $imageNode?->getAttribute('src');
+
+        if ($src = $imageNode?->getAttribute('src')) {
+            return 'https://www.smachno.in.ua/' . $src;
+        }
+
+        return '';
     }
 
     public function urlRule(string $url): bool
     {
-        return !str_contains($url, 'in.ua/ru/');
+        return !str_contains($url, 'in.ua/ru/') && str_contains($url, '?id=');
     }
 }

@@ -23,6 +23,23 @@ class RecipeManagementController extends Controller
             });
         }
 
+        if ($request->has('filter') && !empty($request->filter)) {
+            if ($request->filter === 'one_step') {
+                $query->whereHas('steps', function ($q) {
+                    $q->havingRaw('COUNT(*) = 1');
+                }, '=', 1);
+            } elseif ($request->filter === 'one_ingredient') {
+                $query->whereRaw('
+                EXISTS (
+                    SELECT 1 FROM recipe_ingredients
+                    WHERE recipe_ingredients.recipe_id = recipes.id
+                    GROUP BY recipe_ingredients.recipe_id
+                    HAVING COUNT(*) = 1
+                )
+            ');
+            }
+        }
+
         $query->orderBy('created_at', 'desc');
         $recipes = $query->paginate(50);
 

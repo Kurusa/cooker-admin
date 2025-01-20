@@ -28,11 +28,11 @@ class CookingTimeFormatter
         $minutes = 0;
         $hours = 0;
 
-        if (preg_match('/(\d+)\s*год/i', $time, $matches)) {
+        if (preg_match('/(\d+)\s*(година|години|год)/iu', $time, $matches)) {
             $hours = (int) $matches[1];
         }
 
-        if (preg_match('/(\d+)\s*хв/i', $time, $matches)) {
+        if (preg_match('/(\d+)\s*(хвилина|хвилини|хв|min)/iu', $time, $matches)) {
             $minutes = (int) $matches[1];
         }
 

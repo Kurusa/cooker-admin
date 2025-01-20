@@ -68,27 +68,24 @@ class PatelnyaParser extends BaseRecipeParser
             $steps[] = $item->textContent;
         }
 
-        $paragraphs = $xpath->query(".//div[@class='e-instructions step-instructions instructions']/p");
-        foreach ($paragraphs as $index => $paragraph) {
-            if ($index === 0) {
+        if (count($steps)) {
+            return array_unique($steps);
+        }
+
+        $brs = $xpath->query(".//div[@class='e-instructions step-instructions instructions']/p");
+        foreach ($brs as $node) {
+            $text = $node->textContent;
+            if ($text == 'Готуємо так:') {
                 continue;
             }
 
-            $steps[] = substr($paragraph->textContent, 3);
-        }
-
-        $brs = $xpath->query("//div[@class='e-instructions step-instructions instructions']/p");
-        foreach ($brs as $node) {
-            $text = $node->textContent;
-            if (stripos($text, 'Готуємо так:') !== false) {
-                $text = preg_replace('/^.*Готуємо так:/iu', '', $text);
-                $steps = array_merge($steps, array_filter(
-                        array_map('trim', explode("\n",
-                                substr(str_replace('<br>', "\n", $text), 3))
-                        )
-                    )
-                );
+            $text = substr(str_replace('<br>', "\n", $text), 3);
+            $exploded = explode("\n", $text);
+            if (!count($exploded)) {
+                $exploded = explode("<br>", $text);
             }
+
+            $steps = array_merge($steps, array_filter($exploded));
         }
 
         return array_filter(array_map(function ($step) {
@@ -109,6 +106,6 @@ class PatelnyaParser extends BaseRecipeParser
 
     public function urlRule(string $url): bool
     {
-        return true;
+        return !str_contains($url, 'yak-');
     }
 }

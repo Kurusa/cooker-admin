@@ -108,9 +108,6 @@ class NovaStravaParser extends BaseRecipeParser
             'https://novastrava.com/budinok-dlya-litnikh-lyudei-u-kiyevi/',
             'https://novastrava.com/shtambovi-troyandi/',
             'https://novastrava.com/chim-vidriznyayetsya-vugilnii-gril-vid-mangala/',
-            '',
-            '',
-            '',
         ];
 
         foreach ($disallowedPatterns as $pattern) {

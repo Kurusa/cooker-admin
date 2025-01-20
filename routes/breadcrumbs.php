@@ -61,7 +61,7 @@ Breadcrumbs::for('recipe.recipes.index', function (BreadcrumbTrail $trail) {
     $trail->parent('recipe.index');
 
     $count = Recipe::count();
-    if (request('source')) {
+    if (request('source') && !empty(request('source'))) {
         $count = Source::where('title', request('source'))->first()->recipes()->count();
     }
 
