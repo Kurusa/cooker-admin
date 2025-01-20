@@ -3,19 +3,25 @@
 namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
+use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
+use App\Services\Parsers\Formatters\CleanText;
 use DOMXPath;
 
 class RetseptyParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, ".//h1[@class='entry-title']") ?? '';
+        $class = 'entry-title';
+
+        return $this->extractCleanSingleValue($xpath, ".//h1[@class='$class']") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, "//div[@class='cat-links']/a") ?? '';
+        $class = 'cat-links';
+
+        return $this->extractCleanSingleValue($xpath, "//div[@class='$class']/a") ?? '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -34,9 +40,9 @@ class RetseptyParser extends BaseRecipeParser
         return $preparationTimeMinutes + $cookingTimeMinutes;
     }
 
-    public function parsePortions(DOMXPath $xpath): ?int
+    public function parsePortions(DOMXPath $xpath): int
     {
-        return $this->extractCleanSingleValue($xpath, ".//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']") ?? 0;
+        return $this->extractCleanSingleValue($xpath, ".//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']") ?? 1;
     }
 
     public function parseIngredients(DOMXPath $xpath): array
@@ -50,14 +56,13 @@ class RetseptyParser extends BaseRecipeParser
             $unitNode = $xpath->query(".//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $ingredientNode);
             $nameNode = $xpath->query(".//span[contains(@class, 'wprm-recipe-ingredient-name')]", $ingredientNode);
 
-            $ingredients[] = [
-                'title' => CleanText::cleanText($nameNode->item(0)?->textContent),
-                'unit' => CleanText::cleanText($unitNode->item(0)?->textContent ?? ''),
-                'quantity' => CleanText::cleanText($amountNode->item(0)?->textContent ?? ''),
-            ];
+            $ingredient = CleanText::cleanText($nameNode->item(0)?->textContent) . ': ' . CleanText::cleanText($amountNode->item(0)?->textContent ?? '')
+            . ' ' . CleanText::cleanText($unitNode->item(0)?->textContent ?? '');
+            $ingredients[] = $ingredient;
         }
 
-        return $ingredients;
+        $service = app(DeepseekService::class);
+        return $service->parseIngredients($ingredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array
@@ -76,10 +81,10 @@ class RetseptyParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): ?string
+    public function parseImage(DOMXPath $xpath): string
     {
         $imageNode = $xpath->query(".//img[@class='attachment-800x99999 size-800x99999']")->item(0);
-        return $imageNode?->getAttribute('data-lazy-src');
+        return $imageNode?->getAttribute('data-lazy-src') ?? '';
     }
 
     public function urlRule(string $url): bool

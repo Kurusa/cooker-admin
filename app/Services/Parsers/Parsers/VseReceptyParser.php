@@ -47,7 +47,7 @@ class VseReceptyParser extends BaseRecipeParser
         return $totalMinutes;
     }
 
-    public function parsePortions(DOMXPath $xpath): ?int
+    public function parsePortions(DOMXPath $xpath): int
     {
         $rawPortions = $this->extractCleanSingleValue($xpath, ".//div[@class='recipe-feature_block recipe-portion']//span[@class='yield']");
 

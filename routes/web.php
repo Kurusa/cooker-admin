@@ -21,8 +21,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     Route::name('recipe.')->prefix('recipe')->group(function () {
-        Route::resource('recipes', RecipeManagementController::class);
+        Route::get('recipes', [RecipeManagementController::class, 'index'])->name('recipes.index');
         Route::get('recipes/{recipe}/reparse', [RecipeManagementController::class, 'reparse']);
+        Route::post('recipes/delete', [RecipeManagementController::class, 'deleteByIds']);
         Route::post('recipes/reparse', [RecipeManagementController::class, 'reparseByIds']);
 
         Route::resource('ingredients', IngredientManagementController::class);

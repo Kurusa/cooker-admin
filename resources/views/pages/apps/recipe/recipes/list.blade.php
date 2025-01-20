@@ -31,7 +31,13 @@
                     data-kt-action="reparse-recipes-button"
                     id="reparse-recipes-button"
                     type="button">
-                Reparse (<span id="selected-count">0</span>)
+                Reparse (<span id="selected-count-reparse">0</span>)
+            </button>
+            <button class="btn btn-danger d-none"
+                    data-kt-action="delete-recipes-button"
+                    id="delete-recipes-button"
+                    type="button">
+                Delete (<span id="selected-count-delete">0</span>)
             </button>
             <button class="btn btn-primary" type="submit">Search</button>
         </div>
@@ -99,16 +105,29 @@
                 const recipeCards = document.querySelectorAll('.recipe-card');
                 const checkboxes = document.querySelectorAll('.recipe-checkbox');
                 const reparseButton = document.getElementById('reparse-recipes-button');
-                const selectedCount = document.getElementById('selected-count');
+                const deleteButton = document.getElementById('delete-recipes-button');
+                const selectedCountReparse = document.getElementById('selected-count-reparse');
+                const selectedCountDelete = document.getElementById('selected-count-delete');
 
                 const updateReparseButtonVisibility = () => {
                     const selected = Array.from(checkboxes).filter(checkbox => checkbox.checked);
-                    selectedCount.textContent = selected.length;
+                    selectedCountReparse.textContent = selected.length;
 
                     if (selected.length > 0) {
                         reparseButton.classList.remove('d-none');
                     } else {
                         reparseButton.classList.add('d-none');
+                    }
+                };
+
+                const updateDeleteButtonVisibility = () => {
+                    const selected = Array.from(checkboxes).filter(checkbox => checkbox.checked);
+                    selectedCountDelete.textContent = selected.length;
+
+                    if (selected.length > 0) {
+                        deleteButton.classList.remove('d-none');
+                    } else {
+                        deleteButton.classList.add('d-none');
                     }
                 };
 
@@ -124,12 +143,14 @@
                             checkbox.checked = !checkbox.checked;
 
                             updateReparseButtonVisibility();
+                            updateDeleteButtonVisibility();
                         }
                     });
                 });
 
                 checkboxes.forEach(checkbox => {
                     checkbox.addEventListener('change', updateReparseButtonVisibility);
+                    checkbox.addEventListener('change', updateDeleteButtonVisibility);
                 });
 
                 reparseButton.addEventListener('click', function (event) {
@@ -189,8 +210,66 @@
                         }
                     });
                 });
+                deleteButton.addEventListener('click', function (event) {
+                    event.preventDefault();
+
+                    const selectedIds = Array.from(checkboxes)
+                        .filter(checkbox => checkbox.checked)
+                        .map(checkbox => checkbox.getAttribute('data-recipe-id'));
+
+                    if (selectedIds.length === 0) {
+                        Swal.fire({
+                            text: 'Please select at least one recipe to delete.',
+                            icon: 'warning',
+                            buttonsStyling: false,
+                            confirmButtonText: 'OK',
+                            customClass: {
+                                confirmButton: 'btn btn-primary',
+                            }
+                        });
+                        return;
+                    }
+
+                    Swal.fire({
+                        text: 'Are you sure you want to delete the selected recipes?',
+                        icon: 'warning',
+                        buttonsStyling: false,
+                        showCancelButton: true,
+                        confirmButtonText: 'Yes',
+                        cancelButtonText: 'No',
+                        customClass: {
+                            confirmButton: 'btn btn-danger',
+                            cancelButton: 'btn btn-secondary',
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            $.ajax({
+                                url: '/recipe/recipes/delete',
+                                method: 'POST',
+                                data: {recipe_ids: selectedIds},
+                                success: function () {
+                                    Swal.fire({
+                                        text: 'Success',
+                                        icon: 'success',
+                                        buttonsStyling: false,
+                                        confirmButtonText: 'OK',
+                                        customClass: {
+                                            confirmButton: 'btn btn-primary',
+                                        }
+                                    }).then(() => {
+                                        location.reload();
+                                    });
+                                },
+                                error: function (xhr) {
+                                    console.error('Error:', xhr.responseText);
+                                }
+                            });
+                        }
+                    });
+                });
 
                 updateReparseButtonVisibility();
+                updateDeleteButtonVisibility();
             });
         </script>
     @endpush

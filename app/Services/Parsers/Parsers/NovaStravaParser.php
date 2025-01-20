@@ -46,11 +46,13 @@ class NovaStravaParser extends BaseRecipeParser
         return $totalCookingTime;
     }
 
-    public function parsePortions(DOMXPath $xpath): ?int
+    public function parsePortions(DOMXPath $xpath): int
     {
         $class = 'wprm-recipe-servings wprm-recipe-details wprm-block-text-normal';
 
-        return $this->extractCleanSingleValue($xpath, ".//span[@class='$class']");
+        $portions = (int) $this->extractCleanSingleValue($xpath, ".//span[@class='$class']");
+
+        return $portions > 0 ? $portions : 1;
     }
 
     public function parseIngredients(DOMXPath $xpath): array
@@ -85,6 +87,30 @@ class NovaStravaParser extends BaseRecipeParser
     {
         $disallowedPatterns = [
             'all-posts',
+            '-yak-',
+            '/yak-',
+            'yaki-',
+            'yaku-',
+            'yakij-',
+            'https://novastrava.com/riznovidi-chervonoyi-ribi-ta-yiyi-korist/',
+            'https://novastrava.com/najkrashi-garniri-do-kurki/',
+            'https://novastrava.com/garniri-do-kachki/',
+            'https://novastrava.com/korisni-perekusi-dlya-ditej/',
+            'https://novastrava.com/stravi-na-rizdvo/',
+            'https://novastrava.com/zmina-koloru-pidsvitki-klaviaturi/',
+            'https://novastrava.com/sho-take-ikra/',
+            'https://novastrava.com/pansionati-dlya-litnih-lyudej-porivnyannya-cin-ta-poslug/',
+            'https://novastrava.com/stilni-ta-zruchni-svitli-kukhni/',
+            'https://novastrava.com/nabori-dlya-viski-bohemia/',
+            'https://novastrava.com/sho-mozna-isti-pisla-otruenna/',
+            'https://novastrava.com/10-faktiv-pro-korist-shashliku/',
+            'https://novastrava.com/najpopulyarnishi-garniri-do-ribi/',
+            'https://novastrava.com/budinok-dlya-litnikh-lyudei-u-kiyevi/',
+            'https://novastrava.com/shtambovi-troyandi/',
+            'https://novastrava.com/chim-vidriznyayetsya-vugilnii-gril-vid-mangala/',
+            '',
+            '',
+            '',
         ];
 
         foreach ($disallowedPatterns as $pattern) {

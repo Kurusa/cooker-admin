@@ -39,9 +39,9 @@ class JistyParser extends BaseRecipeParser
         return null;
     }
 
-    public function parsePortions(DOMXPath $xpath): ?int
+    public function parsePortions(DOMXPath $xpath): int
     {
-        return null;
+        return 1;
     }
 
     public function parseIngredients(DOMXPath $xpath): array
@@ -123,6 +123,11 @@ class JistyParser extends BaseRecipeParser
             'retseptiv',
             'retsepty',
             'variantiv',
+            'stravy',
+            'reczepty',
+            'https://jisty.com.ua/pecheritsi-marinovani-nashvidkuruch/',
+            'https://jisty.com.ua/reczepty-smachnyh-strav-gruzynskoyi-kuhni-dlya-spravzhnih-gurmaniv/',
+            'yaki',
         ];
 
         foreach ($disallowedPatterns as $pattern) {

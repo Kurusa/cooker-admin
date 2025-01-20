@@ -38,9 +38,9 @@ class FayniReceptyParser extends BaseRecipeParser
         return ($rawHours * 60) + $rawMinutes;
     }
 
-    public function parsePortions(DOMXPath $xpath): ?int
+    public function parsePortions(DOMXPath $xpath): int
     {
-        return null;
+        return 1;
     }
 
     public function parseIngredients(DOMXPath $xpath): array
@@ -89,6 +89,12 @@ class FayniReceptyParser extends BaseRecipeParser
             'shcho-pryhotuvaty',
             'sho-pryhotuvaty',
             'sho-pyhotuvaty',
+            'koryst',
+            'retsepty',
+            'shcho-',
+            'stravy-',
+            'vse-pro',
+            'chym-',
         ];
 
         foreach ($disallowedPatterns as $pattern) {

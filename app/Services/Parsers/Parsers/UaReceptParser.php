@@ -41,7 +41,7 @@ class UaReceptParser extends BaseRecipeParser
         return $cookingTime;
     }
 
-    public function parsePortions(DOMXPath $xpath): ?int
+    public function parsePortions(DOMXPath $xpath): int
     {
         return (int) $this->extractCleanSingleValue($xpath, '//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p') ?? '';
     }

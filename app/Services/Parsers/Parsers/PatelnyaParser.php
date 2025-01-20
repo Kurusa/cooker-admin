@@ -3,7 +3,9 @@
 namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
+use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
+use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
 use DOMXPath;
 
@@ -11,12 +13,16 @@ class PatelnyaParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, ".//h1[@class='p-name name-title fn']") ?? '';
+        $class = 'p-name name-title fn';
+
+        return $this->extractCleanSingleValue($xpath, ".//h1[@class='$class']") ?? '';
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, ".//div[@class='title-detail']/a/span") ?? '';
+        $class = 'title-detail';
+
+        return $this->extractCleanSingleValue($xpath, ".//div[@class='$class']/a/span") ?? '';
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -31,7 +37,7 @@ class PatelnyaParser extends BaseRecipeParser
         return CookingTimeFormatter::formatCookingTime($rawTime);
     }
 
-    public function parsePortions(DOMXPath $xpath): ?int
+    public function parsePortions(DOMXPath $xpath): int
     {
         $rawPortions = $this->extractCleanSingleValue($xpath, ".//div[i/span[contains(text(), 'Кількість порцій:')]]/i/span[@class='color-414141 yield']");
 
@@ -39,7 +45,7 @@ class PatelnyaParser extends BaseRecipeParser
             return (int) str_replace(['порцій', 'порція'], '', CleanText::cleanText($rawPortions));
         }
 
-        return null;
+        return 1;
     }
 
     public function parseIngredients(DOMXPath $xpath): array
@@ -49,7 +55,8 @@ class PatelnyaParser extends BaseRecipeParser
             $rawIngredients = $this->extractMultipleValues($xpath, ".//div[@class='list-ingredient old-list']//ul/li");
         }
 
-        return $this->formatIngredients($rawIngredients);
+        $service = app(DeepseekService::class);
+        return $service->parseIngredients($rawIngredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array
@@ -89,10 +96,15 @@ class PatelnyaParser extends BaseRecipeParser
         }, $steps));
     }
 
-    public function parseImage(DOMXPath $xpath): ?string
+    public function parseImage(DOMXPath $xpath): string
     {
         $imageNode = $xpath->query(".//img[contains(@class, 'article-img-left')]")->item(0);
-        return $imageNode ? trim($imageNode->getAttribute('src')) : null;
+
+        if ($src = $imageNode->getAttribute('src')) {
+            return $src;
+        }
+
+        return '';
     }
 
     public function urlRule(string $url): bool

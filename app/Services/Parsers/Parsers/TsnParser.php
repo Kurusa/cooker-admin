@@ -46,9 +46,9 @@ class TsnParser extends BaseRecipeParser
         return $totalMinutes;
     }
 
-    public function parsePortions(DOMXPath $xpath): ?int
+    public function parsePortions(DOMXPath $xpath): int
     {
-        return null;
+        return 1;
     }
 
     public function parseIngredients(DOMXPath $xpath): array

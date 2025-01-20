@@ -3,7 +3,9 @@
 namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
+use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
+use App\Services\Parsers\Formatters\CleanText;
 use DOMNode;
 use DOMXPath;
 
@@ -29,9 +31,9 @@ class PicanteParser extends BaseRecipeParser
         return null;
     }
 
-    public function parsePortions(DOMXPath $xpath): ?int
+    public function parsePortions(DOMXPath $xpath): int
     {
-        return null;
+        return 1;
     }
 
     public function parseIngredients(DOMXPath $xpath): array
@@ -43,11 +45,11 @@ class PicanteParser extends BaseRecipeParser
             $name = CleanText::cleanText($xpath->query(".//span[@class='name']", $node)->item(0)->textContent);
             $amount = CleanText::cleanText($xpath->query(".//span[@class='amount']", $node)->item(0)->textContent);
 
-            $ingredient = $amount ? "{$name}: {$amount}" : $name;
-            $ingredients[] = IngredientFormatter::formatIngredient($ingredient);
+            $ingredients[] = $amount ? "{$name}: {$amount}" : $name;
         }
 
-        return $ingredients;
+        $service = app(DeepseekService::class);
+        return $service->parseIngredients($ingredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array
@@ -55,10 +57,7 @@ class PicanteParser extends BaseRecipeParser
         $steps = [];
         $paragraphNodes = $xpath->query("//section[@class='instructions ck-content']/p");
 
-        /**
-         * @var int $index
-         * @var DOMNode $paragraphNode
-         */
+        /** @var DOMNode $paragraphNode */
         foreach ($paragraphNodes as $paragraphNode) {
             $description = CleanText::cleanText($paragraphNode->textContent);
             if (preg_match('/^\d+\)/', $description)) {
@@ -83,14 +82,14 @@ class PicanteParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): ?string
+    public function parseImage(DOMXPath $xpath): string
     {
         $imageNode = $xpath->query(".//img[@class='img-fluid photo result-photo']")->item(0);
-        return $imageNode?->getAttribute('src');
+        return $imageNode?->getAttribute('src') ?? '';
     }
 
     public function urlRule(string $url): bool
     {
-        return true;
+        return str_contains($url, 'uk/recipes');
     }
 }

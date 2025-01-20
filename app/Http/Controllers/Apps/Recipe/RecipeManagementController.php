@@ -54,4 +54,18 @@ class RecipeManagementController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function deleteByIds(Request $request)
+    {
+        $request->validate([
+            'recipe_ids' => 'required|array|min:1',
+            'recipe_ids.*' => 'integer|exists:recipes,id',
+        ]);
+
+        foreach ($request->get('recipe_ids') as $id) {
+            Recipe::destroy($id);
+        }
+
+        return response()->json(['success' => true]);
+    }
 }
