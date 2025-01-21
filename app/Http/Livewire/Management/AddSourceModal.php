@@ -3,6 +3,8 @@
 namespace App\Http\Livewire\Management;
 
 use App\Models\Source;
+use App\Services\Parsers\RecipeParserFactory;
+use App\Services\SitemapUrlCollectorService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -21,7 +23,7 @@ class AddSourceModal extends Component
 
     protected $listeners = [
         'delete_source' => 'deleteSource',
-        'update_source' => 'updateSource',
+        'collect_recipe_urls' => 'collectRecipeUrls',
     ];
 
     public function render()
@@ -52,6 +54,18 @@ class AddSourceModal extends Component
         });
 
         $this->reset();
+    }
+
+    public function collectRecipeUrls(int $id): void
+    {
+        /** @var Source $source */
+        $source = Source::find($id);
+
+        $parser = RecipeParserFactory::make($source->title);
+        $service = new SitemapUrlCollectorService($parser, $source);
+        $service->getFilteredSitemapUrls();
+
+        $this->emit('success', 'Successfully parsed source urls');
     }
 
     public function deleteSource(int $id): void

@@ -32,8 +32,8 @@ abstract class BaseRecipeParser implements RecipeParserInterface
     {
         $urls = [];
 
-        foreach ($source->sitemapUrls as $sitemap) {
-            $sitemapElements = simplexml_load_file($sitemap->sitemap_url);
+        foreach ($source->sitemaps as $sitemap) {
+            $sitemapElements = simplexml_load_file($sitemap->url);
 
             foreach ($sitemapElements as $sitemapElement) {
                 $url = (string) $sitemapElement->loc;

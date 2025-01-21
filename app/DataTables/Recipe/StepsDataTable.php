@@ -49,7 +49,6 @@ class StepsDataTable extends DataTable
     {
         return [
             Column::make('step')->addClass('d-flex align-items-center')->name('image_url')->searchable(false),
-            Column::make('index')->title('Index')->addClass('text-nowrap'),
             Column::make('recipe_link')->title('Recipe ID'),
             Column::make('description')->title('Description'),
             Column::computed('action')

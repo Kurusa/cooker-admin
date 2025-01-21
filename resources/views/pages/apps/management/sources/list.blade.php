@@ -50,5 +50,4 @@
             });
         </script>
     @endpush
-
 </x-default-layout>

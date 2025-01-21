@@ -2,9 +2,7 @@
 
 namespace App\DataTables\Management;
 
-use App\Exceptions\UnknownSourceException;
 use App\Models\Source;
-use App\Services\Parsers\RecipeParserFactory;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -16,22 +14,21 @@ class SourcesDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->rawColumns(['id', 'url', 'recipes_count'])
-            ->editColumn('url', function (Source $source) {
-                return sprintf('<a href="%s" target="_blank">%s</a>', $source->url, $source->url);
+            ->rawColumns(['id', 'url', 'recipes_link'])
+            ->editColumn('id', function (Source $source) {
+                return view('pages/apps.management.sources.columns._source', compact('source'));
             })
-            ->editColumn('recipes_count', function (Source $source) {
-                try {
-                    $parser = RecipeParserFactory::make($source->title);
-                    $unparsedUrlsCount = count($parser->getFilteredSitemapUrls($source));
-                } catch (UnknownSourceException) {
-                    $unparsedUrlsCount = '?';
-                }
-
+            ->editColumn('url', function (Source $source) {
                 return sprintf(
-                    '<span class="badge badge-info">%d %s</span>',
-                    $source->recipes_count,
-                    '(out of ' . $unparsedUrlsCount . ')',
+                    '<a href="%s" target="_blank">%s</a>',
+                    $source->url,
+                    $source->url
+                );
+            })
+            ->editColumn('recipes_link', function (Source $source) {
+                return sprintf(
+                    '<a href="%s" target="_blank" class="text-primary fw-semibold fs-6 me-2">Recipes</a>',
+                    route('recipe.recipes.index') . '?source=' . $source->title
                 );
             })
             ->addColumn('action', function (Source $source) {
@@ -42,7 +39,7 @@ class SourcesDataTable extends DataTable
 
     public function query(Source $model): QueryBuilder
     {
-        return $model->newQuery()->withCount('recipes');
+        return $model->newQuery()->withCount('recipes')->orderBy('id');
     }
 
     public function html(): HtmlBuilder
@@ -64,7 +61,7 @@ class SourcesDataTable extends DataTable
         return [
             Column::make('id')->title('ID'),
             Column::make('url')->title('Source URL')->addClass('text-nowrap'),
-            Column::make('recipes_count')->title('Number of recipes')->searchable(false),
+            Column::make('recipes_link')->title('Recipes')->searchable(false),
             Column::computed('action')
                 ->addClass('text-end text-nowrap')
                 ->exportable(false)

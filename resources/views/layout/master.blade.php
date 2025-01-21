@@ -71,7 +71,7 @@
 <!--end::Javascript-->
 
 <script>
-    document.addEventListener('livewire:load', () => {
+    document.addEventListener('livewire:init', () => {
         Livewire.on('success', (message) => {
             toastr.success(message);
         });

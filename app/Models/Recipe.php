@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
@@ -18,8 +19,8 @@ use Illuminate\Support\Facades\DB;
  * @property string $advice
  * @property int $time
  * @property int $portions
- * @property string|null $source_url
  * @property int $category_id
+ * @property int $source_recipe_url_id
  * @property string|null $image_url
  *
  * @property Source $source
@@ -36,10 +37,9 @@ class Recipe extends Model
         'advice',
         'time',
         'portions',
-        'source_id',
         'category_id',
-        'source_url',
         'image_url',
+        'source_recipe_url_id',
     ];
 
     protected $casts = [
@@ -47,9 +47,21 @@ class Recipe extends Model
         'rating' => 'integer',
     ];
 
-    public function source(): BelongsTo
+    public function sourceRecipeUrl(): BelongsTo
     {
-        return $this->belongsTo(Source::class);
+        return $this->belongsTo(SourceRecipeUrl::class, 'source_recipe_url_id');
+    }
+
+    public function source(): HasOneThrough
+    {
+        return $this->hasOneThrough(
+            Source::class,
+            SourceRecipeUrl::class,
+            'id',
+            'id',
+            'source_recipe_url_id',
+            'source_id',
+        );
     }
 
     public function ingredients(): BelongsToMany

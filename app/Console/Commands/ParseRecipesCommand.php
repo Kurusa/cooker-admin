@@ -12,6 +12,7 @@ use App\Models\Step;
 use App\Models\Unit;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\Parsers\RecipeParserFactory;
+use App\Services\SitemapUrlCollectorService;
 use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
@@ -63,6 +64,19 @@ class ParseRecipesCommand extends Command
                         $this->error("Ingredients can't be empty");
                         return;
                     }
+
+//                    dd([
+//                        'title' => $title,
+//                        'complexity' => $parser->parseComplexity($xpath),
+//                        'time' => $parser->parseCookingTime($xpath),
+//                        'portions' => $parser->parsePortions($xpath),
+//                        'source_url' => $url,
+//                        'source_id' => $source->id,
+//                        'category_id' => $category->id,
+//                        'image_url' => $parser->parseImage($xpath),
+//                        's' => $steps,
+//                        'i' => $ingredients,
+//                    ]);
 
                     /** @var Recipe $recipe */
                     $recipe = Recipe::updateOrCreate([
@@ -186,7 +200,8 @@ class ParseRecipesCommand extends Command
         } elseif ($url = $this->argument('recipeUrl')) {
             return [$url];
         } else {
-            return $parser->getFilteredSitemapUrls($source);
+            $service = new SitemapUrlCollectorService($parser, $source);
+            return $service->getFilteredSitemapUrls();
         }
     }
 }

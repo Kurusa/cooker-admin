@@ -8,4 +8,9 @@
             Delete
         </a>
     </div>
+    <div class="menu-item px-3">
+        <a href="#" class="menu-link px-3" data-kt-source-id="{{ $source->id }}" data-kt-action="collect_recipe_urls">
+            Collect urls
+        </a>
+    </div>
 </div>

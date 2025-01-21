@@ -12,6 +12,7 @@ use App\Services\Parsers\Parsers\PicanteParser;
 use App\Services\Parsers\Parsers\RetseptyParser;
 use App\Services\Parsers\Parsers\RudParser;
 use App\Services\Parsers\Parsers\SmachnoParser;
+use App\Services\Parsers\Parsers\TandiParser;
 use App\Services\Parsers\Parsers\TsnParser;
 use App\Services\Parsers\Parsers\UaReceptParser;
 use App\Services\Parsers\Parsers\VseReceptyParser;
@@ -33,6 +34,7 @@ class RecipeParserFactory
             'retsepty' => new RetseptyParser(),
             'vse-recepty' => new VseReceptyParser(),
             'ua-recept' => new UaReceptParser(),
+            'tandi' => new TandiParser(),
             default => throw new UnknownSourceException(),
         };
     }
