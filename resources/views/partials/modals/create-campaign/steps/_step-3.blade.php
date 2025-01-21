@@ -8,7 +8,7 @@
 			<h1 class="fw-bold text-gray-900">Configure Audiences</h1>
 			<!--end::Title-->
 			<!--begin::Description-->
-			<div class="text-muted fw-semibold fs-4">If you need more info, please check 
+			<div class="text-muted fw-semibold fs-4">If you need more info, please check
 			<a href="#" class="link-primary">Campaign Guidelines</a></div>
 			<!--end::Description-->
 		</div>
@@ -16,7 +16,7 @@
 		<!--begin::Input group-->
 		<div class="fv-row mb-10">
 			<!--begin::Label-->
-			<label class="fs-6 fw-semibold mb-2">Gender 
+			<label class="fs-6 fw-semibold mb-2">Gender
 			<i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Show your ads to either men or women, or select 'All' for both"></i></label>
 			<!--End::Label-->
 			<!--begin::Row-->
@@ -82,7 +82,7 @@
 		<!--begin::Input group-->
 		<div class="fv-row mb-10">
 			<!--begin::Label-->
-			<label class="fs-6 fw-semibold mb-2">Age 
+			<label class="fs-6 fw-semibold mb-2">Age
 			<i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Select the minimum and maximum age of the people who will find your ad relevant."></i></label>
 			<!--End::Label-->
 			<!--begin::Slider-->
@@ -97,12 +97,9 @@
 		<!--begin::Input group-->
 		<div class="fv-row mb-10">
 			<!--begin::Label-->
-			<label class="fs-6 fw-semibold mb-2">Location 
+			<label class="fs-6 fw-semibold mb-2">Location
 			<i class="fas fa-exclamation-circle ms-2 fs-7" data-bs-toggle="tooltip" title="Enter one or more location points for more specific targeting."></i></label>
 			<!--End::Label-->
-			<!--begin::Tagify-->
-			<input class="form-control d-flex align-items-center" value="" id="kt_modal_create_campaign_location" data-kt-flags-path="media/flags/"/>
-			<!--end::Tagify-->
 		</div>
 		<!--end::Input group-->
 	</div>

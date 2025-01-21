@@ -68,7 +68,6 @@
                         <label class="required fs-6 fw-semibold form-label mb-2">Send Event Details To</label>
                         <!--end::Label-->
                         <!--begin::Input-->
-                        <input id="kt_modal_add_schedule_tagify" type="text" class="form-control form-control-solid" name="event_invitees" value="smith@kpmg.com, melody@altbox.com" />
                         <!--end::Input-->
                     </div>
                     <!--end::Input group-->

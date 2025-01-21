@@ -8,25 +8,12 @@ var KTUsersAddSchedule = function () {
     const modal = new bootstrap.Modal(element);
 
     // Init add schedule modal
-    var initAddSchedule = () => {       
+    var initAddSchedule = () => {
 
         // Init flatpickr -- for more info: https://flatpickr.js.org/
         $("#kt_modal_add_schedule_datepicker").flatpickr({
             enableTime: true,
             dateFormat: "Y-m-d H:i",
-        });
-
-        // Init tagify -- for more info: https://yaireo.github.io/tagify/
-        const tagifyInput = form.querySelector('#kt_modal_add_schedule_tagify');
-        new Tagify(tagifyInput, {
-            whitelist: ["sean@dellito.com", "brian@exchange.com", "mikaela@pexcom.com", "f.mitcham@kpmg.com.au", "olivia@corpmail.com", "owen.neil@gmail.com", "dam@consilting.com", "emma@intenso.com", "ana.cf@limtel.com", "robert@benko.com", "lucy.m@fentech.com", "ethan@loop.com.au"],
-            maxTags: 10,
-            dropdown: {
-                maxItems: 20,           // <- mixumum allowed rendered suggestions
-                classname: "tagify__inline__suggestions", // <- custom classname for this dropdown, so it could be targeted
-                enabled: 0,             // <- show suggestions on focus
-                closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
-            }
         });
 
         // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
@@ -61,9 +48,9 @@ var KTUsersAddSchedule = function () {
 								message: 'Event invitees is required'
 							}
 						}
-					},					
+					},
 				},
-				
+
 				plugins: {
 					trigger: new FormValidation.plugins.Trigger(),
 					bootstrap: new FormValidation.plugins.Bootstrap5({
@@ -99,8 +86,8 @@ var KTUsersAddSchedule = function () {
                 }
             }).then(function (result) {
                 if (result.value) {
-                    form.reset(); // Reset form	
-                    modal.hide(); // Hide modal				
+                    form.reset(); // Reset form
+                    modal.hide(); // Hide modal
                 } else if (result.dismiss === 'cancel') {
                     Swal.fire({
                         text: "Your form has not been cancelled!.",
@@ -133,8 +120,8 @@ var KTUsersAddSchedule = function () {
                 }
             }).then(function (result) {
                 if (result.value) {
-                    form.reset(); // Reset form	
-                    modal.hide(); // Hide modal				
+                    form.reset(); // Reset form
+                    modal.hide(); // Hide modal
                 } else if (result.dismiss === 'cancel') {
                     Swal.fire({
                         text: "Your form has not been cancelled!.",
@@ -164,7 +151,7 @@ var KTUsersAddSchedule = function () {
 						// Show loading indication
 						submitButton.setAttribute('data-kt-indicator', 'on');
 
-						// Disable button to avoid multiple click 
+						// Disable button to avoid multiple click
 						submitButton.disabled = true;
 
 						// Simulate form submission. For more info check the plugin's official documentation: https://sweetalert2.github.io/
@@ -174,8 +161,8 @@ var KTUsersAddSchedule = function () {
 
 							// Enable button
 							submitButton.disabled = false;
-							
-							// Show popup confirmation 
+
+							// Show popup confirmation
 							Swal.fire({
 								text: "Form has been successfully submitted!",
 								icon: "success",
@@ -191,7 +178,7 @@ var KTUsersAddSchedule = function () {
 							});
 
 							//form.submit(); // Submit form
-						}, 2000);   						
+						}, 2000);
 					} else {
 						// Show popup warning. For more info check the plugin's official documentation: https://sweetalert2.github.io/
 						Swal.fire({
