@@ -48,7 +48,7 @@ class PatelnyaParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath): array
+    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
     {
         $rawIngredients = $this->extractMultipleValues($xpath, ".//div[@class='list-ingredient old-list']//ul[@class='ingredient']/li");
         if (!count($rawIngredients)) {

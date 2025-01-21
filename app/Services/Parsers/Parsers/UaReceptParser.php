@@ -51,7 +51,7 @@ class UaReceptParser extends BaseRecipeParser
         return (int) $this->extractCleanSingleValue($xpath, '//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p') ?? '';
     }
 
-    public function parseIngredients(DOMXPath $xpath): array
+    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
     {
         $ingredientNodes = $this->extractMultipleValues($xpath, "//ul[@class='ingredients-list layout-1-column']//li//p/text()");
 

@@ -14,10 +14,11 @@ class JistyParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        $class = 'post-title mb-30';
-        if ($this->hasMoreThanOneRecipeOnPage($xpath, $class)) {
+        if ($this->hasMoreThanOneRecipe($xpath)) {
             throw new Exception('There is more than one recipe on page');
         }
+
+        $class = 'post-title mb-30';
 
         return $this->extractCleanSingleValue($xpath, ".//h1[@class='$class']");
     }
@@ -44,7 +45,7 @@ class JistyParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath): array
+    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
     {
         $rawIngredients = $this->extractMultipleValues($xpath, "//ul[@class='ingredients-list']/li");
 
@@ -54,6 +55,10 @@ class JistyParser extends BaseRecipeParser
             $ingredient = str_replace('спеції: ', '', $ingredient);
 
             $parsedIngredients[] = CleanText::cleanText($ingredient);
+        }
+
+        if ($debug) {
+            return $parsedIngredients;
         }
 
         $service = app(DeepseekService::class);
@@ -113,21 +118,6 @@ class JistyParser extends BaseRecipeParser
             'restoran-',
             'kuhar',
             'najsmachnishih-retseptiv-mlintsiv',
-            // продебажити
-            'https://jisty.com.ua/kartoplya-z-sirom-na-garnir/',
-            'https://jisty.com.ua/ovochevij-chizburger/',
-            'https://jisty.com.ua/nokki-abo-sekretna-zbroya-proti-italijskih-mafiozi/',
-            'https://jisty.com.ua/sirnij-kreker/',
-            'https://jisty.com.ua/kavovij-liker/',
-            // кілька рецептів на сторінці
-            'retseptiv',
-            'retsepty',
-            'variantiv',
-            'stravy',
-            'reczepty',
-            'https://jisty.com.ua/pecheritsi-marinovani-nashvidkuruch/',
-            'https://jisty.com.ua/reczepty-smachnyh-strav-gruzynskoyi-kuhni-dlya-spravzhnih-gurmaniv/',
-            'yaki',
         ];
 
         foreach ($disallowedPatterns as $pattern) {
@@ -139,9 +129,12 @@ class JistyParser extends BaseRecipeParser
         return true;
     }
 
-    private function hasMoreThanOneRecipeOnPage(DOMXPath $xpath, string $class): bool
+    public function hasMoreThanOneRecipe(DOMXPath $xpath): bool
     {
+        $class = 'post-title mb-30';
+
         return $xpath->query(".//h1[@class='{$class}']")->length > 1 ||
             $xpath->query(".//h2[@class='has-text-align-center wp-block-heading']")->length > 1;
     }
+
 }

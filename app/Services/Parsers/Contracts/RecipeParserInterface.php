@@ -19,7 +19,7 @@ interface RecipeParserInterface
 
     public function parsePortions(DOMXPath $xpath): int;
 
-    public function parseIngredients(DOMXPath $xpath): array;
+    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array;
 
     public function parseSteps(DOMXPath $xpath): array;
 }

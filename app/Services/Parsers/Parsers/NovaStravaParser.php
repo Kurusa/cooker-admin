@@ -55,7 +55,7 @@ class NovaStravaParser extends BaseRecipeParser
         return $portions > 0 ? $portions : 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath): array
+    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
     {
         $class = 'wprm-recipe-ingredients';
 
