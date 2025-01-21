@@ -6,7 +6,7 @@
                data-recipe-id="{{ $recipe->id }}"
                style="top: 10px; left: 10px; z-index: 10; width: 20px; height: 20px;">
 
-        <div class="card-header" style="padding-left: 40px;"> <!-- Додаємо відступ для чекбокса -->
+        <div class="card-header" style="padding-left: 40px;">
             <div class="card-title">
                 @include('pages.apps.recipe.recipes.partials.title')
                 <a href="{{ $recipe->source_url }}" target="_blank" class="d-flex align-items-center text-primary opacity-75-hover fs-6 fw-semibold">

@@ -9,7 +9,7 @@ use App\Models\Recipe;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class IngredientManagementController extends Controller
+class IngredientController extends Controller
 {
     public function index(IngredientsDataTable $dataTable)
     {

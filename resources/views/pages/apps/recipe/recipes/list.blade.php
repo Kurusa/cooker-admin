@@ -87,26 +87,7 @@
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            $.ajax({
-                                url: `/recipe/recipes/${recipeId}/reparse`,
-                                method: 'GET',
-                                success: function () {
-                                    Swal.fire({
-                                        text: 'Success',
-                                        icon: 'success',
-                                        buttonsStyling: false,
-                                        confirmButtonText: 'OK',
-                                        customClass: {
-                                            confirmButton: 'btn btn-primary',
-                                        }
-                                    }).then(() => {
-                                        location.reload();
-                                    });
-                                },
-                                error: function (xhr) {
-                                    console.error('Error fetching details:', xhr.responseText);
-                                }
-                            });
+                            reparseSelectedRecipes(recipeId)
                         }
                     });
                 });
@@ -197,27 +178,7 @@
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            $.ajax({
-                                url: '/recipe/recipes/reparse',
-                                method: 'POST',
-                                data: {recipe_ids: selectedIds},
-                                success: function () {
-                                    Swal.fire({
-                                        text: 'Success',
-                                        icon: 'success',
-                                        buttonsStyling: false,
-                                        confirmButtonText: 'OK',
-                                        customClass: {
-                                            confirmButton: 'btn btn-primary',
-                                        }
-                                    }).then(() => {
-                                        location.reload();
-                                    });
-                                },
-                                error: function (xhr) {
-                                    console.error('Error:', xhr.responseText);
-                                }
-                            });
+                            reparseSelectedRecipes(selectedIds)
                         }
                     });
                 });
@@ -282,6 +243,30 @@
                 updateReparseButtonVisibility();
                 updateDeleteButtonVisibility();
             });
+
+            function reparseSelectedRecipes(selectedIds) {
+                $.ajax({
+                    url: '/recipe/recipes/reparse',
+                    method: 'POST',
+                    data: {recipe_ids: selectedIds},
+                    success: function () {
+                        Swal.fire({
+                            text: 'Success',
+                            icon: 'success',
+                            buttonsStyling: false,
+                            confirmButtonText: 'OK',
+                            customClass: {
+                                confirmButton: 'btn btn-primary',
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function (xhr) {
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            }
         </script>
     @endpush
 </x-default-layout>

@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Recipe;
 use App\Models\Source;
+use App\Models\SourceRecipeUrl;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 
 class SitemapUrlCollectorService
@@ -15,6 +16,9 @@ class SitemapUrlCollectorService
     {
     }
 
+    /**
+     * @return array<SourceRecipeUrl>
+     */
     public function getFilteredSitemapUrls(): array
     {
         $urls = [];
@@ -38,8 +42,7 @@ class SitemapUrlCollectorService
                 $this->parseSitemapUrls($url, $urls);
             } elseif ($this->parser->urlRule($url)) {
                 if (!Recipe::where('source_url', $url)->exists()) {
-                    $urls[] = $url;
-                    $this->source->recipeUrls()->updateOrCreate(['url' => $url], ['url' => $url]);
+                    $urls[] = $this->source->recipeUrls()->updateOrCreate(['url' => $url], ['url' => $url]);
                 } else {
                     $this->source->recipeUrls()->updateOrCreate(['url' => $url], [
                         'url' => $url,

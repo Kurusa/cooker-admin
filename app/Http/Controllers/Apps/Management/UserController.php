@@ -6,7 +6,7 @@ use App\DataTables\Management\UsersDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 
-class UserManagementController extends Controller
+class UserController extends Controller
 {
     public function index(UsersDataTable $dataTable)
     {

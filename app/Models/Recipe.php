@@ -24,10 +24,10 @@ use Illuminate\Support\Facades\DB;
  * @property string|null $image_url
  *
  * @property Source $source
+ * @property SourceRecipeUrl $sourceRecipeUrl
  * @property string $ingredient_list
  * @property Collection $ingredients_collection
  * @property Collection<Ingredient> $ingredients
- * @property-read string $header
  */
 class Recipe extends Model
 {

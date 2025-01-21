@@ -43,7 +43,7 @@ class FayniReceptyParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath): array
+    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
     {
         $class = 'wprm-recipe-ingredients';
         $ingredientNodes = $xpath->query("//ul[@class='$class']/li");
@@ -59,6 +59,10 @@ class FayniReceptyParser extends BaseRecipeParser
             $name = $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-name')]", $node);
 
             $parsedIngredients[] = CleanText::cleanText($name . ': ' . $amountNode . ' ' . $unit);
+        }
+
+        if ($debug) {
+            return $parsedIngredients;
         }
 
         $service = app(DeepseekService::class);

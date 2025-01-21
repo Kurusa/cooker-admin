@@ -9,7 +9,7 @@ use App\Services\Parsers\RecipeParserFactory;
 use App\Services\SitemapUrlCollectorService;
 use Exception;
 
-class SourceManagementController extends Controller
+class SourceController extends Controller
 {
     public function index(SourcesDataTable $dataTable)
     {

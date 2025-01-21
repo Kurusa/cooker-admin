@@ -1,11 +1,11 @@
 <?php
 
-use App\Http\Controllers\Apps\Management\CategoryManagementController;
-use App\Http\Controllers\Apps\Management\SourceManagementController;
-use App\Http\Controllers\Apps\Management\UserManagementController;
-use App\Http\Controllers\Apps\Recipe\IngredientManagementController;
-use App\Http\Controllers\Apps\Recipe\RecipeManagementController;
-use App\Http\Controllers\Apps\Recipe\StepManagementController;
+use App\Http\Controllers\Apps\Management\CategoryController;
+use App\Http\Controllers\Apps\Management\SourceController;
+use App\Http\Controllers\Apps\Management\UserController;
+use App\Http\Controllers\Apps\Recipe\IngredientController;
+use App\Http\Controllers\Apps\Recipe\RecipeController;
+use App\Http\Controllers\Apps\Recipe\StepController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,21 +15,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::name('management.')->prefix('management')->group(function () {
-        Route::resource('users', UserManagementController::class);
-        Route::resource('sources', SourceManagementController::class);
-        Route::post('sources/{source}/collect-urls', [SourceManagementController::class, 'collectUrls']);
-        Route::get('categories', [CategoryManagementController::class, 'index'])->name('categories.index');
+        Route::resource('users', UserController::class);
+        Route::resource('sources', SourceController::class);
+        Route::post('sources/{source}/collect-urls', [SourceController::class, 'collectUrls']);
+        Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
     });
 
     Route::name('recipe.')->prefix('recipe')->group(function () {
-        Route::get('recipes', [RecipeManagementController::class, 'index'])->name('recipes.index');
-        Route::get('recipes/{recipe}/reparse', [RecipeManagementController::class, 'reparse']);
-        Route::post('recipes/delete', [RecipeManagementController::class, 'deleteByIds']);
-        Route::post('recipes/reparse', [RecipeManagementController::class, 'reparseByIds']);
+        Route::get('recipes', [RecipeController::class, 'index'])->name('recipes.index');
+        Route::post('recipes/delete', [RecipeController::class, 'deleteByIds']);
+        Route::post('recipes/reparse', [RecipeController::class, 'reparseByIds']);
+        Route::post('recipes/parse/debug', [RecipeController::class, 'parseDebug']);
 
-        Route::resource('ingredients', IngredientManagementController::class);
-        Route::get('ingredients/{ingredient}/details', [IngredientManagementController::class, 'getDetails']);
-        Route::get('steps', [StepManagementController::class, 'index'])->name('steps.index');
+        Route::resource('ingredients', IngredientController::class);
+        Route::get('ingredients/{ingredient}/details', [IngredientController::class, 'getDetails']);
+        Route::get('steps', [StepController::class, 'index'])->name('steps.index');
     });
 });
 
