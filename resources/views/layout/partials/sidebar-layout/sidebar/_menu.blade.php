@@ -19,7 +19,73 @@
                     </div>
                 </div>
             </div>
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('management.*') ? 'here show' : '' }}">
+                <span class="menu-link">
+					<span class="menu-icon">{!! getIcon('abstract-28', 'fs-2') !!}</span>
+					<span class="menu-title">Management</span>
+					<span class="menu-arrow"></span>
+				</span>
+                <div class="menu-sub menu-sub-accordion">
+                    <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('management.users.*') ? 'active' : '' }}" href="{{ route('management.users.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+                            <span class="menu-title">Users</span>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('management.sources.*') ? 'active' : '' }}" href="{{ route('management.sources.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+                            <span class="menu-title">Sources</span>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('management.categories.*') ? 'active' : '' }}" href="{{ route('management.categories.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+                            <span class="menu-title">Categories</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
 
+            <div data-kt-menu-trigger="click" class="menu-item menu-accordion {{ request()->routeIs('recipe.*') ? 'here show' : '' }}">
+                <span class="menu-link">
+					<span class="menu-icon">{!! getIcon('abstract-28', 'fs-2') !!}</span>
+					<span class="menu-title">Recipe</span>
+					<span class="menu-arrow"></span>
+				</span>
+                <div class="menu-sub menu-sub-accordion">
+                    <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('recipe.steps.*') ? 'active' : '' }}" href="{{ route('recipe.steps.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+                            <span class="menu-title">Steps</span>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('recipe.ingredients.*') ? 'active' : '' }}" href="{{ route('recipe.ingredients.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+                            <span class="menu-title">Ingredients</span>
+                        </a>
+                    </div>
+                    <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('recipe.recipes.*') ? 'active' : '' }}" href="{{ route('recipe.recipes.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+                            <span class="menu-title">Recipes</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
