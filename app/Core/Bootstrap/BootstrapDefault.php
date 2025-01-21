@@ -29,8 +29,6 @@ class BootstrapDefault
 
         # Include global javascript files
         addJavascriptFile('assets/js/custom/widgets.js');
-        addJavascriptFile('assets/js/custom/utilities/modals/create-app.js');
-        addJavascriptFile('assets/js/custom/utilities/modals/new-target.js');
     }
 
     public function initDarkSidebarLayout()

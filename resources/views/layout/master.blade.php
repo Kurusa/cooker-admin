@@ -16,59 +16,41 @@
 
     {!! includeFavicon() !!}
 
-    <!--begin::Fonts-->
     {!! includeFonts() !!}
-    <!--end::Fonts-->
 
-    <!--begin::Global Stylesheets Bundle(used by all pages)-->
     @foreach(getGlobalAssets('css') as $path)
         {!! sprintf('<link rel="stylesheet" href="%s">', asset($path)) !!}
     @endforeach
-    <!--end::Global Stylesheets Bundle-->
 
-    <!--begin::Vendor Stylesheets(used by this page)-->
     @foreach(getVendors('css') as $path)
         {!! sprintf('<link rel="stylesheet" href="%s">', asset($path)) !!}
     @endforeach
-    <!--end::Vendor Stylesheets-->
 
-    <!--begin::Custom Stylesheets(optional)-->
     @foreach(getCustomCss() as $path)
         {!! sprintf('<link rel="stylesheet" href="%s">', asset($path)) !!}
     @endforeach
-    <!--end::Custom Stylesheets-->
 
     @livewireStyles
 </head>
-<!--end::Head-->
 
-<!--begin::Body-->
 <body {!! printHtmlClasses('body') !!} {!! printHtmlAttributes('body') !!}>
 
 @include('partials/theme-mode/_init')
 
 @yield('content')
 
-<!--begin::Javascript-->
-<!--begin::Global Javascript Bundle(mandatory for all pages)-->
 @foreach(getGlobalAssets() as $path)
     {!! sprintf('<script src="%s"></script>', asset($path)) !!}
 @endforeach
-<!--end::Global Javascript Bundle-->
 
-<!--begin::Vendors Javascript(used by this page)-->
 @foreach(getVendors('js') as $path)
     {!! sprintf('<script src="%s"></script>', asset($path)) !!}
 @endforeach
-<!--end::Vendors Javascript-->
 
-<!--begin::Custom Javascript(optional)-->
 @foreach(getCustomJs() as $path)
     {!! sprintf('<script src="%s"></script>', asset($path)) !!}
 @endforeach
-<!--end::Custom Javascript-->
 @stack('scripts')
-<!--end::Javascript-->
 
 <script>
     document.addEventListener('livewire:init', () => {
@@ -101,6 +83,4 @@
 
 @livewireScripts
 </body>
-<!--end::Body-->
-
 </html>

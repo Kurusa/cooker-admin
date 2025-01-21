@@ -26,10 +26,7 @@ class SourcesDataTable extends DataTable
                 );
             })
             ->editColumn('recipes_link', function (Source $source) {
-                return sprintf(
-                    '<a href="%s" target="_blank" class="text-primary fw-semibold fs-6 me-2">Recipes</a>',
-                    route('recipe.recipes.index') . '?source=' . $source->title
-                );
+                return view('pages/apps.management.sources.columns._recipes', compact('source'));
             })
             ->addColumn('action', function (Source $source) {
                 return view('pages/apps.management.sources.columns._actions', compact('source'));

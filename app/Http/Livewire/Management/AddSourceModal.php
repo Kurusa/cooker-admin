@@ -14,6 +14,8 @@ class AddSourceModal extends Component
     public $title;
     public $url;
 
+    public $loading = false;
+
     public $edit_mode = true;
 
     protected $rules = [
@@ -54,18 +56,6 @@ class AddSourceModal extends Component
         });
 
         $this->reset();
-    }
-
-    public function collectRecipeUrls(int $id): void
-    {
-        /** @var Source $source */
-        $source = Source::find($id);
-
-        $parser = RecipeParserFactory::make($source->title);
-        $service = new SitemapUrlCollectorService($parser, $source);
-        $service->getFilteredSitemapUrls();
-
-        $this->emit('success', 'Successfully parsed source urls');
     }
 
     public function deleteSource(int $id): void

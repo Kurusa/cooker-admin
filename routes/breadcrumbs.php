@@ -38,7 +38,10 @@ Breadcrumbs::for('management.sources.index', function (BreadcrumbTrail $trail) {
 
 Breadcrumbs::for('management.sources.show', function (BreadcrumbTrail $trail, Source $source) {
     $trail->parent('management.sources.index');
-    $trail->push(ucwords($source->name), route('management.sources.show', $source));
+    $trail->push(
+        ucwords($source->title),
+        route('management.sources.show', $source)
+    );
 });
 
 Breadcrumbs::for('management.categories.index', function (BreadcrumbTrail $trail) {

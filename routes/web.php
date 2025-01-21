@@ -17,7 +17,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::name('management.')->prefix('management')->group(function () {
         Route::resource('users', UserManagementController::class);
         Route::resource('sources', SourceManagementController::class);
-        Route::get('sources/{source}/details', [SourceManagementController::class, 'getDetails']);
+        Route::post('sources/{source}/collect-urls', [SourceManagementController::class, 'collectUrls']);
         Route::get('categories', [CategoryManagementController::class, 'index'])->name('categories.index');
     });
 
