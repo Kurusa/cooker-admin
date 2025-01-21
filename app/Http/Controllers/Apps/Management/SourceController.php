@@ -13,6 +13,12 @@ use Exception;
 
 class SourceController extends Controller
 {
+    public function __construct(
+        private readonly RecipeParserFactory $recipeParserFactory,
+    )
+    {
+    }
+
     public function index(SourcesDataTable $dataTable)
     {
         return $dataTable->render('pages/apps.management.sources.list');
@@ -26,11 +32,13 @@ class SourceController extends Controller
     public function collectUrls(Source $source)
     {
         try {
-            $parser = RecipeParserFactory::make($source->title);
+            $parser = $this->recipeParserFactory->make($source->title);
             $service = new SitemapUrlCollectorService($parser, $source);
             $service->getFilteredSitemapUrls();
 
-            return response()->json();
+            return response()->json([
+                'success' => true,
+            ]);
         } catch (Exception $exception) {
             return response()->json([
                 'message' => $exception->getMessage(),
@@ -60,5 +68,11 @@ class SourceController extends Controller
         return response()->json([
             'error' => 'This source sitemap does not belong to this source.',
         ]);
+    }
+
+    public function getUnparsedUrlsView(Source $source)
+    {
+        $unparsedUrls = $source->recipeUrls()->notParsed()->orderBy('is_excluded')->get();
+        return view('pages.apps.management.sources.show-partials.cards.unparsed_urls_list', compact('unparsedUrls', 'source'));
     }
 }

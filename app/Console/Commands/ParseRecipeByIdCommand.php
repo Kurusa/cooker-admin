@@ -9,7 +9,7 @@ use Illuminate\Console\Command;
 
 class ParseRecipeByIdCommand extends Command
 {
-    protected $signature = 'parse:recipe {recipeId}';
+    protected $signature = 'parse:recipe:id {recipeId}';
 
     protected $description = 'Parse a single recipe by its ID';
 

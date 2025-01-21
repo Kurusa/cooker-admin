@@ -8,6 +8,7 @@ use App\Http\Requests\Recipe\DeleteRecipeByIdsRequest;
 use App\Http\Requests\Recipe\ReparseRecipeByIdsRequest;
 use App\Models\Recipe;
 use App\Models\Source;
+use App\Models\SourceRecipeUrl;
 use App\Services\Parsers\RecipeParserFactory;
 use Exception;
 use Illuminate\Http\Request;
@@ -15,6 +16,12 @@ use Illuminate\Support\Facades\Artisan;
 
 class RecipeController extends Controller
 {
+    public function __construct(
+        private readonly RecipeParserFactory $recipeParserFactory,
+    )
+    {
+    }
+
     public function index(Request $request)
     {
         $query = Recipe::with(['steps', 'source']);
@@ -77,7 +84,7 @@ class RecipeController extends Controller
         try {
             /** @var Source $source */
             $source = Source::find($request->get('source_id'));
-            $parser = RecipeParserFactory::make($source->title);
+            $parser = $this->recipeParserFactory->make($source->title);
             $xpath = $parser->loadHtml($request->get('url'));
 
             $recipe = [
@@ -101,5 +108,16 @@ class RecipeController extends Controller
                 'message' => $e->getMessage(),
             ], 500);
         }
+    }
+
+    public function excludeRecipeUrl(SourceRecipeUrl $sourceRecipeUrl)
+    {
+        $sourceRecipeUrl->update([
+            'is_excluded' => true,
+        ]);
+
+        return response()->json([
+            'success' => true,
+        ]);
     }
 }

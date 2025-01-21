@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Models\Recipe;
 use App\Models\Source;
 use App\Models\SourceRecipeUrl;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
@@ -36,19 +35,31 @@ class SitemapUrlCollectorService
 
         foreach ($sitemapElements as $sitemapElement) {
             $url = (string) $sitemapElement->loc;
+            /** @var SourceRecipeUrl $sourceRecipeUrl */
+            $sourceRecipeUrl = SourceRecipeUrl::updateOrCreate([
+                'url' => $url,
+                'source_id' => $this->source->id,
+            ], [
+                'url' => $url,
+                'source_id' => $this->source->id,
+            ]);
+
+            $passRuleValidation = $this->parser->urlRule($url);
 
             if ($this->isSitemap($url)) {
                 echo "Processing xml url: $url" . PHP_EOL;
                 $this->parseSitemapUrls($url, $urls);
-            } elseif ($this->parser->urlRule($url)) {
-                if (!Recipe::where('source_url', $url)->exists()) {
-                    $urls[] = $this->source->recipeUrls()->updateOrCreate(['url' => $url], ['url' => $url]);
-                } else {
-                    $this->source->recipeUrls()->updateOrCreate(['url' => $url], [
-                        'url' => $url,
-                        'is_parsed' => true,
+            } elseif ($passRuleValidation) {
+                $urls[] = $sourceRecipeUrl;
+                if ($sourceRecipeUrl->is_excluded && $sourceRecipeUrl->recipe()->exists()) {
+                    $sourceRecipeUrl->update([
+                        'is_excluded' => false,
                     ]);
                 }
+            } else {
+                $sourceRecipeUrl->update([
+                    'is_excluded' => true,
+                ]);
             }
         }
     }

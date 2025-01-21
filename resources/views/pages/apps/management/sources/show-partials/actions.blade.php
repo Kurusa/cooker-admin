@@ -1,6 +1,12 @@
 <ul class="nav nav-custom nav-tabs nav-line-tabs nav-line-tabs-2x border-0 fs-4 fw-semibold mb-8" role="tablist">
     <li class="nav-item" role="presentation">
-        <a class="nav-link text-active-primary pb-4 active" data-bs-toggle="tab" href="#kt_source_view_overview_tab" aria-selected="true" role="tab">Overview</a>
+        <a class="nav-link text-active-primary pb-4 active"
+           data-bs-toggle="tab"
+           href="#kt_source_view_overview_tab"
+           aria-selected="true"
+           role="tab"
+        >
+            Overview</a>
     </li>
 
     <li class="nav-item" role="presentation">
@@ -12,7 +18,10 @@
            tabindex="-1"
            role="tab"
         >
-            Unparsed urls ({{ $source->recipeUrls()->where('is_parsed', 0)->count() }})
+            Unparsed urls ({{ $source->recipeUrls()->notParsed()->where('is_excluded', 0)->count() }}
+            <span class="w-125px text-gray-500 fw-semibold fs-7">
+                + {{ $source->recipeUrls()->notParsed()->where('is_excluded', 1)->count() }}
+            </span>)
         </a>
     </li>
 
@@ -65,11 +74,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        Swal.fire({
-                            text: 'URLs collected successfully!',
-                            icon: 'success',
-                            confirmButtonText: 'OK',
-                        });
+                        location.reload()
                     } else {
                         Swal.fire({
                             text: data.message || 'Failed to collect URLs.',

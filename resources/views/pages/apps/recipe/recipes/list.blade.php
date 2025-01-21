@@ -216,8 +216,8 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             $.ajax({
-                                url: '/recipe/recipes/delete',
-                                method: 'POST',
+                                url: '/recipe/recipes',
+                                method: 'DELETE',
                                 data: {recipe_ids: selectedIds},
                                 success: function () {
                                     Swal.fire({
@@ -246,7 +246,7 @@
 
             function reparseSelectedRecipes(selectedIds) {
                 $.ajax({
-                    url: '/recipe/recipes/reparse',
+                    url: '/recipe/recipes/parse',
                     method: 'POST',
                     data: {recipe_ids: selectedIds},
                     success: function () {

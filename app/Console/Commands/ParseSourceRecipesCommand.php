@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 
 class ParseSourceRecipesCommand extends Command
 {
-    protected $signature = 'parse:recipe {source}';
+    protected $signature = 'parse:recipe:source {source}';
 
     protected $description = 'Parse a all recipes by source title';
 

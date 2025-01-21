@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 
 class ParseRecipeByUrlCommand extends Command
 {
-    protected $signature = 'parse:recipe {source} {url}';
+    protected $signature = 'parse:recipe:url {source} {url}';
 
     protected $description = 'Parse a single recipe by its URL';
 

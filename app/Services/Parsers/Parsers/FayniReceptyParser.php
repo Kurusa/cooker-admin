@@ -99,6 +99,11 @@ class FayniReceptyParser extends BaseRecipeParser
             'stravy-',
             'vse-pro',
             'chym-',
+            'den-',
+            'vlastyvosti-',
+            'korysni-',
+            'tradytsiyi-',
+            'yak-hotuvaty',
         ];
 
         foreach ($disallowedPatterns as $pattern) {

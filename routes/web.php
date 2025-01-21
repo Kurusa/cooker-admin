@@ -16,18 +16,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::name('management.')->prefix('management')->group(function () {
         Route::resource('users', UserController::class);
+
         Route::resource('sources', SourceController::class);
         Route::post('sources/{source}/collect-urls', [SourceController::class, 'collectUrls']);
         Route::post('sources/{source}/sitemap', [SourceController::class, 'createSitemapUrl']);
         Route::delete('sources/{source}/sitemap/{sourceSitemap}', [SourceController::class, 'deleteSitemapUrl']);
+        Route::get('sources/{source}/unparsed-urls', [SourceController::class, 'getUnparsedUrlsView']);
+
         Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
     });
 
     Route::name('recipe.')->prefix('recipe')->group(function () {
         Route::get('recipes', [RecipeController::class, 'index'])->name('recipes.index');
-        Route::post('recipes/delete', [RecipeController::class, 'deleteByIds']);
-        Route::post('recipes/reparse', [RecipeController::class, 'reparseByIds']);
+        Route::delete('recipes', [RecipeController::class, 'deleteByIds']);
+        Route::post('recipes/parse', [RecipeController::class, 'reparseByIds']);
         Route::post('recipes/parse/debug', [RecipeController::class, 'parseDebug']);
+        Route::delete('recipes/urls/{sourceRecipeUrl}', [RecipeController::class, 'excludeRecipeUrl']);
 
         Route::resource('ingredients', IngredientController::class);
         Route::get('ingredients/{ingredient}/details', [IngredientController::class, 'getDetails']);

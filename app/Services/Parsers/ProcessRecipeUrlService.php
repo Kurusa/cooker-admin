@@ -26,7 +26,7 @@ class ProcessRecipeUrlService
     ): void
     {
         try {
-            $xpath = $parser->loadHtml($sourceRecipeUrl->id);
+            $xpath = $parser->loadHtml($sourceRecipeUrl->url);
 
             DB::transaction(function () use ($sourceRecipeUrl, $parser, $xpath) {
                 DB::statement('SELECT GET_LOCK(?, -1)', ['parse_recipe_lock']);
