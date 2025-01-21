@@ -69,10 +69,6 @@ module.exports = [
     // Quill - is a free, open source WYSIWYG editor built for the modern web. Completely customize it for any need with its modular architecture and expressive API: https://quilljs.com/
     'node_modules/quill/dist/quill.js',
 
-    // Tagify - Transforms an input field or a textarea into a Tags component, in an easy, customizable way, with great performance and small code footprint, exploded with features: https://github.com/yairEO/tagify
-    'node_modules/@yaireo/tagify/dist/tagify.polyfills.min.js',
-    'node_modules/@yaireo/tagify/dist/tagify.min.js',
-
     // Toastr - is a Javascript library for non-blocking notifications. jQuery is required. The goal is to create a simple core library that can be customized and extended: https://github.com/CodeSeven/toastr
     'resources/_keenthemes/src/plugins/toastr/build/toastr.min.js',
 

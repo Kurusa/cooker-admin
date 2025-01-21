@@ -28,24 +28,6 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         return new DOMXPath($dom);
     }
 
-    public function getFilteredSitemapUrls(Source $source): array
-    {
-        $urls = [];
-
-        foreach ($source->sitemaps as $sitemap) {
-            $sitemapElements = simplexml_load_file($sitemap->url);
-
-            foreach ($sitemapElements as $sitemapElement) {
-                $url = (string) $sitemapElement->loc;
-                if ($this->urlRule($url) && !Recipe::where('source_url', $url)->exists()) {
-                    $urls[] = $url;
-                }
-            }
-        }
-
-        return $urls;
-    }
-
     protected function extractCleanSingleValue(DOMXPath $xpath, string $query, ?DOMNode $contextNode = null): string
     {
         $node = $xpath->query($query, $contextNode)->item(0);

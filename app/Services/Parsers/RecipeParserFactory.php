@@ -16,7 +16,6 @@ use App\Services\Parsers\Parsers\TandiParser;
 use App\Services\Parsers\Parsers\TsnParser;
 use App\Services\Parsers\Parsers\UaReceptParser;
 use App\Services\Parsers\Parsers\VseReceptyParser;
-use InvalidArgumentException;
 
 class RecipeParserFactory
 {

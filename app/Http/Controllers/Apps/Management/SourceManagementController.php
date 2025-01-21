@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Apps\Management;
 use App\DataTables\Management\SourcesDataTable;
 use App\Http\Controllers\Controller;
 use App\Models\Source;
-use App\Models\User;
 
 class SourceManagementController extends Controller
 {
