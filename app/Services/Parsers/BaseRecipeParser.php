@@ -2,8 +2,6 @@
 
 namespace App\Services\Parsers;
 
-use App\Models\Recipe;
-use App\Models\Source;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\Parsers\Formatters\CleanText;
 use DOMDocument;
