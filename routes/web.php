@@ -18,6 +18,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('users', UserController::class);
         Route::resource('sources', SourceController::class);
         Route::post('sources/{source}/collect-urls', [SourceController::class, 'collectUrls']);
+        Route::post('sources/{source}/sitemap', [SourceController::class, 'createSitemapUrl']);
+        Route::delete('sources/{source}/sitemap/{sourceSitemap}', [SourceController::class, 'deleteSitemapUrl']);
         Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
     });
 

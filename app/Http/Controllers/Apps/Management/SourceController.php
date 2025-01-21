@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Apps\Management;
 
 use App\DataTables\Management\SourcesDataTable;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Source\CreateSitemapUrlRequest;
 use App\Models\Source;
+use App\Models\SourceSitemap;
 use App\Services\Parsers\RecipeParserFactory;
 use App\Services\SitemapUrlCollectorService;
 use Exception;
@@ -34,5 +36,29 @@ class SourceController extends Controller
                 'message' => $exception->getMessage(),
             ], 500);
         }
+    }
+
+    public function createSitemapUrl(Source $source, CreateSitemapUrlRequest $request)
+    {
+        $source->sitemaps()->create($request->validated());
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
+
+    public function deleteSitemapUrl(Source $source, SourceSitemap $sourceSitemap)
+    {
+        if ($source->sitemaps()->where('id', $sourceSitemap->id)->exists()) {
+            $sourceSitemap->delete();
+
+            return response()->json([
+                'success' => true,
+            ]);
+        }
+
+        return response()->json([
+            'error' => 'This source sitemap does not belong to this source.',
+        ]);
     }
 }
