@@ -15,14 +15,14 @@ class UaReceptParser extends BaseRecipeParser
     {
         $class = 'recipe-card-title';
 
-        return $this->extractCleanSingleValue($xpath, ".//h2[@class='$class']") ?? '';
+        return $this->extractCleanSingleValue($xpath, "//h2[@class='$class']");
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
         $class = 'yoast-breadcrumbs';
 
-        return $this->extractCleanSingleValue($xpath, "//div[@class='$class']//span[2]/a/text()") ?? '';
+        return $this->extractCleanSingleValue($xpath, "//div[@class='$class']//span[2]/a/text()");
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -48,7 +48,7 @@ class UaReceptParser extends BaseRecipeParser
 
     public function parsePortions(DOMXPath $xpath): int
     {
-        return (int) $this->extractCleanSingleValue($xpath, '//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p') ?? '';
+        return (int) $this->extractCleanSingleValue($xpath, '//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p');
     }
 
     public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
@@ -85,8 +85,8 @@ class UaReceptParser extends BaseRecipeParser
 
             $steps = [];
             foreach ($stepNodes as $stepNode) {
-                $description = $xpath->query(".//strong", $stepNode)->item(0)->textContent ?? '';
-                $imageUrl = $xpath->query(".//img/@src", $stepNode)->item(0)->textContent ?? '';
+                $description = $xpath->query("//strong", $stepNode)->item(0)->textContent ?? '';
+                $imageUrl = $xpath->query("//img/@src", $stepNode)->item(0)->textContent ?? '';
 
                 if (mb_strlen($description)) {
                     $steps[] = [
@@ -104,7 +104,7 @@ class UaReceptParser extends BaseRecipeParser
     {
         $class = 'wpzoom-recipe-card-image';
 
-        $imageNode = $xpath->query(".//img[@class='$class']")->item(0);
+        $imageNode = $xpath->query("//img[@class='$class']")->item(0);
         return $imageNode?->getAttribute('src') ?? '';
     }
 

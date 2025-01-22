@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
  * @property int $id
  * @property string $url
  * @property string $title
+ * @property bool $is_manual
  *
  * @property Collection<Recipe> $recipes
  * @property Collection<SourceSitemap> $sitemaps
@@ -21,9 +22,14 @@ class Source extends Model
     protected $fillable = [
         'url',
         'title',
+        'is_manual',
     ];
 
     public $timestamps = false;
+
+    protected $casts = [
+        'is_manual' => 'boolean',
+    ];
 
     public function recipes(): HasManyThrough
     {

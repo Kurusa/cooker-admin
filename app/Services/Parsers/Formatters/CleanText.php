@@ -13,6 +13,7 @@ class CleanText
 
         $text = rtrim($text, ',');
         $text = rtrim($text, '.');
+        $text = rtrim($text, '-');
 
         $text = preg_replace('/\x{00A0}/u', '', $text);
 

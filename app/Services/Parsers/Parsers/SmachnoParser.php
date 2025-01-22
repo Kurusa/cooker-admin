@@ -12,7 +12,7 @@ class SmachnoParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, ".//h1[@itemprop='name']") ?? '';
+        return $this->extractCleanSingleValue($xpath, "//h1[@itemprop='name']");
     }
 
     public function parseCategory(DOMXPath $xpath): string
@@ -41,8 +41,8 @@ class SmachnoParser extends BaseRecipeParser
         $ingredientNodes = $xpath->query("//span[@itemprop='ingredient']/ul/li");
 
         foreach ($ingredientNodes as $node) {
-            $nameNode = $xpath->query(".//span[@itemprop='name']", $node);
-            $amountNode = $xpath->query(".//span[@itemprop='amount']", $node);
+            $nameNode = $xpath->query("//span[@itemprop='name']", $node);
+            $amountNode = $xpath->query("//span[@itemprop='amount']", $node);
 
             $name = trim($nameNode->item(0)?->textContent ?? '');
             $amount = trim($amountNode->item(0)?->textContent ?? '');
@@ -60,8 +60,8 @@ class SmachnoParser extends BaseRecipeParser
         $stepNodes = $xpath->query("//div[@itemprop='instructions']/div[@class='step']");
 
         foreach ($stepNodes as $node) {
-            $descriptionNode = $xpath->query(".//div[@class='step_text']", $node);
-            $imageNode = $xpath->query(".//img/@src", $node);
+            $descriptionNode = $xpath->query("//div[@class='step_text']", $node);
+            $imageNode = $xpath->query("//img/@src", $node);
 
             $description = trim($descriptionNode->item(0)?->textContent ?? '');
             $image = trim($imageNode->item(0)?->nodeValue ?? '');
@@ -77,7 +77,7 @@ class SmachnoParser extends BaseRecipeParser
 
     public function parseImage(DOMXPath $xpath): string
     {
-        $imageNode = $xpath->query(".//img[@itemprop='photo']")->item(0);
+        $imageNode = $xpath->query("//img[@itemprop='photo']")->item(0);
 
         if ($src = $imageNode?->getAttribute('src')) {
             return 'https://www.smachno.in.ua/' . $src;

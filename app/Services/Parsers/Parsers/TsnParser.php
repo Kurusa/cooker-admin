@@ -13,12 +13,12 @@ class TsnParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='c-card__title']//span") ?? '';
+        return $this->extractCleanSingleValue($xpath, "//h1[@class='c-card__title']//span");
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, ".//span[@class='post-cat bg-warning']") ?? '';
+        return $this->extractCleanSingleValue($xpath, "//span[@class='post-cat bg-warning']");
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity

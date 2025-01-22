@@ -14,14 +14,14 @@ class TandiParser extends BaseRecipeParser
     {
         $class = 'entry-title';
 
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='$class']") ?? '';
+        return $this->extractCleanSingleValue($xpath, "//h1[@class='$class']");
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
         $class = 'entry-category';
 
-        return $this->extractCleanSingleValue($xpath, ".//li[@class='$class']/a/text()");
+        return $this->extractCleanSingleValue($xpath, "//li[@class='$class']/a/text()");
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -75,7 +75,7 @@ class TandiParser extends BaseRecipeParser
     {
         $class = 'entry-thumb td-animation-stack-type0-2';
 
-        return $xpath->query(".//img[@class='$class']")->item(0)?->getAttribute('src') ?? '';
+        return $xpath->query("//img[@class='$class']")->item(0)?->getAttribute('src') ?? '';
     }
 
     public function urlRule(string $url): bool

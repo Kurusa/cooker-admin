@@ -62,7 +62,7 @@ class RecipeController extends Controller
     public function reparseByIds(ReparseRecipeByIdsRequest $request)
     {
         foreach ($request->get('recipe_ids') as $id) {
-            Artisan::call('parse:recipe', [
+            Artisan::call('parse:recipe:id', [
                 'recipeId' => $id,
             ]);
         }

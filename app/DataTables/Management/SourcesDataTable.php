@@ -23,6 +23,11 @@ class SourcesDataTable extends DataTable
                 if ($source->recipeUrls()->notParsed()->where('is_excluded', 0)->count() === 0 && $source->recipeUrls()->count() > 0) {
                     $html .= '<span class="badge py-3 px-4 fs-7 badge-light-success">Completed</span>';
                 }
+
+                if ($source->is_manual) {
+                    $html .= '<span class="bullet bullet-dot bg-danger me-2 h-10px w-10px"></span>';
+                }
+
                 return $html . sprintf(
                     ' <a href="%s" target="_blank">%s</a>',
                     $source->url,

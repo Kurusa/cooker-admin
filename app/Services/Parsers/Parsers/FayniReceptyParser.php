@@ -12,12 +12,12 @@ class FayniReceptyParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return CleanText::cleanText($xpath->query(".//h2[@class='wprm-recipe-name wprm-block-text-bold']")?->item(0)?->nodeValue ?? '');
+        return CleanText::cleanText($xpath->query("//h2[@class='wprm-recipe-name wprm-block-text-bold']")?->item(0)?->nodeValue ?? '');
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return CleanText::cleanText($xpath->query(".//ul[@class='trail-items']/li[2]/a/span/text()")?->item(0)?->nodeValue ?? '');
+        return CleanText::cleanText($xpath->query("//ul[@class='trail-items']/li[2]/a/span/text()")?->item(0)?->nodeValue ?? '');
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -27,7 +27,7 @@ class FayniReceptyParser extends BaseRecipeParser
 
     public function parseCookingTime(DOMXPath $xpath): ?int
     {
-        $rawHours = (int) $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()");
+        $rawHours = (int) $this->extractCleanSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()");
         $rawMinutes = (int) $this->extractCleanSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()");
 
         return ($rawHours * 60) + $rawMinutes;
@@ -45,9 +45,9 @@ class FayniReceptyParser extends BaseRecipeParser
 
         foreach ($nodes as $node) {
             $ingredient = implode(' ', [
-                $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-name')]", $node),
-                $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $node),
-                $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $node),
+                $this->extractCleanSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-ingredient-name')]", $node),
+                $this->extractCleanSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $node),
+                $this->extractCleanSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $node),
             ]);
 
             $ingredients[] = CleanText::cleanText($ingredient);
@@ -63,7 +63,7 @@ class FayniReceptyParser extends BaseRecipeParser
 
     public function parseImage(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, ".//img[@class='attachment-full size-full wp-post-image']/@data-wpfc-original-src");
+        return $this->extractCleanSingleValue($xpath, "//img[@class='attachment-full size-full wp-post-image']/@data-wpfc-original-src");
     }
 
     public function urlRule(string $url): bool

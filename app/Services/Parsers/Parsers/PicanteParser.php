@@ -13,12 +13,12 @@ class PicanteParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, ".//h1[@class='fn']") ?? '';
+        return $this->extractCleanSingleValue($xpath, "//h1[@class='fn']");
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, ".//ol[@id='wo-breadcrumbs']/li[3]/a/span/text()") ?? '';
+        return $this->extractCleanSingleValue($xpath, "//ol[@id='wo-breadcrumbs']/li[3]/a/span/text()");
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -42,8 +42,8 @@ class PicanteParser extends BaseRecipeParser
         $ingredientNodes = $xpath->query("//ul[@class='ingredients']/li");
 
         foreach ($ingredientNodes as $node) {
-            $name = CleanText::cleanText($xpath->query(".//span[@class='name']", $node)->item(0)->textContent);
-            $amount = CleanText::cleanText($xpath->query(".//span[@class='amount']", $node)->item(0)->textContent);
+            $name = CleanText::cleanText($xpath->query("//span[@class='name']", $node)->item(0)->textContent);
+            $amount = CleanText::cleanText($xpath->query("//span[@class='amount']", $node)->item(0)->textContent);
 
             $ingredients[] = $amount ? "{$name}: {$amount}" : $name;
         }
@@ -68,7 +68,7 @@ class PicanteParser extends BaseRecipeParser
                 $nextSibling = $xpath->query("following-sibling::p[1]/figure", $paragraphNode);
                 $imageUrl = '';
                 if ($nextSibling->length > 0) {
-                    $imgNode = $xpath->query(".//img/@src", $nextSibling->item(0));
+                    $imgNode = $xpath->query("//img/@src", $nextSibling->item(0));
                     $imageUrl = $imgNode->item(0)->nodeValue;
                 }
 
@@ -84,7 +84,7 @@ class PicanteParser extends BaseRecipeParser
 
     public function parseImage(DOMXPath $xpath): string
     {
-        $imageNode = $xpath->query(".//img[@class='img-fluid photo result-photo']")->item(0);
+        $imageNode = $xpath->query("//img[@class='img-fluid photo result-photo']")->item(0);
         return $imageNode?->getAttribute('src') ?? '';
     }
 

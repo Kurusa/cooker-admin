@@ -20,6 +20,8 @@ class CookingTimeFormatterTest extends TestCase
         $this->assertEquals(60, CookingTimeFormatter::formatCookingTime('1 год'));
         $this->assertEquals(120, CookingTimeFormatter::formatCookingTime('2 години'));
         $this->assertEquals(180, CookingTimeFormatter::formatCookingTime('3 години'));
+        $this->assertEquals(180, CookingTimeFormatter::formatCookingTime('~3 години'));
+        $this->assertEquals(60, CookingTimeFormatter::formatCookingTime('~ 1 год.'));
     }
 
     public function testFormatHoursAndMinutes()

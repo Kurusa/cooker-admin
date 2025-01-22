@@ -3,6 +3,7 @@
 namespace App\Services\Parsers;
 
 use App\Exceptions\RecipeAttributeCantBeEmptyException;
+use App\Exceptions\UnsupportedCategoryException;
 use App\Models\SourceRecipeUrl;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\RecipeAttributes\IngredientService;
@@ -33,6 +34,8 @@ class ProcessRecipeUrlService
             DB::transaction(function () use ($sourceRecipeUrl, $parser, $xpath) {
                 DB::statement('SELECT GET_LOCK(?, -1)', ['parse_recipe_lock']);
 
+                $category = $parser->parseCategory($xpath);
+
                 $title = $parser->parseTitle($xpath);
                 if (!mb_strlen($title)) {
                     throw new RecipeAttributeCantBeEmptyException("Title can't be empty");
@@ -50,7 +53,7 @@ class ProcessRecipeUrlService
 
                 $recipe = $this->recipeService->createOrUpdateRecipe([
                     'source_recipe_url_id' => $sourceRecipeUrl->id,
-                    'category' => $parser->parseCategory($xpath),
+                    'category' => $category,
                     'title' => $title,
                     'complexity' => $parser->parseComplexity($xpath),
                     'time' => $parser->parseCookingTime($xpath),
@@ -61,6 +64,10 @@ class ProcessRecipeUrlService
                 $this->stepService->attachSteps($steps, $recipe);
                 $this->ingredientService->attachIngredients($ingredients, $recipe);
             });
+        } catch (UnsupportedCategoryException $exception) {
+            $sourceRecipeUrl->update([
+                'is_excluded' => true,
+            ]);
         } catch (Exception $exception) {
             Log::error($exception->getMessage());
         } finally {

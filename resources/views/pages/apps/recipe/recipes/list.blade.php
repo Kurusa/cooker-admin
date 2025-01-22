@@ -87,7 +87,7 @@
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            reparseSelectedRecipes(recipeId)
+                            reparseSelectedRecipes({recipeId})
                         }
                     });
                 });

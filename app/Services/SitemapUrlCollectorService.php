@@ -35,34 +35,37 @@ class SitemapUrlCollectorService
 
         foreach ($sitemapElements as $sitemapElement) {
             $url = (string) $sitemapElement->loc;
-            /** @var SourceRecipeUrl $sourceRecipeUrl */
-            $sourceRecipeUrl = SourceRecipeUrl::updateOrCreate([
-                'url' => $url,
-                'source_id' => $this->source->id,
-            ], [
-                'url' => $url,
-                'source_id' => $this->source->id,
-            ]);
 
             $passRuleValidation = $this->parser->urlRule($url);
 
             if ($this->isSitemap($url)) {
                 echo "Processing xml url: $url" . PHP_EOL;
                 $this->parseSitemapUrls($url, $urls);
-            } elseif ($passRuleValidation) {
-                if (!$sourceRecipeUrl->recipe()->exists()) {
-                    $urls[] = $sourceRecipeUrl;
-                }
+            } else {
+                /** @var SourceRecipeUrl $sourceRecipeUrl */
+                $sourceRecipeUrl = SourceRecipeUrl::updateOrCreate([
+                    'url' => $url,
+                    'source_id' => $this->source->id,
+                ], [
+                    'url' => $url,
+                    'source_id' => $this->source->id,
+                ]);
 
-                if ($sourceRecipeUrl->is_excluded && $sourceRecipeUrl->recipe()->exists()) {
+                if ($passRuleValidation) {
+                    if (!$sourceRecipeUrl->recipe()->exists()) {
+                        $urls[] = $sourceRecipeUrl;
+                    }
+
+                    if ($sourceRecipeUrl->is_excluded && $sourceRecipeUrl->recipe()->exists()) {
+                        $sourceRecipeUrl->update([
+                            'is_excluded' => false,
+                        ]);
+                    }
+                } else {
                     $sourceRecipeUrl->update([
-                        'is_excluded' => false,
+                        'is_excluded' => true,
                     ]);
                 }
-            } else {
-                $sourceRecipeUrl->update([
-                    'is_excluded' => true,
-                ]);
             }
         }
     }

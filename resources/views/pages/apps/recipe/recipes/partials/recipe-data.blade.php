@@ -38,6 +38,7 @@
             <td>
                 @foreach($recipe['steps'] as $step)
                     - {!! is_array($step) ? $step['description'] : $step !!} <br>
+                    - Image: {!! is_array($step) ? $step['image'] : '' !!} <br>
                 @endforeach
             </td>
         </tr>

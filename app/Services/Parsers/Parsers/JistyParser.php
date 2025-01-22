@@ -15,14 +15,14 @@ class JistyParser extends BaseRecipeParser
     {
         $class = 'post-title mb-30';
 
-        return $this->extractCleanSingleValue($xpath, ".//h1[@class='$class']");
+        return $this->extractCleanSingleValue($xpath, "//h1[@class='$class']");
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
         $class = 'post-cat bg-warning';
 
-        return $this->extractCleanSingleValue($xpath, ".//span[@class='$class']");
+        return $this->extractCleanSingleValue($xpath, "//span[@class='$class']");
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -58,13 +58,13 @@ class JistyParser extends BaseRecipeParser
 
     public function parseSteps(DOMXPath $xpath): array
     {
-        $stepNodes = $xpath->query(".//div[@class='wp-block-wpzoom-recipe-card-block-directions'][1]/ul[@class='directions-list']/li[@class='direction-step']");
+        $stepNodes = $xpath->query("//div[@class='wp-block-wpzoom-recipe-card-block-directions'][1]/ul[@class='directions-list']/li[@class='direction-step']");
 
         $steps = [];
 
         /** @var DOMNode $stepNode */
         foreach ($stepNodes as $stepNode) {
-            $imageNode = $xpath->query(".//img", $stepNode);
+            $imageNode = $xpath->query("//img", $stepNode);
             $imageUrl = $imageNode->item(0)?->getAttribute('data-src') ? 'https://jisty.com.ua' . $imageNode->item(0)->getAttribute('data-src') : '';
 
             $description = CleanText::cleanText($stepNode->textContent);
