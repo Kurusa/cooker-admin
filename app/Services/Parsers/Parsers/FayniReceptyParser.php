@@ -6,23 +6,18 @@ use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
-use DOMNode;
 use DOMXPath;
 
 class FayniReceptyParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        $class = 'wprm-recipe-name wprm-block-text-bold';
-
-        return $this->extractCleanSingleValue($xpath, ".//h2[@class='$class']");
+        return CleanText::cleanText($xpath->query(".//h2[@class='wprm-recipe-name wprm-block-text-bold']")?->item(0)?->nodeValue ?? '');
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        $class = 'trail-items';
-
-        return $this->extractCleanSingleValue($xpath, ".//ul[@class='$class']/li[2]/a/span/text()");
+        return CleanText::cleanText($xpath->query(".//ul[@class='trail-items']/li[2]/a/span/text()")?->item(0)?->nodeValue ?? '');
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
@@ -45,28 +40,20 @@ class FayniReceptyParser extends BaseRecipeParser
 
     public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
     {
-        $class = 'wprm-recipe-ingredients';
-        $ingredientNodes = $xpath->query("//ul[@class='$class']/li");
+        $ingredients = [];
+        $nodes = $xpath->query("//ul[@class='wprm-recipe-ingredients']/li");
 
-        $parsedIngredients = [];
+        foreach ($nodes as $node) {
+            $ingredient = implode(' ', [
+                $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-name')]", $node),
+                $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $node),
+                $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $node),
+            ]);
 
-        /** @var DOMNode $node */
-        foreach ($ingredientNodes as $node) {
-            $amountNode = $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $node);
-
-            $unit = $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $node);
-
-            $name = $this->extractCleanSingleValue($xpath, ".//span[contains(@class, 'wprm-recipe-ingredient-name')]", $node);
-
-            $parsedIngredients[] = CleanText::cleanText($name . ': ' . $amountNode . ' ' . $unit);
+            $ingredients[] = CleanText::cleanText($ingredient);
         }
 
-        if ($debug) {
-            return $parsedIngredients;
-        }
-
-        $service = app(DeepseekService::class);
-        return $service->parseIngredients($parsedIngredients);
+        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array
@@ -76,8 +63,7 @@ class FayniReceptyParser extends BaseRecipeParser
 
     public function parseImage(DOMXPath $xpath): string
     {
-        $imageNode = $xpath->query(".//img[@class='attachment-full size-full wp-post-image']")->item(0);
-        return $imageNode?->getAttribute('data-wpfc-original-src') ?? '';
+        return $this->extractCleanSingleValue($xpath, ".//img[@class='attachment-full size-full wp-post-image']/@data-wpfc-original-src");
     }
 
     public function urlRule(string $url): bool

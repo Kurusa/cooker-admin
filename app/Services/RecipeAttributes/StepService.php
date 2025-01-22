@@ -9,11 +9,9 @@ class StepService
 {
     public function attachSteps(array $steps, Recipe $recipe): void
     {
-        foreach ($steps as $step) {
-            if (!$step || (isset($step['description']) && !mb_strlen($step['description']))) {
-                continue;
-            }
+        $steps = array_unique(array_filter($steps), SORT_REGULAR);
 
+        foreach ($steps as $step) {
             Step::create([
                 'recipe_id' => $recipe->id,
                 'description' => $step['description'] ?? $step,

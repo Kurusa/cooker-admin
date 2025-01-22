@@ -36,6 +36,11 @@
         </a>
         <div class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-800 menu-state-bg-light-primary fw-semibold py-4 w-250px fs-6" data-kt-menu="true" style="">
             <div class="menu-item px-3">
+                <a href="#" class="menu-link px-3" data-source-id="{{ $source->id }}" id="parseSource">
+                    Parse source
+                </a>
+            </div>
+            <div class="menu-item px-3">
                 <a href="#" class="menu-link px-3" data-source-id="{{ $source->id }}" id="collectUrlsButton">
                     Collect urls
                 </a>
@@ -78,6 +83,36 @@
                     } else {
                         Swal.fire({
                             text: data.message || 'Failed to collect URLs.',
+                            icon: 'error',
+                            confirmButtonText: 'OK',
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        text: 'An error occurred. Please try again.',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                    });
+                });
+        });
+
+        document.getElementById('parseSource').addEventListener('click', function () {
+            const sourceId = this.getAttribute('data-source-id');
+
+            fetch(`/management/sources/${sourceId}/parse`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload()
+                    } else {
+                        Swal.fire({
+                            text: data.message || 'Failed to parse source.',
                             icon: 'error',
                             confirmButtonText: 'OK',
                         });

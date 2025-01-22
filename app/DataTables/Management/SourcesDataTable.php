@@ -19,8 +19,12 @@ class SourcesDataTable extends DataTable
                 return view('pages/apps.management.sources.columns._source', compact('source'));
             })
             ->editColumn('url', function (Source $source) {
-                return sprintf(
-                    '<a href="%s" target="_blank">%s</a>',
+                $html = '';
+                if ($source->recipeUrls()->notParsed()->where('is_excluded', 0)->count() === 0 && $source->recipeUrls()->count() > 0) {
+                    $html .= '<span class="badge py-3 px-4 fs-7 badge-light-success">Completed</span>';
+                }
+                return $html . sprintf(
+                    ' <a href="%s" target="_blank">%s</a>',
                     $source->url,
                     $source->url
                 );

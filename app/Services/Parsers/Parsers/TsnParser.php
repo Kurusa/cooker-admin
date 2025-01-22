@@ -46,41 +46,26 @@ class TsnParser extends BaseRecipeParser
 
     public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
     {
+        $class = 'c-bar c-bar--normal c-bar--dense c-bar--log c-bar--y-divided c-bar--unordered c-bar--label-px0';
+        $ingredientNodes = $xpath->query("//div[@class='$class']/dl//dt | //h2[strong[text()='Інгредієнти:']]/following-sibling::ul//li");
+
         $ingredients = [];
-        $ingredientNodes = $xpath->query("//div[@class='c-bar c-bar--normal c-bar--dense c-bar--log c-bar--y-divided c-bar--unordered c-bar--label-px0']/dl");
 
         foreach ($ingredientNodes as $node) {
-            $nameNode = $xpath->query(".//dt", $node);
-            $quantityNode = $xpath->query(".//dd", $node);
-
-            $ingredients[] = implode(':', [
-                $nameNode->item(0)?->textContent ?? '',
-                $quantityNode->item(0)?->textContent ?? '',
-            ]);
-        }
-
-        if (empty($ingredients)) {
-            $ingredientHeading = $xpath->query("//h2[strong[text()='Інгредієнти:']]");
-
-            if ($ingredientHeading->length > 0) {
-                $nextElement = $ingredientHeading->item(0)->nextSibling;
-
-                while ($nextElement && $nextElement->nodeName !== 'ul') {
-                    $nextElement = $nextElement->nextSibling;
+            if ($node->nodeName === 'dt') {
+                $name = CleanText::cleanText($node->textContent);
+                $quantityNode = $node->nextSibling;
+                while ($quantityNode && $quantityNode->nodeName !== 'dd') {
+                    $quantityNode = $quantityNode->nextSibling;
                 }
-
-                if ($nextElement && $nextElement->nodeName === 'ul') {
-                    $listItems = $xpath->query(".//li", $nextElement);
-
-                    foreach ($listItems as $item) {
-                        $ingredients[] = CleanText::cleanText($item->textContent);
-                    }
-                }
+                $quantity = $quantityNode ? CleanText::cleanText($quantityNode->textContent) : '';
+                $ingredients[] = CleanText::cleanText($name . ':' . $quantity);
+            } elseif ($node->nodeName === 'li') {
+                $ingredients[] = CleanText::cleanText($node->textContent);
             }
         }
 
-        $service = app(DeepseekService::class);
-        return $service->parseIngredients($ingredients);
+        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array
@@ -89,6 +74,13 @@ class TsnParser extends BaseRecipeParser
         $stepNodes = $xpath->query("//div[@data-content='']/ol/li");
         foreach ($stepNodes as $node) {
             $steps[] = CleanText::cleanText($node->textContent);
+        }
+
+        if (empty($steps)) {
+            $paragraphNodes = $xpath->query("//h2[contains(text(), 'Інгредієнти')]/following::ul[1]/li");
+            foreach ($paragraphNodes as $node) {
+                $steps[] = CleanText::cleanText($node->textContent);
+            }
         }
 
         if (empty($steps)) {

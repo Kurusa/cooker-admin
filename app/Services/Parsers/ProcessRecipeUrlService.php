@@ -8,7 +8,9 @@ use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\RecipeAttributes\IngredientService;
 use App\Services\RecipeAttributes\RecipeService;
 use App\Services\RecipeAttributes\StepService;
+use Exception;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProcessRecipeUrlService
 {
@@ -59,6 +61,8 @@ class ProcessRecipeUrlService
                 $this->stepService->attachSteps($steps, $recipe);
                 $this->ingredientService->attachIngredients($ingredients, $recipe);
             });
+        } catch (Exception $exception) {
+            Log::error($exception->getMessage());
         } finally {
             DB::statement('SELECT RELEASE_LOCK(?)', ['parse_recipe_lock']);
         }

@@ -50,7 +50,10 @@ class SitemapUrlCollectorService
                 echo "Processing xml url: $url" . PHP_EOL;
                 $this->parseSitemapUrls($url, $urls);
             } elseif ($passRuleValidation) {
-                $urls[] = $sourceRecipeUrl;
+                if (!$sourceRecipeUrl->recipe()->exists()) {
+                    $urls[] = $sourceRecipeUrl;
+                }
+
                 if ($sourceRecipeUrl->is_excluded && $sourceRecipeUrl->recipe()->exists()) {
                     $sourceRecipeUrl->update([
                         'is_excluded' => false,

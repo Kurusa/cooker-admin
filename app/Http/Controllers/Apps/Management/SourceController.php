@@ -10,6 +10,7 @@ use App\Models\SourceSitemap;
 use App\Services\Parsers\RecipeParserFactory;
 use App\Services\SitemapUrlCollectorService;
 use Exception;
+use Illuminate\Support\Facades\Artisan;
 
 class SourceController extends Controller
 {
@@ -26,7 +27,9 @@ class SourceController extends Controller
 
     public function show(Source $source)
     {
-        return view('pages/apps.management.sources.show', compact('source'));
+        $unparsedUrls = $source->recipeUrls()->notParsed()->orderBy('is_excluded')->paginate();
+
+        return view('pages/apps.management.sources.show', compact('source', 'unparsedUrls'));
     }
 
     public function collectUrls(Source $source)
@@ -72,7 +75,17 @@ class SourceController extends Controller
 
     public function getUnparsedUrlsView(Source $source)
     {
-        $unparsedUrls = $source->recipeUrls()->notParsed()->orderBy('is_excluded')->get();
+        $unparsedUrls = $source->recipeUrls()->notParsed()->orderBy('is_excluded')->paginate(100);
+
         return view('pages.apps.management.sources.show-partials.cards.unparsed_urls_list', compact('unparsedUrls', 'source'));
+    }
+
+    public function parse(Source $source)
+    {
+        Artisan::call('parse:recipe:source', [
+            'source' => $source->title,
+        ]);
+
+        return response()->json(['success' => true]);
     }
 }

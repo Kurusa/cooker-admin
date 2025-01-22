@@ -55,6 +55,10 @@ class PatelnyaParser extends BaseRecipeParser
             $rawIngredients = $this->extractMultipleValues($xpath, ".//div[@class='list-ingredient old-list']//ul/li");
         }
 
+        if ($debug) {
+            return $rawIngredients;
+        }
+
         $service = app(DeepseekService::class);
         return $service->parseIngredients($rawIngredients);
     }
@@ -79,13 +83,7 @@ class PatelnyaParser extends BaseRecipeParser
                 continue;
             }
 
-            $text = substr(str_replace('<br>', "\n", $text), 3);
-            $exploded = explode("\n", $text);
-            if (!count($exploded)) {
-                $exploded = explode("<br>", $text);
-            }
-
-            $steps = array_merge($steps, array_filter($exploded));
+            $steps[] = CleanText::cleanText($text);
         }
 
         return array_filter(array_map(function ($step) {

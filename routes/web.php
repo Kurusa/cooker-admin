@@ -20,6 +20,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('sources', SourceController::class);
         Route::post('sources/{source}/collect-urls', [SourceController::class, 'collectUrls']);
         Route::post('sources/{source}/sitemap', [SourceController::class, 'createSitemapUrl']);
+        Route::post('sources/{source}/parse', [SourceController::class, 'parse']);
         Route::delete('sources/{source}/sitemap/{sourceSitemap}', [SourceController::class, 'deleteSitemapUrl']);
         Route::get('sources/{source}/unparsed-urls', [SourceController::class, 'getUnparsedUrlsView']);
 

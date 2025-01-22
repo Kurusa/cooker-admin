@@ -32,9 +32,9 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         return $node ? CleanText::cleanText($node->nodeValue) : '';
     }
 
-    protected function extractMultipleValues(DOMXPath $xpath, string $query): array
+    protected function extractMultipleValues(DOMXPath $xpath, string $query, ?DOMNode $contextNode = null): array
     {
-        $nodes = $xpath->query($query);
+        $nodes = $xpath->query($query, $contextNode);
         $values = [];
 
         foreach ($nodes as $node) {

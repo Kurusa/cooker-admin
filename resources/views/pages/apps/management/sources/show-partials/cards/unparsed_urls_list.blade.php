@@ -1,6 +1,6 @@
 <div class="card card-flush mb-6 mb-xl-9">
     <div class="card-body d-flex flex-column">
-        @foreach($source->recipeUrls()->notParsed()->orderBy('is_excluded')->get() as $recipeUrl)
+        @foreach($unparsedUrls as $recipeUrl)
             <div class="d-flex flex-stack position-relative mb-6">
                 <div class="position-absolute top-0 start-0 rounded h-100 bg-secondary w-4px"></div>
                 <div class="fw-semibold ms-5">
@@ -21,6 +21,14 @@
                 @endif
             </div>
         @endforeach
+
+        <div class="d-flex justify-content-center mt-4 mb-4">
+            {{ $unparsedUrls->appends([
+                'search' => request('search'),
+                'source' => request('source'),
+                'filter' => request('filter'),
+            ])->links('pagination::bootstrap-4') }}
+        </div>
     </div>
 </div>
 

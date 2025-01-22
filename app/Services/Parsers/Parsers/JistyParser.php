@@ -8,16 +8,11 @@ use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
 use DOMNode;
 use DOMXPath;
-use Exception;
 
 class JistyParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        if ($this->hasMoreThanOneRecipe($xpath)) {
-            throw new Exception('There is more than one recipe on page');
-        }
-
         $class = 'post-title mb-30';
 
         return $this->extractCleanSingleValue($xpath, ".//h1[@class='$class']");
@@ -47,46 +42,37 @@ class JistyParser extends BaseRecipeParser
 
     public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
     {
-        $rawIngredients = $this->extractMultipleValues($xpath, "//ul[@class='ingredients-list']/li");
+        $rawIngredients = $this->extractMultipleValues(
+            $xpath,
+            ".//div[@class='wp-block-wpzoom-recipe-card-block-ingredients'][1]/ul[@class='ingredients-list']/li"
+        );
 
-        $parsedIngredients = [];
+        $ingredients = [];
         foreach ($rawIngredients as $ingredient) {
-            $ingredient = str_replace('(adsbygoogle=window.adsbygoogle||[]).push({})', '', $ingredient);
-            $ingredient = str_replace('спеції: ', '', $ingredient);
-
-            $parsedIngredients[] = CleanText::cleanText($ingredient);
+            $ingredient = str_replace(['(adsbygoogle=window.adsbygoogle||[]).push({})', 'спеції:'], '', $ingredient);
+            $ingredients[] = CleanText::cleanText($ingredient);
         }
 
-        if ($debug) {
-            return $parsedIngredients;
-        }
-
-        $service = app(DeepseekService::class);
-        return $service->parseIngredients($parsedIngredients);
+        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array
     {
-        $stepNodes = $xpath->query("//ul[@class='directions-list']/li[@class='direction-step']");
+        $stepNodes = $xpath->query(".//div[@class='wp-block-wpzoom-recipe-card-block-directions'][1]/ul[@class='directions-list']/li[@class='direction-step']");
 
         $steps = [];
-        $descriptions = [];
 
         /** @var DOMNode $stepNode */
         foreach ($stepNodes as $stepNode) {
             $imageNode = $xpath->query(".//img", $stepNode);
-            $imageUrl = '';
-            if ($imageSrc = $imageNode->item(0)?->getAttribute('data-src')) {
-                $imageUrl = 'https://jisty.com.ua' . $imageSrc;
-            }
+            $imageUrl = $imageNode->item(0)?->getAttribute('data-src') ? 'https://jisty.com.ua' . $imageNode->item(0)->getAttribute('data-src') : '';
 
             $description = CleanText::cleanText($stepNode->textContent);
-            if (!isset($descriptions[$description])) {
+            if (!in_array($description, array_column($steps, 'description'))) {
                 $steps[] = [
                     'description' => $description,
                     'image_url' => $imageUrl,
                 ];
-                $descriptions[$description] = true;
             }
         }
 
@@ -95,16 +81,12 @@ class JistyParser extends BaseRecipeParser
 
     public function parseImage(DOMXPath $xpath): string
     {
-        $imageNode = $xpath->query(".//figure[@class='aligncenter size-large']/img")->item(0);
-        if (!$imageNode) {
-            $imageNode = $xpath->query(".//div[@class='thumbnail text-center mb-20']/img")->item(0);
-        }
+        $imageNode = $xpath->query(
+            ".//figure[@class='aligncenter size-large']/img | .//div[@class='thumbnail text-center mb-20']/img"
+        )->item(0);
 
-        if ($imageSrc = $imageNode?->getAttribute('data-src')) {
-            return 'https://jisty.com.ua' . $imageSrc;
-        }
-
-        return '';
+        $imageSrc = $imageNode?->getAttribute('data-src');
+        return $imageSrc ? 'https://jisty.com.ua' . $imageSrc : '';
     }
 
     public function urlRule(string $url): bool
@@ -118,6 +100,8 @@ class JistyParser extends BaseRecipeParser
             'restoran-',
             'kuhar',
             'najsmachnishih-retseptiv-mlintsiv',
+            'yak-pr',
+            'najkrash'
         ];
 
         foreach ($disallowedPatterns as $pattern) {
@@ -128,13 +112,4 @@ class JistyParser extends BaseRecipeParser
 
         return true;
     }
-
-    public function hasMoreThanOneRecipe(DOMXPath $xpath): bool
-    {
-        $class = 'post-title mb-30';
-
-        return $xpath->query(".//h1[@class='{$class}']")->length > 1 ||
-            $xpath->query(".//h2[@class='has-text-align-center wp-block-heading']")->length > 1;
-    }
-
 }

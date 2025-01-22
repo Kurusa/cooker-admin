@@ -9,7 +9,7 @@
         <div class="card-header" style="padding-left: 40px;">
             <div class="card-title">
                 @include('pages.apps.recipe.recipes.partials.title')
-                <a href="{{ $recipe->source_url }}" target="_blank" class="d-flex align-items-center text-primary opacity-75-hover fs-6 fw-semibold">
+                <a href="{{ $recipe->sourceRecipeUrl->url }}" target="_blank" class="d-flex align-items-center text-primary opacity-75-hover fs-6 fw-semibold">
                     <span class="ki-duotone ki-exit-right-corner fs-4 ms-1">
                         <span class="path1"></span>
                         <span class="path2"></span>

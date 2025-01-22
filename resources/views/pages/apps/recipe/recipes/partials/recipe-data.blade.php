@@ -27,11 +27,19 @@
         </tr>
         <tr>
             <td>Ingredients</td>
-            <td>{{ json_encode($recipe['ingredients']) }}</td>
+            <td>
+                @foreach($recipe['ingredients'] as $ingredient)
+                    - {!! is_array($ingredient) ? $ingredient['title'] : $ingredient !!} <br>
+                @endforeach
+            </td>
         </tr>
         <tr>
             <td>Steps</td>
-            <td>{{ json_encode($recipe['steps']) }}</td>
+            <td>
+                @foreach($recipe['steps'] as $step)
+                    - {!! is_array($step) ? $step['description'] : $step !!} <br>
+                @endforeach
+            </td>
         </tr>
         </tbody>
     </table>

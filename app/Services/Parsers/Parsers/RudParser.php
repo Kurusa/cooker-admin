@@ -13,29 +13,24 @@ class RudParser extends BaseRecipeParser
 {
     public function parseTitle(DOMXPath $xpath): string
     {
-        return $this->extractCleanSingleValue($xpath, "//h2[@itemprop='name']") ?? '';
+        return CleanText::cleanText($xpath->query("//h2[@itemprop='name']")?->item(0)?->nodeValue ?? '');
     }
 
     public function parseCategory(DOMXPath $xpath): string
     {
-        $categories = $this->extractMultipleValues($xpath, "//div[@class='wrapper']//span[@itemprop='itemListElement']//span[@itemprop='name']");
-
-        return $categories[count($categories) - 2] ?? '';
+        return CleanText::cleanText($xpath->evaluate("string((//div[@class='wrapper']//span[@itemprop='itemListElement']//span[@itemprop='name'])[last()-1])"));
     }
 
     public function parseComplexity(DOMXPath $xpath): Complexity
     {
-        $nodes = $xpath->query("(//div[@class='top'])[4]/span");
-        $complexity = mb_strtolower(trim($nodes->item(1)->textContent));
+        $complexity = mb_strtolower(trim($xpath->evaluate("string((//div[@class='top'])[4]/span[2])")));
 
         return Complexity::mapParsedValue($complexity);
     }
 
     public function parseCookingTime(DOMXPath $xpath): int
     {
-        $timeNode = $xpath->query("//div[@class='top']/span[1]/time[@itemprop='cookTime prepTime']");
-
-        $timeText = $timeNode->item(0)->textContent;
+        $timeText = $xpath->evaluate("string(//div[@class='top']/span[1]/time[@itemprop='cookTime prepTime'])");
 
         return CookingTimeFormatter::formatCookingTime($timeText);
     }
@@ -47,21 +42,12 @@ class RudParser extends BaseRecipeParser
 
     public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
     {
-        $ingredients = [];
+        $ingredients = array_map(
+            fn($row) => CleanText::cleanText($xpath->evaluate("string(.//td[1])", $row) . ':' . $xpath->evaluate("string(.//td[2])", $row)),
+            iterator_to_array($xpath->query("//tr[@itemprop='recipeIngredient']"))
+        );
 
-        $rows = $xpath->query("//tr[@itemprop='recipeIngredient']");
-        foreach ($rows as $row) {
-            $ingredientNameNode = $xpath->query(".//td[1]", $row);
-            $ingredientQuantityNode = $xpath->query(".//td[2]", $row);
-
-            $ingredients[] = implode(':', [
-                $ingredientNameNode->item(0)?->textContent ?? '',
-                $ingredientQuantityNode->item(0)?->textContent ?? ''
-            ]);
-        }
-
-        $service = app(DeepseekService::class);
-        return $service->parseIngredients($ingredients);
+        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
     public function parseSteps(DOMXPath $xpath): array
@@ -109,14 +95,8 @@ class RudParser extends BaseRecipeParser
 
     public function parseImage(DOMXPath $xpath): string
     {
-        $imageNode = $xpath->query("//p[@itemprop='recipeInstructions']/preceding-sibling::img[1]");
-
-        if ($imageNode->length > 0) {
-            $src = $imageNode->item(0)->getAttribute('src');
-            return 'https://rud.ua' . trim($src);
-        }
-
-        return '';
+        $src = $xpath->evaluate("string(//p[@itemprop='recipeInstructions']/preceding-sibling::img[1]/@src)");
+        return $src ? 'https://rud.ua' . trim($src) : '';
     }
 
     public function urlRule(string $url): bool
