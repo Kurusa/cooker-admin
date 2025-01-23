@@ -55,6 +55,6 @@ class SourceRecipeUrl extends Model
 
     public function scopeNotExcluded(Builder $query): void
     {
-        $query->whereNot('is_excluded');
+        $query->where('is_excluded', 0);
     }
 }

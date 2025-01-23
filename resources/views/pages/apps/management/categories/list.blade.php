@@ -1,5 +1,4 @@
 <x-default-layout>
-
     @section('title')
         Categories
     @endsection
@@ -24,8 +23,6 @@
                         Add category
                     </button>
                 </div>
-
-                <livewire:management.add-category-modal></livewire:management.add-category-modal>
             </div>
         </div>
 
@@ -34,6 +31,8 @@
                 {{ $dataTable->table() }}
             </div>
         </div>
+
+        @livewire('management.edit-category-modal')
     </div>
 
     @push('scripts')

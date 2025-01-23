@@ -29,13 +29,6 @@ class IngredientController extends Controller
         return response()->json(['success' => true, 'message' => 'Ingredient updated successfully']);
     }
 
-    public function delete(Recipe $recipe)
-    {
-        $recipe->delete();
-
-        return response()->json();
-    }
-
     public function getDetails(int $ingredientId)
     {
         $ingredientUnits = DB::table('ingredient_units')

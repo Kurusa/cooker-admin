@@ -54,7 +54,7 @@
 
 <script>
     document.addEventListener('livewire:init', () => {
-        Livewire.on('success', (message) => {
+        Livewire.on('success', () => {
             toastr.success(message);
         });
         Livewire.on('error', (message) => {

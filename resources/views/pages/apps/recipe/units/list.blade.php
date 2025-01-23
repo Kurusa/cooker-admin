@@ -1,7 +1,7 @@
 <x-default-layout>
     <style>
         .hover-highlight {
-            background-color: #f5f5f5 !important;
+            background-color: var(--bs-gray-100) !important;
         }
     </style>
 

@@ -55,12 +55,50 @@ class Source extends Model
 
     public function isParsingCompleted(): bool
     {
-        return $this->recipeUrls()->notParsed()->notExcluded()->count() === 0
-            && $this->recipeUrls()->count() > 0;
+        return $this->pendingUrlsCount() === 0
+            && $this->totalUrls() > 0;
     }
 
     public function hasUnparsedRecipes(): bool
     {
-        return (bool) $this->recipeUrls()->notParsed()->notExcluded()->count();
+        return (bool) $this->recipeUrls()
+            ->notParsed()
+            ->notExcluded()
+            ->count();
+    }
+
+    public function totalUrls(): int
+    {
+        return $this->recipeUrls
+            ->count();
+    }
+
+    public function notExcludedUrlsCount():int
+    {
+        return $this->recipeUrls()
+            ->notExcluded()
+            ->count();
+    }
+
+    public function parsedUrlsCount(): int
+    {
+        return $this->recipes
+            ->count();
+    }
+
+    public function pendingUrlsCount(): int
+    {
+        return $this->recipeUrls()
+            ->notParsed()
+            ->notExcluded()
+            ->count();
+    }
+
+    public function percentageParsed(): int
+    {
+        $totalUrls = $this->notExcludedUrlsCount();
+        $parsedCount = $this->parsedUrlsCount();
+
+        return ($totalUrls > 0) ? round(($parsedCount / $totalUrls) * 100, 2) : 0;
     }
 }

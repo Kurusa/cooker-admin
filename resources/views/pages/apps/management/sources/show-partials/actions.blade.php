@@ -55,11 +55,7 @@
                     Add sitemap
                 </a>
             </div>
-            <div class="menu-item px-3">
-                <a href="#" class="menu-link text-danger px-3" data-kt-source-id="{{ $source->id }}" data-kt-action="delete_row">
-                    Delete
-                </a>
-            </div>
+            @include('partials.datatable-actions._delete-button', ['model' => 'source', 'id' => $source->id])
         </div>
     </li>
 </ul>

@@ -63,6 +63,6 @@ $('#ingredients-table tbody').off('click', 'tr').on('click', 'tr', function () {
     }
 });
 
-Livewire.on('success', (message) => {
+Livewire.on('success', () => {
     LaravelDataTables['ingredients-table'].ajax.reload();
 });

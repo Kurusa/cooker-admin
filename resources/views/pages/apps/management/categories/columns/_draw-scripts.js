@@ -21,6 +21,12 @@ document.querySelectorAll('[data-kt-action="delete_row"]').forEach(function (ele
     });
 });
 
-Livewire.on('success', (message) => {
+document.querySelectorAll('[data-kt-action="edit_row"]').forEach(function (element) {
+    element.addEventListener('click', function () {
+        Livewire.emit('editCategory', this.getAttribute('data-kt-category-id'));
+    })
+});
+
+Livewire.on('success', () => {
     LaravelDataTables['categories-table'].ajax.reload();
 });

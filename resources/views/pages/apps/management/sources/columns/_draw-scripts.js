@@ -21,6 +21,6 @@ document.querySelectorAll('[data-kt-action="delete_row"]').forEach(function (ele
     });
 });
 
-Livewire.on('success', (message) => {
+Livewire.on('success', () => {
     LaravelDataTables['sources-table'].ajax.reload();
 });

@@ -27,6 +27,6 @@ document.querySelectorAll('[data-kt-action="update_row"]').forEach(function (ele
     });
 });
 
-Livewire.on('success', (message) => {
+Livewire.on('success', () => {
     LaravelDataTables['steps-table'].ajax.reload();
 });

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Source;
@@ -48,9 +49,8 @@ Breadcrumbs::for('management.sources.show', function (BreadcrumbTrail $trail, So
 
 Breadcrumbs::for('management.categories.index', function (BreadcrumbTrail $trail) {
     $trail->parent('management.index');
-    $trail->push('Categories', route('management.categories.index'));
+    $trail->push('Categories (' . Category::count() . ')', route('management.categories.index'));
 });
-
 
 ## Recipe
 Breadcrumbs::for('recipe.index', function (BreadcrumbTrail $trail) {

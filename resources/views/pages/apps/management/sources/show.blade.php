@@ -9,16 +9,7 @@
 
     <div class="d-flex flex-column flex-lg-row">
         <div class="flex-column flex-lg-row-auto w-lg-250px w-xl-350px mb-10">
-            <div class="card mb-5 mb-xl-8">
-                <div class="card-body">
-                    <div class="d-flex flex-center flex-column py-5">
-                        <div class="fw-bold mb-3">
-                            @include('pages.apps.management.sources.columns._recipes')
-                        </div>
-                        @include('pages.apps.management.sources.show-partials.statistic')
-                    </div>
-                </div>
-            </div>
+            @include('pages.apps.management.sources.show-partials.statistic')
         </div>
 
         <div class="flex-lg-row-fluid ms-lg-15">
