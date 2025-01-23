@@ -52,4 +52,15 @@ class Source extends Model
     {
         return $this->hasMany(SourceRecipeUrl::class);
     }
+
+    public function isParsingCompleted(): bool
+    {
+        return $this->recipeUrls()->notParsed()->notExcluded()->count() === 0
+            && $this->recipeUrls()->count() > 0;
+    }
+
+    public function hasUnparsedRecipes(): bool
+    {
+        return (bool) $this->recipeUrls()->notParsed()->notExcluded()->count();
+    }
 }

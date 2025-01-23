@@ -6,6 +6,7 @@ use App\Http\Controllers\Apps\Management\UserController;
 use App\Http\Controllers\Apps\Recipe\IngredientController;
 use App\Http\Controllers\Apps\Recipe\RecipeController;
 use App\Http\Controllers\Apps\Recipe\StepController;
+use App\Http\Controllers\Apps\Recipe\UnitController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -35,7 +36,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('recipes/urls/{sourceRecipeUrl}', [RecipeController::class, 'excludeRecipeUrl']);
 
         Route::resource('ingredients', IngredientController::class);
+        Route::resource('units', UnitController::class);
         Route::get('ingredients/{ingredient}/details', [IngredientController::class, 'getDetails']);
+        Route::get('units/{unit}/details', [UnitController::class, 'getDetails']);
         Route::get('steps', [StepController::class, 'index'])->name('steps.index');
     });
 });

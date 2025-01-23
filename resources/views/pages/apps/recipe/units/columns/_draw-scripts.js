@@ -3,7 +3,7 @@ KTMenu.init();
 document.querySelectorAll('[data-kt-action="delete_row"]').forEach(function (element) {
     element.addEventListener('click', function () {
         Swal.fire({
-            text: 'Are you sure you want to remove this ingredient?',
+            text: 'Are you sure you want to remove this unit?',
             icon: 'warning',
             buttonsStyling: false,
             showCancelButton: true,
@@ -15,19 +15,19 @@ document.querySelectorAll('[data-kt-action="delete_row"]').forEach(function (ele
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                Livewire.emit('delete_ingredient', this.getAttribute('data-kt-ingredient-id'));
+                Livewire.emit('delete_unit', this.getAttribute('data-kt-unit-id'));
             }
         });
     });
 });
 
-document.querySelectorAll('[data-kt-action="update_row"]').forEach(function (element) {
+document.querySelectorAll('[data-kt-action="edit_row"]').forEach(function (element) {
     element.addEventListener('click', function () {
-        Livewire.emit('update_ingredient', this.getAttribute('data-kt-ingredient-id'));
-    });
+        Livewire.emit('editUnit', this.getAttribute('data-kt-unit-id'));
+    })
 });
 
-$('#ingredients-table tbody tr').hover(
+$('#units-table tbody tr').hover(
     function () {
         if (!$(this).hasClass('shown')) {
             $(this).addClass('hover-highlight');
@@ -40,17 +40,17 @@ $('#ingredients-table tbody tr').hover(
     }
 );
 
-$('#ingredients-table tbody').off('click', 'tr').on('click', 'tr', function () {
+$('#units-table tbody').off('click', 'tr').on('click', 'tr', function () {
     let tr = $(this);
-    let row = window.LaravelDataTables['ingredients-table'].row(tr);
+    let row = window.LaravelDataTables['units-table'].row(tr);
 
     if (tr.hasClass('shown')) {
         row.child.hide();
         tr.removeClass('shown');
     } else {
-        let ingredientId = tr.attr('id');
+        let unitId = tr.attr('id');
         $.ajax({
-            url: `/recipe/ingredients/${ingredientId}/details`,
+            url: `/recipe/units/${unitId}/details`,
             method: 'GET',
             success: function (response) {
                 row.child(response.html).show();
@@ -63,6 +63,6 @@ $('#ingredients-table tbody').off('click', 'tr').on('click', 'tr', function () {
     }
 });
 
-Livewire.on('success', (message) => {
-    LaravelDataTables['ingredients-table'].ajax.reload();
+Livewire.on('success', () => {
+    LaravelDataTables['units-table'].ajax.reload();
 });

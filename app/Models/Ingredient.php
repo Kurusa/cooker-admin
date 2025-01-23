@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * @property int $id
@@ -18,5 +19,17 @@ class Ingredient extends Model
     public function units(): HasMany
     {
         return $this->hasMany(IngredientUnit::class);
+    }
+
+    public function recipeIngredients(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            RecipeIngredient::class,
+            IngredientUnit::class,
+            'ingredient_id',
+            'ingredient_unit_id',
+            'id',
+            'id',
+        );
     }
 }

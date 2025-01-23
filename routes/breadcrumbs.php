@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Source;
+use App\Models\Unit;
 use App\Models\User;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
@@ -62,7 +64,12 @@ Breadcrumbs::for('recipe.steps.index', function (BreadcrumbTrail $trail) {
 
 Breadcrumbs::for('recipe.ingredients.index', function (BreadcrumbTrail $trail) {
     $trail->parent('recipe.index');
-    $trail->push('Ingredients', route('recipe.ingredients.index'));
+    $trail->push('Ingredients (' . Ingredient::count() . ')', route('recipe.ingredients.index'));
+});
+
+Breadcrumbs::for('recipe.units.index', function (BreadcrumbTrail $trail) {
+    $trail->parent('recipe.index');
+    $trail->push('Units (' . Unit::count() . ')', route('recipe.units.index'));
 });
 
 Breadcrumbs::for('recipe.recipes.index', function (BreadcrumbTrail $trail) {

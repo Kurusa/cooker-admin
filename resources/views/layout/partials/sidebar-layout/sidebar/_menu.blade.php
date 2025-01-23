@@ -77,6 +77,14 @@
                         </a>
                     </div>
                     <div class="menu-item">
+                        <a class="menu-link {{ request()->routeIs('recipe.units.*') ? 'active' : '' }}" href="{{ route('recipe.units.index') }}">
+							<span class="menu-bullet">
+								<span class="bullet bullet-dot"></span>
+							</span>
+                            <span class="menu-title">Units</span>
+                        </a>
+                    </div>
+                    <div class="menu-item">
                         <a class="menu-link {{ request()->routeIs('recipe.recipes.*') ? 'active' : '' }}" href="{{ route('recipe.recipes.index') }}">
 							<span class="menu-bullet">
 								<span class="bullet bullet-dot"></span>

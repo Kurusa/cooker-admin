@@ -18,9 +18,9 @@
            tabindex="-1"
            role="tab"
         >
-            Unparsed urls ({{ $source->recipeUrls()->notParsed()->where('is_excluded', 0)->count() }}
+            Unparsed urls ({{ $source->recipeUrls()->notParsed()->notExcluded()->count() }}
             <span class="w-125px text-gray-500 fw-semibold fs-7">
-                + {{ $source->recipeUrls()->notParsed()->where('is_excluded', 1)->count() }}
+                + {{ $source->recipeUrls()->notParsed()->isExcluded()->count() }}
             </span>)
         </a>
     </li>
@@ -49,7 +49,6 @@
                 <a href="#"
                    class="menu-link px-3"
                    data-source-id="{{ $source->id }}"
-                   id="collectUrlsButton"
                    data-bs-toggle="modal"
                    data-bs-target="#kt_modal_add_sitemap"
                 >

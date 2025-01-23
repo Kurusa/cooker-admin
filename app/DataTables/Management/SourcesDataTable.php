@@ -14,25 +14,37 @@ class SourcesDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->rawColumns(['id', 'url', 'recipes_link'])
+            ->rawColumns(['id', 'url', 'status', 'recipes_link'])
             ->editColumn('id', function (Source $source) {
                 return view('pages/apps.management.sources.columns._source', compact('source'));
             })
             ->editColumn('url', function (Source $source) {
-                $html = '';
-                if ($source->recipeUrls()->notParsed()->where('is_excluded', 0)->count() === 0 && $source->recipeUrls()->count() > 0) {
-                    $html .= '<span class="badge py-3 px-4 fs-7 badge-light-success">Completed</span>';
+                return sprintf(
+                    '<a href="%s" target="_blank">%s</a>',
+                    $source->url,
+                    $source->title,
+                );
+            })
+            ->editColumn('status', function (Source $source) {
+                $statusBadge = '';
+
+                if ($source->isParsingCompleted()) {
+                    $statusBadge = '<span class="badge py-3 px-4 fs-7 badge-light-success">Completed</span>';
+                }
+
+                if ($source->hasUnparsedRecipes()) {
+                    $statusBadge = '<span class="badge py-3 px-4 fs-7 badge-light-primary">Waiting to be parsed</span>';
+                }
+
+                if (!$source->sitemaps()->count() && !$source->is_manual) {
+                    $statusBadge = '<span class="badge py-3 px-4 fs-7 badge-light-dark">Doesn\'t have a sitemap</span>';
                 }
 
                 if ($source->is_manual) {
-                    $html .= '<span class="bullet bullet-dot bg-danger me-2 h-10px w-10px"></span>';
+                    $statusBadge = '<span class="badge py-3 px-4 fs-7 badge-light-secondary">Manual parsing required</span>';
                 }
 
-                return $html . sprintf(
-                    ' <a href="%s" target="_blank">%s</a>',
-                    $source->url,
-                    $source->url
-                );
+                return $statusBadge;
             })
             ->editColumn('recipes_link', function (Source $source) {
                 return view('pages/apps.management.sources.columns._recipes', compact('source'));
@@ -67,6 +79,7 @@ class SourcesDataTable extends DataTable
         return [
             Column::make('id')->title('ID'),
             Column::make('url')->title('Source URL')->addClass('text-nowrap'),
+            Column::make('status')->title('Status')->addClass('text-nowrap'),
             Column::make('recipes_link')->title('Recipes')->searchable(false),
             Column::computed('action')
                 ->addClass('text-end text-nowrap')

@@ -24,3 +24,27 @@ WHERE (SELECT COUNT(*)
    OR (SELECT COUNT(*)
        FROM recipe_steps
        WHERE recipe_steps.recipe_id = recipes.id) = 1;
+
+// чищення кроків
+UPDATE recipe_steps
+SET description = TRIM(BOTH '\n' FROM description); -- Прибирає переноси рядків на початку і в кінці
+
+UPDATE recipe_steps
+SET description = CONCAT(LOWER(SUBSTRING(description, 1, 1)), SUBSTRING(description, 2)); -- Приводить до нижнього регістру першу букву
+
+UPDATE recipe_steps
+SET description = REGEXP_REPLACE(description, '\\s+', ' '); -- Замінює більше одного пробілу на один
+
+UPDATE recipe_steps
+SET description = TRIM(TRAILING '.' FROM description);
+
+UPDATE recipe_steps
+SET description = LTRIM(description);
+
+// дублікати кроків
+DELETE rs1
+FROM recipe_steps rs1
+INNER JOIN recipe_steps rs2
+ON rs1.recipe_id = rs2.recipe_id
+AND rs1.description = rs2.description
+AND rs1.id > rs2.id;

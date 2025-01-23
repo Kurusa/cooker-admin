@@ -8,9 +8,9 @@
     <div class="border border-gray-300 border-dashed rounded py-3 px-3 mx-4 mb-3">
         <div class="fs-4 fw-bold text-gray-700">
             <span class="w-50px">
-                {{ $source->recipeUrls()->notParsed()->where('is_excluded', 0)->count() }}
+                {{ $source->recipeUrls()->notParsed()->notExcluded()->count() }}
                 <span class="w-125px text-gray-500 fw-semibold fs-7">
-                    + {{ $source->recipeUrls()->notParsed()->where('is_excluded', 1)->count() }}
+                    + {{ $source->recipeUrls()->notParsed()->isExcluded()->count() }}
                 </span>
             </span>
         </div>
