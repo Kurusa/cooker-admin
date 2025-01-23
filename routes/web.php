@@ -16,8 +16,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::name('management.')->prefix('management')->group(function () {
-        Route::resource('users', UserController::class);
-
         Route::resource('sources', SourceController::class)->only(['index', 'show']);
         Route::prefix('sources/{source}')->group(function () {
             Route::post('collect-urls', [SourceController::class, 'collectUrls'])->name('sources.collect-urls');
@@ -27,7 +25,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('unparsed-urls', [SourceController::class, 'getUnparsedUrlsView'])->name('sources.unparsed-urls');
         });
 
-        Route::get('categories', [CategoryController::class, 'index'])->name('categories.index');
+        Route::resource('categories', CategoryController::class)->only('index', 'show', 'update', 'destroy');
+        Route::get('categories/{category}/details', [CategoryController::class, 'getDetails'])->name('categories.details');
     });
 
     Route::name('recipe.')->prefix('recipe')->group(function () {

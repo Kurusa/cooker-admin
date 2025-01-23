@@ -32,7 +32,7 @@ var KTApp = function () {
         }
 
         // Initialize popover
-        var tp = new bootstrap.Tooltip(el, options);        
+        var tp = new bootstrap.Tooltip(el, options);
 
         // Handle dismiss
         if (options['dismiss'] && options['dismiss'] === 'click') {
@@ -149,7 +149,7 @@ var KTApp = function () {
                 });
 
                 this.classList.add('active');
-            });       
+            });
 
             group.setAttribute("data-kt-initialized", "1");
         });
@@ -169,7 +169,7 @@ var KTApp = function () {
         var elements = [].slice.call(document.querySelectorAll('[data-kt-daterangepicker="true"]'));
         var start = moment().subtract(29, 'days');
         var end = moment();
-        
+
         elements.map(function (element) {
             if (element.getAttribute("data-kt-initialized") === "1") {
                 return;
@@ -187,7 +187,7 @@ var KTApp = function () {
                         display.innerHTML = start.format('D MMM YYYY');
                     } else {
                         display.innerHTML = start.format('D MMM YYYY') + ' - ' + end.format('D MMM YYYY');
-                    }                    
+                    }
                 }
             }
 
@@ -235,7 +235,8 @@ var KTApp = function () {
             }
 
             var options = {
-                dir: document.body.getAttribute('direction')
+                dir: document.body.getAttribute('direction'),
+                closeOnSelect: false,
             };
 
             if (element.getAttribute('data-hide-search') == 'true') {
@@ -250,7 +251,7 @@ var KTApp = function () {
 
                 if (parentEl && parentEl.hasAttribute("data-kt-menu")) {
                     var menu = KTMenu.getInstance(parentEl);
-                    
+
                     if (!menu) {
                         menu = new KTMenu(parentEl);
                     }
@@ -266,8 +267,8 @@ var KTApp = function () {
                                 return false;
                             }
                         });
-                    }                    
-                }                
+                    }
+                }
             }
 
             element.setAttribute("data-kt-initialized", "1");
@@ -356,7 +357,7 @@ var KTApp = function () {
 
             // Window scroll event handler
             window.addEventListener('scroll', createCountUp);
-        }      
+        }
 
         // Tabs shown event handler
         var tabs = [].slice.call(document.querySelectorAll('[data-kt-countup-tabs="true"][data-bs-toggle="tab"]'));
@@ -475,7 +476,7 @@ var KTApp = function () {
                 // An example returning different values based on whether the clicked link was in the header nav or not
                 if (anchor.hasAttribute('data-kt-scroll-offset')) {
                     var val = KTUtil.getResponsiveValue(anchor.getAttribute('data-kt-scroll-offset'));
-                    
+
                     return val;
                 } else {
                     return 0;
@@ -488,7 +489,7 @@ var KTApp = function () {
         // Toggle Handler
         KTUtil.on(document.body, '[data-kt-card-action="remove"]', 'click', function (e) {
             e.preventDefault();
-            
+
             const card = this.closest('.card');
 
             if (!card) {
@@ -511,14 +512,14 @@ var KTApp = function () {
                         denyButton: "btn btn-danger"
                     }
                 }).then(function (result) {
-                    if (result.isConfirmed) { 
+                    if (result.isConfirmed) {
                         card.remove();
                     }
                 });
             } else {
                 card.remove();
-            }            
-        });        
+            }
+        });
     }
 
     var initModal = function() {
@@ -529,21 +530,21 @@ var KTApp = function () {
                 if (element.getAttribute("data-kt-initialized") === "1") {
                     return;
                 }
-    
+
                 element.setAttribute("data-kt-initialized", "1");
-    
+
                 element.addEventListener("click", function(e) {
                     e.preventDefault();
-    
+
                     const modalEl = document.querySelector(this.getAttribute("data-bs-stacked-modal"));
-    
+
                     if (modalEl) {
                         const modal = new bootstrap.Modal(modalEl, {backdrop: false});
                         modal.show();
-                    }                
-                }); 
+                    }
+                });
             });
-        }        
+        }
     }
 
     var initCheck = function () {
@@ -594,7 +595,7 @@ var KTApp = function () {
         if (initialized === true) {
             return;
         }
-        
+
         KTUtil.on(document.body,  '[data-kt-rotate="true"]', 'click', function(e) {
             if (this.classList.contains('active')) {
                 this.classList.remove('active');
@@ -640,7 +641,7 @@ var KTApp = function () {
 
             initBootstrapCollapse();
 
-            initBootstrapRotate();            
+            initBootstrapRotate();
 
             createBootstrapTooltips();
 

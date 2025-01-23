@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Artisan;
 
 class RecipeController extends Controller
 {
+    const RECIPES_PER_PAGE = 51;
+
     public function __construct(
         private readonly RecipeParserFactory $recipeParserFactory,
     )
@@ -54,9 +56,9 @@ class RecipeController extends Controller
         }
 
         $query->orderBy('created_at', 'desc');
-        $recipes = $query->paginate(50);
+        $recipes = $query->paginate(self::RECIPES_PER_PAGE);
 
-        return view('pages/apps.recipe.recipes.list', compact('recipes'));
+        return view('pages/apps.recipe.recipes.list', ['recipes' => $recipes]);
     }
 
     public function reparseByIds(ReparseRecipeByIdsRequest $request)

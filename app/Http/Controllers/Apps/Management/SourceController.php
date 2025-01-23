@@ -86,7 +86,7 @@ class SourceController extends Controller
 
         $unparsedUrls = $query->paginate(100);
 
-        return view('pages.apps.management.sources.show-partials.cards.unparsed_urls_table', compact('unparsedUrls', 'source'));
+        return view('pages.apps.management.sources.partials.cards.unparsed_urls_table', compact('unparsedUrls', 'source'));
     }
 
     public function parse(Source $source)

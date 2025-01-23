@@ -1,9 +1,4 @@
 <x-default-layout>
-
-    @section('title')
-        Sources
-    @endsection
-
     @section('breadcrumbs')
         {{ Breadcrumbs::render('management.sources.index') }}
     @endsection

@@ -27,14 +27,6 @@
 				</span>
                 <div class="menu-sub menu-sub-accordion">
                     <div class="menu-item">
-                        <a class="menu-link {{ request()->routeIs('management.users.*') ? 'active' : '' }}" href="{{ route('management.users.index') }}">
-							<span class="menu-bullet">
-								<span class="bullet bullet-dot"></span>
-							</span>
-                            <span class="menu-title">Users</span>
-                        </a>
-                    </div>
-                    <div class="menu-item">
                         <a class="menu-link {{ request()->routeIs('management.sources.*') ? 'active' : '' }}" href="{{ route('management.sources.index') }}">
 							<span class="menu-bullet">
 								<span class="bullet bullet-dot"></span>

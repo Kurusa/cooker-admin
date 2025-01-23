@@ -5,10 +5,6 @@
         }
     </style>
 
-    @section('title')
-        Units
-    @endsection
-
     @section('breadcrumbs')
         {{ Breadcrumbs::render('recipe.units.index') }}
     @endsection

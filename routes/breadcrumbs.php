@@ -5,7 +5,6 @@ use App\Models\Ingredient;
 use App\Models\Recipe;
 use App\Models\Source;
 use App\Models\Unit;
-use App\Models\User;
 use Diglactic\Breadcrumbs\Breadcrumbs;
 use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 
@@ -20,18 +19,7 @@ Breadcrumbs::for('dashboard', function (BreadcrumbTrail $trail) {
 
 Breadcrumbs::for('management.index', function (BreadcrumbTrail $trail) {
     $trail->parent('dashboard');
-    $trail->push('Management', route('management.users.index'));
-});
-
-## Users
-Breadcrumbs::for('management.users.index', function (BreadcrumbTrail $trail) {
-    $trail->parent('management.index');
-    $trail->push('Users', route('management.users.index'));
-});
-
-Breadcrumbs::for('management.users.show', function (BreadcrumbTrail $trail, User $user) {
-    $trail->parent('management.users.index');
-    $trail->push(ucwords($user->name), route('management.users.show', $user));
+    $trail->push('Management', route('management.sources.index'));
 });
 
 Breadcrumbs::for('management.sources.index', function (BreadcrumbTrail $trail) {
@@ -49,7 +37,7 @@ Breadcrumbs::for('management.sources.show', function (BreadcrumbTrail $trail, So
 
 Breadcrumbs::for('management.categories.index', function (BreadcrumbTrail $trail) {
     $trail->parent('management.index');
-    $trail->push('Categories (' . Category::count() . ')', route('management.categories.index'));
+    $trail->push('Categories (P:' . Category::parentCategories()->count() . ', C:' . Category::childrenCategories()->count() . ')', route('management.categories.index'));
 });
 
 ## Recipe

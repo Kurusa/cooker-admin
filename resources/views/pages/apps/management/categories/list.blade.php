@@ -1,30 +1,16 @@
 <x-default-layout>
-    @section('title')
-        Categories
-    @endsection
+    <style>
+        .hover-highlight {
+            background-color: var(--bs-gray-100) !important;
+        }
+    </style>
 
     @section('breadcrumbs')
         {{ Breadcrumbs::render('management.categories.index') }}
     @endsection
 
     <div class="card">
-        <div class="card-header border-0 pt-6">
-            <div class="card-title">
-                <div class="d-flex align-items-center position-relative my-1">
-                    {!! getIcon('magnifier', 'fs-3 position-absolute ms-5') !!}
-                    <input type="text" data-kt-source-table-filter="search" class="form-control form-control-solid w-250px ps-13" placeholder="Search category" id="mySearchInput"/>
-                </div>
-            </div>
-
-            <div class="card-toolbar">
-                <div class="d-flex justify-content-end" data-kt-source-table-toolbar="base">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#kt_modal_add_category">
-                        {!! getIcon('plus', 'fs-2', '', 'i') !!}
-                        Add category
-                    </button>
-                </div>
-            </div>
-        </div>
+        @include('pages.apps.management.categories.partials.actions')
 
         <div class="card-body py-4">
             <div class="table-responsive">
@@ -32,7 +18,7 @@
             </div>
         </div>
 
-        @livewire('management.edit-category-modal')
+        @include('pages.apps.management.categories.modals.edit-category-modal')
     </div>
 
     @push('scripts')

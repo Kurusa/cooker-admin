@@ -14,9 +14,12 @@ class CategoriesDataTable extends DataTable
     public function dataTable(QueryBuilder $query): EloquentDataTable
     {
         return (new EloquentDataTable($query))
-            ->rawColumns(['title', 'recipes_count'])
+            ->rawColumns(['id', 'title', 'children_count', 'recipes_count'])
             ->editColumn('title', function (Category $category) {
-                return $category->title;
+                return view('pages.apps.management.categories.columns._category', compact('category'));
+            })
+            ->editColumn('children_count', function (Category $category) {
+                return sprintf('<span class="badge badge-info">%d</span>', $category->children->count());
             })
             ->editColumn('recipes_count', function (Category $category) {
                 return sprintf('<span class="badge badge-info">%d</span>', $category->recipes_count);
@@ -29,7 +32,10 @@ class CategoriesDataTable extends DataTable
 
     public function query(Category $model): QueryBuilder
     {
-        return $model->newQuery()->withCount('recipes');
+        return $model->newQuery()
+            ->whereDoesntHave('parent')
+            ->withCount('recipes')
+            ->orderBy('title');
     }
 
     public function html(): HtmlBuilder
@@ -48,7 +54,9 @@ class CategoriesDataTable extends DataTable
     public function getColumns(): array
     {
         return [
+            Column::make('id')->title('ID')->addClass('text-nowrap'),
             Column::make('title')->title('Title')->addClass('text-nowrap'),
+            Column::make('children_count')->title('Number of children categories')->searchable(false),
             Column::make('recipes_count')->title('Number of recipes')->searchable(false),
             Column::computed('action')
                 ->addClass('text-end text-nowrap')

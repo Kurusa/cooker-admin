@@ -6,51 +6,12 @@
         }
     </style>
 
-    @section('title')
-        Recipes
-    @endsection
-
     @section('breadcrumbs')
         {{ Breadcrumbs::render('recipe.recipes.index') }}
     @endsection
 
     <form method="GET" action="{{ route('recipe.recipes.index') }}" class="mb-4">
-        <div class="input-group">
-            <input type="text" name="search" class="form-control" placeholder="Search recipes..." value="{{ request('search') }}">
-
-            <select name="source" class="form-select">
-                <option value="">All Sources</option>
-                @foreach(\App\Models\Source::all() as $source)
-                    <option value="{{ $source->title }}" {{ request('source') == $source->title ? 'selected' : '' }}>
-                        {{ $source->title }} ({{ $source->recipes()->count() }})
-                    </option>
-                @endforeach
-            </select>
-
-            <select name="filter" class="form-select">
-                <option value="">Filter</option>
-                <option value="one_step" {{ request('filter') == 'one_step' ? 'selected' : '' }}>
-                    One step
-                </option>
-                <option value="one_ingredient" {{ request('filter') == 'one_ingredient' ? 'selected' : '' }}>
-                    One ingredient
-                </option>
-            </select>
-
-            <button class="btn btn-warning d-none"
-                    data-kt-action="reparse-recipes-button"
-                    id="reparse-recipes-button"
-                    type="button">
-                Reparse (<span id="selected-count-reparse">0</span>)
-            </button>
-            <button class="btn btn-danger d-none"
-                    data-kt-action="delete-recipes-button"
-                    id="delete-recipes-button"
-                    type="button">
-                Delete (<span id="selected-count-delete">0</span>)
-            </button>
-            <button class="btn btn-primary" type="submit">Search</button>
-        </div>
+        @include('pages.apps.recipe.recipes.partials.filters')
     </form>
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-5 g-xl-9">
@@ -59,20 +20,13 @@
         @endforeach
     </div>
 
-    <div class="d-flex justify-content-center mt-4 mb-4">
-        {{ $recipes->appends([
-            'search' => request('search'),
-            'source' => request('source'),
-            'filter' => request('filter'),
-        ])->links('pagination::bootstrap-4') }}
-    </div>
+    @include('pages.apps.recipe.recipes.partials.pagination')
 
     @push('scripts')
         <script>
             document.querySelectorAll('[data-kt-action="reparse_recipe"]').forEach(function (element) {
                 element.addEventListener('click', function () {
-                    let a = $(this);
-                    let recipeId = a.attr('data-kt-id');
+                    let recipeId = $(this).attr('data-kt-id');
 
                     Swal.fire({
                         text: 'Are you sure you want to reparse this recipe?',
