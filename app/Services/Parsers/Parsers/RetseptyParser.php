@@ -6,7 +6,6 @@ use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
-use DOMXPath;
 
 class RetseptyParser extends BaseRecipeParser
 {

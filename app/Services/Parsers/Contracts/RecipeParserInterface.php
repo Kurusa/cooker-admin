@@ -4,7 +4,6 @@ namespace App\Services\Parsers\Contracts;
 
 use App\DTO\RecipeDTO;
 use App\Enums\Recipe\Complexity;
-use DOMXPath;
 
 interface RecipeParserInterface
 {

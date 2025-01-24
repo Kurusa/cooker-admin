@@ -32,14 +32,14 @@ class EtnocookParserTest extends TestCase
         $this->parser->loadHTML(null, $html);
     }
 
-    public function testParsesTitleCorrectly(): void
+    public function testTitle(): void
     {
         $title = $this->parser->parseTitle();
 
         $this->assertEquals('суп з кропивою', $title);
     }
 
-    public function testParsesCategoriesCorrectly(): void
+    public function testCategories(): void
     {
         $categories = $this->parser->parseCategories();
 
@@ -50,28 +50,33 @@ class EtnocookParserTest extends TestCase
         ], $categories);
     }
 
-    public function testParsesComplexityCorrectly()
+    public function testComplexity()
     {
         $complexity = $this->parser->parseComplexity();
 
         $this->assertEquals(Complexity::EASY, $complexity);
     }
 
-    public function testParsesCookingTimeCorrectly()
+    public function testCookingTime()
     {
         $cookingTime = $this->parser->parseCookingTime();
 
         $this->assertEquals(60, $cookingTime);
     }
 
-    public function testParsesPortionsCorrectly()
+    public function testPortions()
     {
         $cookingTime = $this->parser->parsePortions();
 
         $this->assertEquals(1, $cookingTime);
     }
 
-    public function testParsesIngredientsCorrectly()
+    public function testImage()
+    {
+
+    }
+
+    public function testIngredients()
     {
         $ingredients = $this->parser->parseIngredients(true);
 
@@ -80,6 +85,4 @@ class EtnocookParserTest extends TestCase
             "за бажанням  морква…………..50 гр.  сіль……………за смаком (~5-6 гр.)  цукор…………..за смаком (~2-3 гр.)  перць чорний мелений……за смаком  яйце куряче……2 шт"
         ], $ingredients);
     }
-
-
 }

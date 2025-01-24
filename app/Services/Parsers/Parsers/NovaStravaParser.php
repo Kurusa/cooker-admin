@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use DOMXPath;
 
 class NovaStravaParser extends BaseRecipeParser
 {
@@ -53,14 +52,14 @@ class NovaStravaParser extends BaseRecipeParser
 
     public function parseIngredients(bool $debug = false): array
     {
-        $ingredients = $this->xpathService->extractMultipleValues(, "//ul[@class='wprm-recipe-ingredients']/li");
+        $ingredients = $this->xpathService->extractMultipleValues("//ul[@class='wprm-recipe-ingredients']/li");
 
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
     public function parseSteps(bool $debug = false): array
     {
-        return $this->xpathService->extractMultipleValues(, "//ul[@class='wprm-recipe-instructions']/li");
+        return $this->xpathService->extractMultipleValues("//ul[@class='wprm-recipe-instructions']/li");
     }
 
     public function parseImage(): string

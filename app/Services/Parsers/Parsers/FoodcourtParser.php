@@ -7,7 +7,6 @@ use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
 use DOMNode;
-use DOMXPath;
 
 class FoodcourtParser extends BaseRecipeParser
 {

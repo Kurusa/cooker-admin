@@ -8,7 +8,6 @@ use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
-use DOMXPath;
 
 class PatelnyaParser extends BaseRecipeParser
 {
@@ -59,17 +58,17 @@ class PatelnyaParser extends BaseRecipeParser
 
     public function parseIngredients(bool $debug = false): array
     {
-        $ingredients = $this->xpathService->extractMultipleValues(, "//div[@class='list-ingredient old-list']//ul[@class='ingredient']/li | .//div[@class='list-ingredient old-list']//ul/li");
+        $ingredients = $this->xpathService->extractMultipleValues("//div[@class='list-ingredient old-list']//ul[@class='ingredient']/li | .//div[@class='list-ingredient old-list']//ul/li");
 
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
     public function parseSteps(bool $debug = false): array
     {
-        $steps = $this->xpathService->extractMultipleValues(, "//div[@class='e-instructions step-instructions instructions']//ol/li/text()");
+        $steps = $this->xpathService->extractMultipleValues("//div[@class='e-instructions step-instructions instructions']//ol/li/text()");
 
         if (empty($steps)) {
-            $steps = $this->xpathService->extractMultipleValues(, "//div[@class='e-instructions step-instructions instructions']/p/text()[not(contains(., 'Готуємо так:'))]");
+            $steps = $this->xpathService->extractMultipleValues("//div[@class='e-instructions step-instructions instructions']/p/text()[not(contains(., 'Готуємо так:'))]");
         }
 
         return array_filter(array_map(function ($step) {

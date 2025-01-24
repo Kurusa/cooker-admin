@@ -7,7 +7,6 @@ use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
-use DOMXPath;
 
 class RudParser extends BaseRecipeParser
 {

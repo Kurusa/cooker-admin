@@ -47,7 +47,7 @@ class EtnocookParser extends BaseRecipeParser
 
     public function parseImage(): string
     {
-        return $this->xpath->query("//img[contains(@class, 'aligncenter size-full wp-image-')]/@src")->item(0)?->textContent;
+        return $this->xpathService->extractSingleMetaAttribute('og:image');
     }
 
     public function parseIngredients(bool $debug = false): array

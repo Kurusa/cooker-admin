@@ -6,7 +6,6 @@ use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
-use DOMXPath;
 
 class FayniReceptyParser extends BaseRecipeParser
 {
@@ -58,7 +57,7 @@ class FayniReceptyParser extends BaseRecipeParser
 
     public function parseSteps(bool $debug = false): array
     {
-        return array_unique($this->xpathService->extractMultipleValues(, "//ul[@class='wprm-recipe-instructions']/li/div[@class='wprm-recipe-instruction-text']"));
+        return array_unique($this->xpathService->extractMultipleValues("//ul[@class='wprm-recipe-instructions']/li/div[@class='wprm-recipe-instruction-text']"));
     }
 
     public function parseImage(): string

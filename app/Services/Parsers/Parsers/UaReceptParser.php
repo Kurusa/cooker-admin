@@ -7,7 +7,6 @@ use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
 use DOMNode;
-use DOMXPath;
 
 class UaReceptParser extends BaseRecipeParser
 {
@@ -39,21 +38,21 @@ class UaReceptParser extends BaseRecipeParser
     {
         $cookingTime = 0;
 
-        $cookingTime += (int) $this->xpathService->extractCleanSingleValue(, '//div[contains(@class, "detail-item")]/span[text()="Час підготовки"]/following-sibling::p');
+        $cookingTime += (int) $this->xpathService->extractCleanSingleValue('//div[contains(@class, "detail-item")]/span[text()="Час підготовки"]/following-sibling::p');
 
-        $cookingTime += (int) $this->xpathService->extractCleanSingleValue(, '//div[contains(@class, "detail-item")]/span[text()="Час приготування"]/following-sibling::p');
+        $cookingTime += (int) $this->xpathService->extractCleanSingleValue('//div[contains(@class, "detail-item")]/span[text()="Час приготування"]/following-sibling::p');
 
         return $cookingTime;
     }
 
     public function parsePortions(): int
     {
-        return (int) $this->xpathService->extractCleanSingleValue(, '//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p');
+        return (int) $this->xpathService->extractCleanSingleValue('//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p');
     }
 
     public function parseIngredients(bool $debug = false): array
     {
-        $ingredientNodes = $this->xpathService->extractMultipleValues(, "//ul[@class='ingredients-list layout-1-column']//li//p/text()");
+        $ingredientNodes = $this->xpathService->extractMultipleValues("//ul[@class='ingredients-list layout-1-column']//li//p/text()");
 
         $service = app(DeepseekService::class);
         return $service->parseIngredients($ingredientNodes);
