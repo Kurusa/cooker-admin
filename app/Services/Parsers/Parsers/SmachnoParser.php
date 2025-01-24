@@ -10,39 +10,39 @@ use DOMXPath;
 
 class SmachnoParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
-        return $this->extractCleanSingleValue($xpath, "//h1[@itemprop='name']");
+        return $this->xpathService->extractCleanSingleValue("//h1[@itemprop='name']");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
-        return '';
+        return [];
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
         return Complexity::MEDIUM;
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
         return null;
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
         $ingredients = [];
-        $ingredientNodes = $xpath->query("//span[@itemprop='ingredient']/ul/li");
+        $ingredientNodes = $this->xpath->query("//span[@itemprop='ingredient']/ul/li");
 
         foreach ($ingredientNodes as $node) {
-            $nameNode = $xpath->query("//span[@itemprop='name']", $node);
-            $amountNode = $xpath->query("//span[@itemprop='amount']", $node);
+            $nameNode = $this->xpath->query("//span[@itemprop='name']", $node);
+            $amountNode = $this->xpath->query("//span[@itemprop='amount']", $node);
 
             $name = trim($nameNode->item(0)?->textContent ?? '');
             $amount = trim($amountNode->item(0)?->textContent ?? '');
@@ -54,14 +54,14 @@ class SmachnoParser extends BaseRecipeParser
         return $service->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
         $steps = [];
-        $stepNodes = $xpath->query("//div[@itemprop='instructions']/div[@class='step']");
+        $stepNodes = $this->xpath->query("//div[@itemprop='instructions']/div[@class='step']");
 
         foreach ($stepNodes as $node) {
-            $descriptionNode = $xpath->query("//div[@class='step_text']", $node);
-            $imageNode = $xpath->query("//img/@src", $node);
+            $descriptionNode = $this->xpath->query("//div[@class='step_text']", $node);
+            $imageNode = $this->xpath->query("//img/@src", $node);
 
             $description = trim($descriptionNode->item(0)?->textContent ?? '');
             $image = trim($imageNode->item(0)?->nodeValue ?? '');
@@ -75,9 +75,9 @@ class SmachnoParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
-        $imageNode = $xpath->query("//img[@itemprop='photo']")->item(0);
+        $imageNode = $this->xpath->query("//img[@itemprop='photo']")->item(0);
 
         if ($src = $imageNode?->getAttribute('src')) {
             return 'https://www.smachno.in.ua/' . $src;

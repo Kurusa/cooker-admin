@@ -10,38 +10,38 @@ use DOMXPath;
 
 class TandiParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
         $class = 'entry-title';
 
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='$class']");
+        return $this->xpathService->extractCleanSingleValue("//h1[@class='$class']");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
         $class = 'entry-category';
 
-        return $this->extractCleanSingleValue($xpath, "//li[@class='$class']/a/text()");
+        return $this->xpathService->extractCleanSingleValue("//li[@class='$class']/a/text()");
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
         return Complexity::MEDIUM;
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
         return null;
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
-        $ingredientNodes = $xpath->query('//p[contains(text(), "Складові:")]/following-sibling::text()');
+        $ingredientNodes = $this->xpath->query('//p[contains(text(), "Складові:")]/following-sibling::text()');
 
         $ingredients = [];
         foreach ($ingredientNodes as $ingredientNode) {
@@ -53,9 +53,9 @@ class TandiParser extends BaseRecipeParser
         return $service->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
-        $stepNodes = $xpath->query('//strong[contains(text(), "Приготування:")]/following-sibling::text()');
+        $stepNodes = $this->xpath->query('//strong[contains(text(), "Приготування:")]/following-sibling::text()');
 
         $steps = [];
         foreach ($stepNodes as $step) {
@@ -71,11 +71,11 @@ class TandiParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
         $class = 'entry-thumb td-animation-stack-type0-2';
 
-        return $xpath->query("//img[@class='$class']")->item(0)?->getAttribute('src') ?? '';
+        return $this->xpath->query("//img[@class='$class']")->item(0)?->getAttribute('src') ?? '';
     }
 
     public function urlRule(string $url): bool

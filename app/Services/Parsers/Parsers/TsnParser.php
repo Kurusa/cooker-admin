@@ -11,24 +11,24 @@ use DOMXPath;
 
 class TsnParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='c-card__title']//span");
+        return $this->xpathService->extractCleanSingleValue("//h1[@class='c-card__title']//span");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
-        return $this->extractCleanSingleValue($xpath, "//span[@class='post-cat bg-warning']");
+        return $this->xpathService->extractCleanSingleValue("//span[@class='post-cat bg-warning']");
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
         return Complexity::MEDIUM;
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
-        $timeNode = $xpath->query("//dd[contains(@class, 'i-cooking-time')]");
+        $timeNode = $this->xpath->query("//dd[contains(@class, 'i-cooking-time')]");
 
         if (!$timeNode->length) {
             return null;
@@ -39,15 +39,15 @@ class TsnParser extends BaseRecipeParser
         return CookingTimeFormatter::formatCookingTime($timeText);
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
         $class = 'c-bar c-bar--normal c-bar--dense c-bar--log c-bar--y-divided c-bar--unordered c-bar--label-px0';
-        $ingredientNodes = $xpath->query("//div[@class='$class']/dl//dt | //h2[strong[text()='Інгредієнти:']]/following-sibling::ul//li");
+        $ingredientNodes = $this->xpath->query("//div[@class='$class']/dl//dt | //h2[strong[text()='Інгредієнти:']]/following-sibling::ul//li");
 
         $ingredients = [];
 
@@ -68,23 +68,23 @@ class TsnParser extends BaseRecipeParser
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
         $steps = [];
-        $stepNodes = $xpath->query("//div[@data-content='']/ol/li");
+        $stepNodes = $this->xpath->query("//div[@data-content='']/ol/li");
         foreach ($stepNodes as $node) {
             $steps[] = CleanText::cleanText($node->textContent);
         }
 
         if (empty($steps)) {
-            $paragraphNodes = $xpath->query("//h2[contains(text(), 'Інгредієнти')]/following::ul[1]/li");
+            $paragraphNodes = $this->xpath->query("//h2[contains(text(), 'Інгредієнти')]/following::ul[1]/li");
             foreach ($paragraphNodes as $node) {
                 $steps[] = CleanText::cleanText($node->textContent);
             }
         }
 
         if (empty($steps)) {
-            $paragraphNodes = $xpath->query("//div[@data-content='']/p");
+            $paragraphNodes = $this->xpath->query("//div[@data-content='']/p");
             foreach ($paragraphNodes as $node) {
                 $text = CleanText::cleanText($node->textContent);
 
@@ -96,7 +96,7 @@ class TsnParser extends BaseRecipeParser
         }
 
         if (empty($steps)) {
-            $paragraphNodes = $xpath->query("//div[@data-content='']/p");
+            $paragraphNodes = $this->xpath->query("//div[@data-content='']/p");
             $isStepsStarted = false;
 
             foreach ($paragraphNodes as $node) {
@@ -119,9 +119,9 @@ class TsnParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
-        $imageNode = $xpath->query("//img[@class='c-card__embed__img']");
+        $imageNode = $this->xpath->query("//img[@class='c-card__embed__img']");
 
         return $imageNode->item(0)->getAttribute('src');
     }

@@ -10,53 +10,53 @@ use DOMXPath;
 
 class RetseptyParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
         $class = 'entry-title';
 
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='$class']");
+        return $this->xpathService->extractCleanSingleValue("//h1[@class='$class']");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
         $class = 'cat-links';
 
-        return $this->extractCleanSingleValue($xpath, "//div[@class='$class']/a");
+        return $this->xpathService->extractCleanSingleValue("//div[@class='$class']/a");
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
         return Complexity::MEDIUM;
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
-        $span = $xpath->query("//span[contains(@class, 'wprm-recipe-prep_time-hours')]")->item(0);
+        $span = $this->xpath->query("//span[contains(@class, 'wprm-recipe-prep_time-hours')]")->item(0);
         $preparationTimeMinutes = $span ? $span->firstChild->nodeValue * 60 : 0;
 
-        $span = $xpath->query("//span[@class='wprm-recipe-details wprm-recipe-details-hours wprm-recipe-cook_time wprm-recipe-cook_time-hours']")->item(0);
+        $span = $this->xpath->query("//span[@class='wprm-recipe-details wprm-recipe-details-hours wprm-recipe-cook_time wprm-recipe-cook_time-hours']")->item(0);
         $cookingTimeMinutes = $span ? $span->firstChild->nodeValue * 60 : 0;
 
         return $preparationTimeMinutes + $cookingTimeMinutes;
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
-        $portions = (int) $this->extractCleanSingleValue($xpath, "//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']");
+        $portions = (int) $this->xpathService->extractCleanSingleValue("//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']");
 
         return $portions > 0 ? $portions : 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
         $ingredients = [];
 
-        $ingredientNodes = $xpath->query("//ul[@class='wprm-recipe-ingredients']/li[contains(@class, 'wprm-recipe-ingredient')]");
+        $ingredientNodes = $this->xpath->query("//ul[@class='wprm-recipe-ingredients']/li[contains(@class, 'wprm-recipe-ingredient')]");
 
         foreach ($ingredientNodes as $ingredientNode) {
-            $amountNode = $xpath->query("//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $ingredientNode);
-            $unitNode = $xpath->query("//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $ingredientNode);
-            $nameNode = $xpath->query("//span[contains(@class, 'wprm-recipe-ingredient-name')]", $ingredientNode);
+            $amountNode = $this->xpath->query("//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $ingredientNode);
+            $unitNode = $this->xpath->query("//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $ingredientNode);
+            $nameNode = $this->xpath->query("//span[contains(@class, 'wprm-recipe-ingredient-name')]", $ingredientNode);
 
             $ingredient = CleanText::cleanText($nameNode->item(0)?->textContent) . ': ' . CleanText::cleanText($amountNode->item(0)?->textContent ?? '')
                 . ' ' . CleanText::cleanText($unitNode->item(0)?->textContent ?? '');
@@ -67,14 +67,14 @@ class RetseptyParser extends BaseRecipeParser
         return $service->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
         $steps = [];
 
-        $stepNodes = $xpath->query("//ul[@class='wprm-recipe-instructions']/li[contains(@class, 'wprm-recipe-instruction')]");
+        $stepNodes = $this->xpath->query("//ul[@class='wprm-recipe-instructions']/li[contains(@class, 'wprm-recipe-instruction')]");
 
         foreach ($stepNodes as $stepNode) {
-            $textNode = $xpath->query("//div[contains(@class, 'wprm-recipe-instruction-text')]", $stepNode);
+            $textNode = $this->xpath->query("//div[contains(@class, 'wprm-recipe-instruction-text')]", $stepNode);
             $text = $textNode->length > 0 ? trim($textNode->item(0)->textContent) : '';
 
             $steps[] = $text;
@@ -83,9 +83,9 @@ class RetseptyParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
-        $imageNode = $xpath->query("//img[@class='attachment-800x99999 size-800x99999']")->item(0);
+        $imageNode = $this->xpath->query("//img[@class='attachment-800x99999 size-800x99999']")->item(0);
         return $imageNode?->getAttribute('data-lazy-src') ?? '';
     }
 

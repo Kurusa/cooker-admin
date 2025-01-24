@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Recipe;
-use App\Services\Parsers\ProcessRecipeUrlService;
 use App\Services\Parsers\RecipeParserFactory;
+use App\Services\ProcessRecipeUrlService;
 use Illuminate\Console\Command;
 
 class ParseRecipeByIdCommand extends Command

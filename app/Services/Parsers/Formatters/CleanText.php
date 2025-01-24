@@ -8,7 +8,11 @@ class CleanText
     {
         $text = trim($text);
         $text = ltrim($text);
-
+        $text = str_replace([
+            "\r", "\n",
+            chr(160),
+            "\xC2\xA0"
+        ], '', $text);
         $text = mb_strtolower($text);
 
         $text = rtrim($text, ',');
@@ -25,11 +29,10 @@ class CleanText
         $text = str_replace('( ', ' (', $text);
         $text = str_replace(' )', ')', $text);
 
-        $text = str_replace(chr(160), '', $text);
-        $text = str_replace("\xC2\xA0", '', $text);
-
         $text = rtrim($text, ':');
         $text = rtrim($text, ';');
+
+        $text = preg_replace('/\s+/', ' ', $text);
 
         return $text;
     }

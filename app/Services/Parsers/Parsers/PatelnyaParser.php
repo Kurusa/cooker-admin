@@ -12,14 +12,14 @@ use DOMXPath;
 
 class PatelnyaParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='p-name name-title fn']");
+        return $this->xpathService->extractCleanSingleValue("//h1[@class='p-name name-title fn']");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
-        $categoryText = $this->extractCleanSingleValue($xpath, "//div[@class='title-detail']/a/span |
+        $categoryText = $this->xpathService->extractCleanSingleValue("//div[@class='title-detail']/a/span |
                                                            .//div[@id='crumbs']/a/span[last()]");
         $disallowedCategories = [
             'кулінарний словник',
@@ -36,40 +36,40 @@ class PatelnyaParser extends BaseRecipeParser
         return $category;
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
-        $complexity = $this->extractCleanSingleValue($xpath, "//div[i/span[contains(text(), 'Рівень складності:')]]/i/span[@class='color-414141']");
+        $complexity = $this->xpathService->extractCleanSingleValue("//div[i/span[contains(text(), 'Рівень складності:')]]/i/span[@class='color-414141']");
 
         return Complexity::mapParsedValue($complexity);
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
-        $time = $this->extractCleanSingleValue($xpath, "//div[i[@class='duration']]/i/span[@class='color-414141 value-title']");
+        $time = $this->xpathService->extractCleanSingleValue("//div[i[@class='duration']]/i/span[@class='color-414141 value-title']");
 
         return CookingTimeFormatter::formatCookingTime($time);
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
-        $portions = $this->extractCleanSingleValue($xpath, "//div[i/span[contains(text(), 'Кількість порцій:')]]/i/span[@class='color-414141 yield']");
+        $portions = $this->xpathService->extractCleanSingleValue("//div[i/span[contains(text(), 'Кількість порцій:')]]/i/span[@class='color-414141 yield']");
 
         return $portions ? (int) str_replace(['порцій', 'порція'], '', CleanText::cleanText($portions)) : 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
-        $ingredients = $this->extractMultipleValues($xpath, "//div[@class='list-ingredient old-list']//ul[@class='ingredient']/li | .//div[@class='list-ingredient old-list']//ul/li");
+        $ingredients = $this->xpathService->extractMultipleValues(, "//div[@class='list-ingredient old-list']//ul[@class='ingredient']/li | .//div[@class='list-ingredient old-list']//ul/li");
 
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
-        $steps = $this->extractMultipleValues($xpath, "//div[@class='e-instructions step-instructions instructions']//ol/li/text()");
+        $steps = $this->xpathService->extractMultipleValues(, "//div[@class='e-instructions step-instructions instructions']//ol/li/text()");
 
         if (empty($steps)) {
-            $steps = $this->extractMultipleValues($xpath, "//div[@class='e-instructions step-instructions instructions']/p/text()[not(contains(., 'Готуємо так:'))]");
+            $steps = $this->xpathService->extractMultipleValues(, "//div[@class='e-instructions step-instructions instructions']/p/text()[not(contains(., 'Готуємо так:'))]");
         }
 
         return array_filter(array_map(function ($step) {
@@ -77,9 +77,9 @@ class PatelnyaParser extends BaseRecipeParser
         }, array_unique($steps)));
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
-        return $this->extractCleanSingleValue($xpath, "//img[contains(@class, 'article-img-left')]/@src");
+        return $this->xpathService->extractCleanSingleValue("//img[contains(@class, 'article-img-left')]/@src");
     }
 
     public function urlRule(string $url): bool

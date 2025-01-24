@@ -8,38 +8,49 @@ use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
 use DOMNode;
-use DOMXPath;
 
 class EtnocookParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='entry-title']");
+        return $this->xpathService->extractSingleMetaAttribute('og:title');
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
-        return $this->extractCleanSingleValue($xpath, "//a[rel='category tag'][1]");
+        return $this->xpathService->extractMultipleValues("//meta[@property='article:section']", true);
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
-        return Complexity::MEDIUM;
+        return Complexity::mapParsedValue(
+            str_replace(
+                'складність: ',
+                '',
+                $this->xpathService
+                    ->extractCleanSingleValue("//p[contains(normalize-space(),'Складність')]")
+            )
+        );
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
-        $cookingTime = $this->extractCleanSingleValue($xpath, "//p[contains(., 'Час приготування')]");
+        $cookingTime = $this->xpathService->extractCleanSingleValue("//p[contains(., 'Час приготування')]");
 
         return CookingTimeFormatter::formatCookingTime($cookingTime);
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseImage(): string
+    {
+        return $this->xpath->query("//img[contains(@class, 'aligncenter size-full wp-image-')]/@src")->item(0)?->textContent;
+    }
+
+    public function parseIngredients(bool $debug = false): array
     {
         $ingredients = [];
 
@@ -49,17 +60,17 @@ class EtnocookParser extends BaseRecipeParser
             foreach ($exploded as $ingredient) {
                 $ingredients[] = CleanText::cleanText($ingredient);
             }
-        }, iterator_to_array($xpath->query("//p[contains(.,'………')]")));
+        }, iterator_to_array($this->xpath->query("//p[contains(.,'………')]")));
 
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
         $steps = [];
 
-        return array_map(function (DOMNode $item) use (&$steps) {
-            $exploded = explode("<br>", $item->textContent);
+        array_map(function (DOMNode $item) use (&$steps) {
+            $exploded = array_filter(preg_split('/[0-9]+\./', $item->textContent));
 
             foreach ($exploded as $step) {
                 $steps[] = [
@@ -67,13 +78,11 @@ class EtnocookParser extends BaseRecipeParser
                     'image' => '',
                 ];
             }
-        }, iterator_to_array($xpath->query("//p[contains(.,'………')]")));
+        }, iterator_to_array($this->xpath->query("//p[contains(.,'Спосіб приготування:')]/following-sibling::p")));
+
+        return $debug ? $steps : app(DeepseekService::class)->parseSteps($steps);
     }
 
-    public function parseImage(DOMXPath $xpath): string
-    {
-        return $xpath->query("//img[contains(@class, 'aligncenter size-full wp-image-')]/@src")->item(0)?->textContent;
-    }
 
     public function urlRule(string $url): bool
     {

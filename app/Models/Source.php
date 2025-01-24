@@ -73,7 +73,7 @@ class Source extends Model
             ->count();
     }
 
-    public function notExcludedUrlsCount():int
+    public function notExcludedUrlsCount(): int
     {
         return $this->recipeUrls()
             ->notExcluded()

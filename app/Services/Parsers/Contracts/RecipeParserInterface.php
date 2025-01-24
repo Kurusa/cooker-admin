@@ -11,21 +11,21 @@ interface RecipeParserInterface
     /**
      * @return RecipeDTO[]
      */
-    public function parseRecipes(DOMXPath $xpath): array;
+    public function parseRecipes(): array;
 
-    public function parseTitle(DOMXPath $xpath): string;
+    public function parseTitle(): string;
 
-    public function parseImage(DOMXPath $xpath): string;
+    public function parseCategories(): array;
 
-    public function parseCategories(DOMXPath $xpath): array;
+    public function parseComplexity(): Complexity;
 
-    public function parseComplexity(DOMXPath $xpath): Complexity;
+    public function parseCookingTime(): ?int;
 
-    public function parseCookingTime(DOMXPath $xpath): ?int;
+    public function parsePortions(): int;
 
-    public function parsePortions(DOMXPath $xpath): int;
+    public function parseImage(): string;
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array;
+    public function parseIngredients(bool $debug = false): array;
 
-    public function parseSteps(DOMXPath $xpath): array;
+    public function parseSteps(bool $debug = false): array;
 }

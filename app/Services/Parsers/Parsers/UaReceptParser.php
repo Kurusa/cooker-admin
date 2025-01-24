@@ -11,23 +11,23 @@ use DOMXPath;
 
 class UaReceptParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
         $class = 'recipe-card-title';
 
-        return $this->extractCleanSingleValue($xpath, "//h2[@class='$class']");
+        return $this->xpathService->extractCleanSingleValue("//h2[@class='$class']");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
         $class = 'yoast-breadcrumbs';
 
-        return $this->extractCleanSingleValue($xpath, "//div[@class='$class']//span[2]/a/text()");
+        return $this->xpathService->extractCleanSingleValue("//div[@class='$class']//span[2]/a/text()");
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
-        $difficultyNode = $xpath->query("//li[@class='single-meta category-meta'][contains(text(), 'Difficulty:')]");
+        $difficultyNode = $this->xpath->query("//li[@class='single-meta category-meta'][contains(text(), 'Difficulty:')]");
 
         $text = $difficultyNode->item(0)?->textContent ?? '';
         $difficulty = strtolower(trim(str_replace('Difficulty:', '', $text)));
@@ -35,33 +35,33 @@ class UaReceptParser extends BaseRecipeParser
         return Complexity::mapParsedValue($difficulty);
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
         $cookingTime = 0;
 
-        $cookingTime += (int) $this->extractCleanSingleValue($xpath, '//div[contains(@class, "detail-item")]/span[text()="Час підготовки"]/following-sibling::p');
+        $cookingTime += (int) $this->xpathService->extractCleanSingleValue(, '//div[contains(@class, "detail-item")]/span[text()="Час підготовки"]/following-sibling::p');
 
-        $cookingTime += (int) $this->extractCleanSingleValue($xpath, '//div[contains(@class, "detail-item")]/span[text()="Час приготування"]/following-sibling::p');
+        $cookingTime += (int) $this->xpathService->extractCleanSingleValue(, '//div[contains(@class, "detail-item")]/span[text()="Час приготування"]/following-sibling::p');
 
         return $cookingTime;
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
-        return (int) $this->extractCleanSingleValue($xpath, '//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p');
+        return (int) $this->xpathService->extractCleanSingleValue(, '//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p');
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
-        $ingredientNodes = $this->extractMultipleValues($xpath, "//ul[@class='ingredients-list layout-1-column']//li//p/text()");
+        $ingredientNodes = $this->xpathService->extractMultipleValues(, "//ul[@class='ingredients-list layout-1-column']//li//p/text()");
 
         $service = app(DeepseekService::class);
         return $service->parseIngredients($ingredientNodes);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
-        $stepNodes = $xpath->query("//div[contains(@class, 'recipe-card-directions')]//li[contains(@class, 'direction-step')]//p");
+        $stepNodes = $this->xpath->query("//div[contains(@class, 'recipe-card-directions')]//li[contains(@class, 'direction-step')]//p");
 
         /** @var DOMNode $stepNode */
         foreach ($stepNodes as $stepNode) {
@@ -81,12 +81,12 @@ class UaReceptParser extends BaseRecipeParser
         }
 
         if (empty($steps)) {
-            $stepNodes = $xpath->query("//li[contains(@class, 'direction-step')]");
+            $stepNodes = $this->xpath->query("//li[contains(@class, 'direction-step')]");
 
             $steps = [];
             foreach ($stepNodes as $stepNode) {
-                $description = $xpath->query("//strong", $stepNode)->item(0)->textContent ?? '';
-                $imageUrl = $xpath->query("//img/@src", $stepNode)->item(0)->textContent ?? '';
+                $description = $this->xpath->query("//strong", $stepNode)->item(0)->textContent ?? '';
+                $imageUrl = $this->xpath->query("//img/@src", $stepNode)->item(0)->textContent ?? '';
 
                 if (mb_strlen($description)) {
                     $steps[] = [
@@ -100,11 +100,11 @@ class UaReceptParser extends BaseRecipeParser
         return array_filter($steps);
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
         $class = 'wpzoom-recipe-card-image';
 
-        $imageNode = $xpath->query("//img[@class='$class']")->item(0);
+        $imageNode = $this->xpath->query("//img[@class='$class']")->item(0);
         return $imageNode?->getAttribute('src') ?? '';
     }
 

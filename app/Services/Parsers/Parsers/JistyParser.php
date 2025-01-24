@@ -11,41 +11,38 @@ use DOMXPath;
 
 class JistyParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
         $class = 'post-title mb-30';
 
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='$class']");
+        return $this->xpathService->extractCleanSingleValue("//h1[@class='$class']");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
         $class = 'post-cat bg-warning';
 
-        return $this->extractCleanSingleValue($xpath, "//span[@class='$class']");
+        return $this->xpathService->extractCleanSingleValue("//span[@class='$class']");
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
         return Complexity::MEDIUM;
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
         return null;
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
-        $rawIngredients = $this->extractMultipleValues(
-            $xpath,
-            ".//div[@class='wp-block-wpzoom-recipe-card-block-ingredients'][1]/ul[@class='ingredients-list']/li"
-        );
+        $rawIngredients = $this->xpathService->extractMultipleValues(".//div[@class='wp-block-wpzoom-recipe-card-block-ingredients'][1]/ul[@class='ingredients-list']/li");
 
         $ingredients = [];
         foreach ($rawIngredients as $ingredient) {
@@ -56,15 +53,15 @@ class JistyParser extends BaseRecipeParser
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
-        $stepNodes = $xpath->query("//div[@class='wp-block-wpzoom-recipe-card-block-directions'][1]/ul[@class='directions-list']/li[@class='direction-step']");
+        $stepNodes = $this->xpath->query("//div[@class='wp-block-wpzoom-recipe-card-block-directions'][1]/ul[@class='directions-list']/li[@class='direction-step']");
 
         $steps = [];
 
         /** @var DOMNode $stepNode */
         foreach ($stepNodes as $stepNode) {
-            $imageNode = $xpath->query("//img", $stepNode);
+            $imageNode = $this->xpath->query("//img", $stepNode);
             $imageUrl = $imageNode->item(0)?->getAttribute('data-src') ? 'https://jisty.com.ua' . $imageNode->item(0)->getAttribute('data-src') : '';
 
             $description = CleanText::cleanText($stepNode->textContent);
@@ -79,9 +76,9 @@ class JistyParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
-        $imageNode = $xpath->query(
+        $imageNode = $this->xpath->query(
             ".//figure[@class='aligncenter size-large']/img | .//div[@class='thumbnail text-center mb-20']/img"
         )->item(0);
 

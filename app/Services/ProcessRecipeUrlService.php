@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\Parsers;
+namespace App\Services;
 
 use App\Models\SourceRecipeUrl;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
@@ -27,17 +27,16 @@ class ProcessRecipeUrlService
     ): void
     {
         try {
-            $xpath = $parser->loadHtml($sourceRecipeUrl->url);
+            $parser->loadHtml($sourceRecipeUrl->url);
 
-            DB::transaction(function () use ($sourceRecipeUrl, $parser, $xpath) {
+            DB::transaction(function () use ($sourceRecipeUrl, $parser) {
                 DB::statement('SELECT GET_LOCK(?, -1)', ['parse_recipe_lock']);
 
-                $recipes = $parser->parseRecipes($xpath);
+                $recipes = $parser->parseRecipes();
 
                 foreach ($recipes as $recipeDTO) {
                     $recipe = $this->recipeService->createOrUpdateRecipe([
                         'source_recipe_url_id' => $sourceRecipeUrl->id,
-                        'category' => $recipeDTO->category,
                         'title' => $recipeDTO->title,
                         'complexity' => $recipeDTO->complexity,
                         'time' => $recipeDTO->time,

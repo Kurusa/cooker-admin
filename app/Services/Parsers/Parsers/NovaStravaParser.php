@@ -9,27 +9,27 @@ use DOMXPath;
 
 class NovaStravaParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='sc_layouts_title_caption']");
+        return $this->xpathService->extractCleanSingleValue("//h1[@class='sc_layouts_title_caption']");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
-        return $this->extractCleanSingleValue($xpath, "//a[@class='breadcrumbs_item cat_post']");
+        return $this->xpathService->extractCleanSingleValue("//a[@class='breadcrumbs_item cat_post']");
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
         return Complexity::MEDIUM;
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
         $totalCookingTime = 0;
 
-        $rawHours = $this->extractCleanSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()");
-        $rawMinutes = $this->extractCleanSingleValue($xpath, "//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()");
+        $rawHours = $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()");
+        $rawMinutes = $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()");
 
         if ($rawHours) {
             $totalCookingTime += (int) $rawHours * 60;
@@ -42,30 +42,30 @@ class NovaStravaParser extends BaseRecipeParser
         return $totalCookingTime;
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
         $class = 'wprm-recipe-servings wprm-recipe-details wprm-block-text-normal';
 
-        $portions = (int) $this->extractCleanSingleValue($xpath, "//span[@class='$class']");
+        $portions = (int) $this->xpathService->extractCleanSingleValue("//span[@class='$class']");
 
         return $portions > 0 ? $portions : 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
-        $ingredients = $this->extractMultipleValues($xpath, "//ul[@class='wprm-recipe-ingredients']/li");
+        $ingredients = $this->xpathService->extractMultipleValues(, "//ul[@class='wprm-recipe-ingredients']/li");
 
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
-        return $this->extractMultipleValues($xpath, "//ul[@class='wprm-recipe-instructions']/li");
+        return $this->xpathService->extractMultipleValues(, "//ul[@class='wprm-recipe-instructions']/li");
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
-        $imageNode = $xpath->query("//div[@class='wprm-recipe-image wprm-block-image-normal']/img")->item(0);
+        $imageNode = $this->xpath->query("//div[@class='wprm-recipe-image wprm-block-image-normal']/img")->item(0);
 
         if ($src = $imageNode?->getAttribute('src')) {
             return str_replace('150', '370', $src);

@@ -7,42 +7,41 @@ use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
-use DOMXPath;
 
 class AllRecipesParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='mv-create-title mv-create-title-primary']");
+        return $this->xpathService->extractCleanSingleValue("//h1[@class='mv-create-title mv-create-title-primary']");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
-        return $this->extractCleanSingleValue($xpath, "//span[@class='cat-links']/a");
+        return [$this->xpathService->extractCleanSingleValue("//span[@class='cat-links']/a")];
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
         return Complexity::MEDIUM;
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
-        $timeNodes = $xpath->query("//span[@class='mv-time-part mv-time-minutes']");
+        $timeNodes = $this->xpath->query("//span[@class='mv-time-part mv-time-minutes']");
 
         $time = $timeNodes->item($timeNodes->length - 1)?->textContent;
 
         return CookingTimeFormatter::formatCookingTime($time);
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
-        $listItems = $xpath->query("//div[@class='mv-create-ingredients']//ul/li");
+        $listItems = $this->xpath->query("//div[@class='mv-create-ingredients']//ul/li");
 
         $ingredients = [];
         foreach ($listItems as $item) {
@@ -52,12 +51,12 @@ class AllRecipesParser extends BaseRecipeParser
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
-        $listItems = $xpath->query("//div[@class='mv-create-instructions mv-create-instructions-slot-v2']//ol//p");
+        $listItems = $this->xpath->query("//div[@class='mv-create-instructions mv-create-instructions-slot-v2']//ol//p");
 
         if (!$listItems->length) {
-            $listItems = $xpath->query("//div[@class='mv-create-instructions mv-create-instructions-slot-v2']//p");
+            $listItems = $this->xpath->query("//div[@class='mv-create-instructions mv-create-instructions-slot-v2']//p");
         }
 
         $steps = [];
@@ -84,9 +83,9 @@ class AllRecipesParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
-        $imageNode = $xpath->query("//figure[@class='post-featured-image']/a/img")->item(0);
+        $imageNode = $this->xpath->query("//figure[@class='post-featured-image']/a/img")->item(0);
 
         return $imageNode?->getAttribute('data-src') ?? '';
     }

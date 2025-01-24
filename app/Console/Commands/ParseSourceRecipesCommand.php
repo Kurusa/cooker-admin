@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Services\FindSourceByTitle;
-use App\Services\Parsers\ProcessRecipeUrlService;
 use App\Services\Parsers\RecipeParserFactory;
+use App\Services\ProcessRecipeUrlService;
 use App\Services\SitemapUrlCollectorService;
 use Illuminate\Console\Command;
 

@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\SourceRecipeUrl;
 use App\Services\FindSourceByTitle;
-use App\Services\Parsers\ProcessRecipeUrlService;
 use App\Services\Parsers\RecipeParserFactory;
+use App\Services\ProcessRecipeUrlService;
 use Illuminate\Console\Command;
 
 class ParseRecipeByUrlCommand extends Command

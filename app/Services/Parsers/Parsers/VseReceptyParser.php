@@ -11,21 +11,21 @@ use DOMXPath;
 
 class VseReceptyParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
         $class = 'entry-title';
 
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='$class']");
+        return $this->xpathService->extractCleanSingleValue("//h1[@class='$class']");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
-        return $this->extractCleanSingleValue($xpath, "//ul[@class='recipe-categories']/li[@class='ctg-name'][last()]/a");
+        return $this->xpathService->extractCleanSingleValue("//ul[@class='recipe-categories']/li[@class='ctg-name'][last()]/a");
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
-        $difficultyNode = $xpath->query("//li[@class='single-meta category-meta'][contains(text(), 'Difficulty:')]");
+        $difficultyNode = $this->xpath->query("//li[@class='single-meta category-meta'][contains(text(), 'Difficulty:')]");
 
         $text = $difficultyNode->item(0)?->textContent ?? '';
         $difficulty = strtolower(trim(str_replace('Difficulty:', '', $text)));
@@ -33,16 +33,16 @@ class VseReceptyParser extends BaseRecipeParser
         return Complexity::mapParsedValue($difficulty);
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
-        $timeText = $xpath->query("//span[@class='duration']")->item(0)?->textContent;
+        $timeText = $this->xpath->query("//span[@class='duration']")->item(0)?->textContent;
 
         return $timeText ? CookingTimeFormatter::formatCookingTime($timeText) : null;
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
-        $rawPortions = $this->extractCleanSingleValue($xpath, "//div[@class='recipe-feature_block recipe-portion']//span[@class='yield']");
+        $rawPortions = $this->xpathService->extractCleanSingleValue("//div[@class='recipe-feature_block recipe-portion']//span[@class='yield']");
 
         if ($rawPortions) {
             return (int) str_replace(['порції', 'порцій', 'порція'], '', CleanText::cleanText($rawPortions));
@@ -51,20 +51,20 @@ class VseReceptyParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
         $ingredients = [];
 
-        $ingredientNodes = $xpath->query("//div[@class='recipe-ingredients_list']/ul/li");
+        $ingredientNodes = $this->xpath->query("//div[@class='recipe-ingredients_list']/ul/li");
 
         foreach ($ingredientNodes as $ingredientNode) {
-            $titleNode = $xpath->query("//span[@class='recipe-ingredients_name']", $ingredientNode);
-            $amountNode = $xpath->query("//span[@class='recipe-ingredients_amount']", $ingredientNode);
+            $titleNode = $this->xpath->query("//span[@class='recipe-ingredients_name']", $ingredientNode);
+            $amountNode = $this->xpath->query("//span[@class='recipe-ingredients_amount']", $ingredientNode);
 
             $name = CleanText::cleanText($titleNode->item(0)?->textContent);
 
-            $valueNode = $xpath->query("//span[@class='value']", $amountNode->item(0));
-            $unitNode = $xpath->query("//span[@class='type']", $amountNode->item(0));
+            $valueNode = $this->xpath->query("//span[@class='value']", $amountNode->item(0));
+            $unitNode = $this->xpath->query("//span[@class='type']", $amountNode->item(0));
 
             $quantity = CleanText::cleanText($valueNode->item(0)?->textContent ?? '');
             $unit = CleanText::cleanText($unitNode->item(0)?->textContent ?? '');
@@ -76,21 +76,21 @@ class VseReceptyParser extends BaseRecipeParser
         return $service->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
         $steps = [];
 
-        $stepNodes = $xpath->query("//div[@class='recipe-steps_list instructions']//div[contains(@class, 'recipe-steps_desc')]");
+        $stepNodes = $this->xpath->query("//div[@class='recipe-steps_list instructions']//div[contains(@class, 'recipe-steps_desc')]");
 
         foreach ($stepNodes as $stepNode) {
-            $textNode = $xpath->query("//p[contains(@class, 'instruction')]", $stepNode);
+            $textNode = $this->xpath->query("//p[contains(@class, 'instruction')]", $stepNode);
             if ($textNode->length > 0) {
                 $steps[] = CleanText::cleanText($textNode->item(0)->textContent);
             }
         }
 
         if (empty($steps)) {
-            $stepNodes = $xpath->query("//h2[text()='Покроковий рецепт приготування']/following-sibling::ol//li");
+            $stepNodes = $this->xpath->query("//h2[text()='Покроковий рецепт приготування']/following-sibling::ol//li");
 
             foreach ($stepNodes as $stepNode) {
                 $steps[] = CleanText::cleanText($stepNode->textContent);
@@ -100,11 +100,11 @@ class VseReceptyParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
         $class = 'attachment-post-thumbnail size-post-thumbnail wp-post-image lazyload';
 
-        $imageNode = $xpath->query("//img[@class='$class']")->item(0);
+        $imageNode = $this->xpath->query("//img[@class='$class']")->item(0);
         return $imageNode?->getAttribute('data-src') ?? '';
     }
 

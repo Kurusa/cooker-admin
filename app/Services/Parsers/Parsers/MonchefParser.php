@@ -10,34 +10,34 @@ use DOMXPath;
 
 class MonchefParser extends BaseRecipeParser
 {
-    public function parseTitle(DOMXPath $xpath): string
+    public function parseTitle(): string
     {
-        return $this->extractCleanSingleValue($xpath, "//h1[@class='entry-title']");
+        return $this->xpathService->extractCleanSingleValue("//h1[@class='entry-title']");
     }
 
-    public function parseCategories(DOMXPath $xpath): array
+    public function parseCategories(): array
     {
-        return '';
+        return [];
     }
 
-    public function parseComplexity(DOMXPath $xpath): Complexity
+    public function parseComplexity(): Complexity
     {
         return Complexity::MEDIUM;
     }
 
-    public function parseCookingTime(DOMXPath $xpath): ?int
+    public function parseCookingTime(): ?int
     {
         return null;
     }
 
-    public function parsePortions(DOMXPath $xpath): int
+    public function parsePortions(): int
     {
         return 1;
     }
 
-    public function parseIngredients(DOMXPath $xpath, bool $debug = false): array
+    public function parseIngredients(bool $debug = false): array
     {
-        $listItems = $xpath->query("//div[@class='entry-content']/ul[1]/li");
+        $listItems = $this->xpath->query("//div[@class='entry-content']/ul[1]/li");
 
         $ingredients = [];
         foreach ($listItems as $item) {
@@ -47,9 +47,9 @@ class MonchefParser extends BaseRecipeParser
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(DOMXPath $xpath): array
+    public function parseSteps(bool $debug = false): array
     {
-        $listItems = $xpath->query("//div[@class='entry-content']//following::ul/following-sibling::p");
+        $listItems = $this->xpath->query("//div[@class='entry-content']//following::ul/following-sibling::p");
 
         $steps = [];
         foreach ($listItems as $item) {
@@ -62,9 +62,9 @@ class MonchefParser extends BaseRecipeParser
         return $steps;
     }
 
-    public function parseImage(DOMXPath $xpath): string
+    public function parseImage(): string
     {
-        $imageNode = $xpath->query("//div[@class='entry-media-thumb']//@style")->item(0)->nodeValue;
+        $imageNode = $this->xpath->query("//div[@class='entry-media-thumb']//@style")->item(0)->nodeValue;
         $imageUrl = str_replace('background-image: url(', '', $imageNode);
 
         return str_replace(');', '', $imageUrl);
