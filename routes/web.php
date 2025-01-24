@@ -36,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::post('parse', [RecipeController::class, 'reparseByIds'])->name('recipes.parse');
             Route::post('parse/debug', [RecipeController::class, 'parseDebug'])->name('recipes.parse.debug');
             Route::delete('urls/{sourceRecipeUrl}', [RecipeController::class, 'excludeRecipeUrl'])->name('recipes.urls.exclude');
+            Route::delete('all', [RecipeController::class, 'deleteAll'])->name('recipes.delete.all');
         });
 
         Route::delete('recipes', [RecipeController::class, 'deleteByIds']);

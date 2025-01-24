@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
+/**
+ * @property int $id
+ * @property string $title
+ */
 class Unit extends Model
 {
     protected $fillable = [

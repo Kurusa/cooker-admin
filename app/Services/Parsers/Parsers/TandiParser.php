@@ -17,7 +17,7 @@ class TandiParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//h1[@class='$class']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         $class = 'entry-category';
 

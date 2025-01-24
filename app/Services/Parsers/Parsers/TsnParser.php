@@ -16,7 +16,7 @@ class TsnParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//h1[@class='c-card__title']//span");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return $this->extractCleanSingleValue($xpath, "//span[@class='post-cat bg-warning']");
     }

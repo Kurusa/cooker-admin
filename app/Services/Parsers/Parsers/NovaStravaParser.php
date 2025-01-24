@@ -14,7 +14,7 @@ class NovaStravaParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//h1[@class='sc_layouts_title_caption']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return $this->extractCleanSingleValue($xpath, "//a[@class='breadcrumbs_item cat_post']");
     }

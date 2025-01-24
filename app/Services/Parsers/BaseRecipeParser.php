@@ -2,6 +2,7 @@
 
 namespace App\Services\Parsers;
 
+use App\DTO\RecipeDTO;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\Parsers\Formatters\CleanText;
 use DOMDocument;
@@ -42,5 +43,21 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         }
 
         return $values;
+    }
+
+    public function parseRecipes(DOMXPath $xpath): array
+    {
+        return [
+            RecipeDTO::from([
+                'title' => $this->parseTitle($xpath),
+                'category' => $this->parseCategory($xpath),
+                'complexity' => $this->parseComplexity($xpath),
+                'time' => $this->parseCookingTime($xpath),
+                'portions' => $this->parsePortions($xpath),
+                'image_url' => $this->parseImage($xpath),
+                'ingredients' => $this->parseIngredients($xpath),
+                'steps' => $this->parseSteps($xpath),
+            ]),
+        ];
     }
 }

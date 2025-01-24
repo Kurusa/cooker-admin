@@ -2,6 +2,7 @@
 
 namespace App\Services\RecipeAttributes;
 
+use App\DTO\IngredientDTO;
 use App\Models\Ingredient;
 use App\Models\IngredientUnit;
 use App\Models\Recipe;
@@ -9,16 +10,17 @@ use App\Models\Unit;
 
 class IngredientService
 {
+    /**
+     * @param IngredientDTO[] $ingredients
+     * @param Recipe $recipe
+     */
     public function attachIngredients(array $ingredients, Recipe $recipe): void
     {
         foreach ($ingredients as $ingredientData) {
-            if (!strlen($ingredientData['title'])) {
-                continue;
-            }
+            /** @var Ingredient $ingredient */
+            $ingredient = Ingredient::firstOrCreate(['title' => $ingredientData->title]);
 
-            $ingredient = Ingredient::firstOrCreate(['title' => $ingredientData['title']]);
-
-            $unit = $this->getUnit($ingredientData['unit'] ?? null);
+            $unit = $this->getUnit($ingredientData->unit);
 
             $ingredientUnit = IngredientUnit::firstOrCreate([
                 'ingredient_id' => $ingredient->id,
@@ -26,7 +28,7 @@ class IngredientService
             ]);
 
             $recipe->ingredients()->attach($ingredientUnit->id, [
-                'quantity' => $ingredientData['quantity'] ?? null,
+                'quantity' => $ingredientData->quantity,
             ]);
         }
     }

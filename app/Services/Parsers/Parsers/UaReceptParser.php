@@ -18,7 +18,7 @@ class UaReceptParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//h2[@class='$class']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         $class = 'yoast-breadcrumbs';
 

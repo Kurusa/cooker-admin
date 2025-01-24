@@ -2,7 +2,7 @@
 
 namespace App\DataTables\Recipe;
 
-use App\Models\Step;
+use App\Models\RecipeStep;
 use Illuminate\Database\Eloquent\Builder as QueryBuilder;
 use Yajra\DataTables\EloquentDataTable;
 use Yajra\DataTables\Html\Builder as HtmlBuilder;
@@ -15,19 +15,19 @@ class StepsDataTable extends DataTable
     {
         return (new EloquentDataTable($query))
             ->rawColumns(['step', 'recipe_link'])
-            ->editColumn('step', function (Step $step) {
+            ->editColumn('step', function (RecipeStep $step) {
                 return view('pages/apps.recipe.steps.columns._step', compact('step'));
             })
-            ->addColumn('action', function (Step $step) {
+            ->addColumn('action', function (RecipeStep $step) {
                 return view('pages/apps/recipe/steps/columns._actions', compact('step'));
             })
-            ->addColumn('recipe_link', function (Step $step) {
+            ->addColumn('recipe_link', function (RecipeStep $step) {
                 return $step->recipe ? '<a href="' . route('recipe.recipes.show', $step->recipe->id) . '">' . $step->recipe->id . '</a>' : 'N/A';
             })
             ->setRowId('id');
     }
 
-    public function query(Step $model): QueryBuilder
+    public function query(RecipeStep $model): QueryBuilder
     {
         return $model->newQuery()->with('recipe');
     }

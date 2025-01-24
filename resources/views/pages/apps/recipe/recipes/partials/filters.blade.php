@@ -33,4 +33,5 @@
         Delete (<span id="selected-count-delete">0</span>)
     </button>
     <button class="btn btn-primary" type="submit">Search</button>
+    <button class="btn btn-danger" type="submit" id="deleteAllRecipes">Delete all</button>
 </div>

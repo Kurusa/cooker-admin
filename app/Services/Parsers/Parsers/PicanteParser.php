@@ -16,7 +16,7 @@ class PicanteParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//h1[@class='fn']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return $this->extractCleanSingleValue($xpath, "//ol[@id='wo-breadcrumbs']/li[3]/a/span/text()");
     }

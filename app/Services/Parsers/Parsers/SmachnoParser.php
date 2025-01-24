@@ -15,7 +15,7 @@ class SmachnoParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//h1[@itemprop='name']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return '';
     }

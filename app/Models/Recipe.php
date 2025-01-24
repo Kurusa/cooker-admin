@@ -19,7 +19,6 @@ use Illuminate\Support\Facades\DB;
  * @property string $advice
  * @property int $time
  * @property int $portions
- * @property int $category_id
  * @property int $source_recipe_url_id
  * @property string|null $image_url
  *
@@ -37,7 +36,6 @@ class Recipe extends Model
         'advice',
         'time',
         'portions',
-        'category_id',
         'image_url',
         'source_recipe_url_id',
     ];
@@ -97,14 +95,19 @@ class Recipe extends Model
         return DB::select($query, ['recipe_id' => $this->id]);
     }
 
-    public function category(): BelongsTo
+    public function categories(): BelongsToMany
     {
-        return $this->belongsTo(Category::class);
+        return $this->belongsToMany(
+            Category::class,
+            'recipe_categories',
+            'recipe_id',
+            'category_id'
+        );
     }
 
     public function steps(): HasMany
     {
-        return $this->hasMany(Step::class);
+        return $this->hasMany(RecipeStep::class);
     }
 
     public function hasImage(): bool

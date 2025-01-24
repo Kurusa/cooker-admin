@@ -16,7 +16,7 @@ class ReceptyTvParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//div[@class='large-8 medium-12 large-offset-2 cell']/h1");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return $this->extractCleanSingleValue($xpath, "//div[@class='grid-x grid-padding-x']/div[@class='small-12 cell'][1]/ul/li[last()]");
     }

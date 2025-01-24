@@ -17,7 +17,7 @@ class YabpoelaParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//div[@class='div-form'][1]/h1[@class='title']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return $this->extractCleanSingleValue($xpath, "//div[@class='div-form'][1]/a[@class='fullstory-cat']");
     }

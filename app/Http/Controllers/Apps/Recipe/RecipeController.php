@@ -122,4 +122,13 @@ class RecipeController extends Controller
             'success' => true,
         ]);
     }
+
+    public function deleteAll()
+    {
+        Recipe::query()->delete();
+
+        return response()->json([
+            'success' => true,
+        ]);
+    }
 }

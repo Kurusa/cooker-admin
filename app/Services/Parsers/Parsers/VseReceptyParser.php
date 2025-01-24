@@ -18,7 +18,7 @@ class VseReceptyParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//h1[@class='$class']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return $this->extractCleanSingleValue($xpath, "//ul[@class='recipe-categories']/li[@class='ctg-name'][last()]/a");
     }

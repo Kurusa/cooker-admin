@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Recipe;
 
-use App\Models\Step;
+use App\Models\RecipeStep;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
@@ -45,8 +45,8 @@ class AddStepModal extends Component
                 'index' => $this->index,
             ];
 
-            /** @var Step $step */
-            $step = $this->step_id ? Step::find($this->step_id) : new Step();
+            /** @var RecipeStep $step */
+            $step = $this->step_id ? RecipeStep::find($this->step_id) : new RecipeStep();
 
             if ($this->edit_mode) {
                 $step->update($data);
@@ -63,7 +63,7 @@ class AddStepModal extends Component
 
     public function deleteStep(int $id): void
     {
-        Step::destroy($id);
+        RecipeStep::destroy($id);
         $this->emit('success', __('Step successfully deleted'));
     }
 
@@ -71,7 +71,7 @@ class AddStepModal extends Component
     {
         $this->edit_mode = true;
 
-        $step = Step::find($id);
+        $step = RecipeStep::find($id);
 
         $this->step_id = $step->id;
         $this->recipe_id = $step->recipe_id;

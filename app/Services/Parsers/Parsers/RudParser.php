@@ -16,7 +16,7 @@ class RudParser extends BaseRecipeParser
         return CleanText::cleanText($xpath->query("//h2[@itemprop='name']")?->item(0)?->nodeValue ?? '');
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return CleanText::cleanText($xpath->evaluate("string((//div[@class='wrapper']//span[@itemprop='itemListElement']//span[@itemprop='name'])[last()-1])"));
     }

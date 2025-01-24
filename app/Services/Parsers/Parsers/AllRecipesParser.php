@@ -16,7 +16,7 @@ class AllRecipesParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//h1[@class='mv-create-title mv-create-title-primary']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return $this->extractCleanSingleValue($xpath, "//span[@class='cat-links']/a");
     }

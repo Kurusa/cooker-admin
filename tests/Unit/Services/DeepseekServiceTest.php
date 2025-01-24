@@ -12,15 +12,11 @@ class DeepseekServiceTest extends TestCase
 {
     private DeepseekService $deepseekService;
 
-    private MockObject $client;
-
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->client = $this->createMock(Client::class);
-
-        $this->deepseekService = new DeepseekService($this->client);
+        $this->deepseekService = new DeepseekService($this->createMock(Client::class));
     }
 
     public function testParseDeepseekResponseReturnsCorrectIngredients()

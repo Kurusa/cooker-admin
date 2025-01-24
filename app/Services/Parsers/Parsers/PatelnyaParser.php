@@ -17,7 +17,7 @@ class PatelnyaParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//h1[@class='p-name name-title fn']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         $categoryText = $this->extractCleanSingleValue($xpath, "//div[@class='title-detail']/a/span |
                                                            .//div[@id='crumbs']/a/span[last()]");

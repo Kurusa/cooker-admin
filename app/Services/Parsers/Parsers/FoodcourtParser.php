@@ -16,7 +16,7 @@ class FoodcourtParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//span[@class='breadcrumb_last']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return $this->extractCleanSingleValue($xpath, "//p[@id='breadcrumbs']//span[2]/a");
     }

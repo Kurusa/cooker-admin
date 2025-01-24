@@ -2,8 +2,6 @@
 
 namespace App\Services\Parsers;
 
-use App\Exceptions\RecipeAttributeCantBeEmptyException;
-use App\Exceptions\UnsupportedCategoryException;
 use App\Models\SourceRecipeUrl;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\RecipeAttributes\IngredientService;
@@ -34,40 +32,23 @@ class ProcessRecipeUrlService
             DB::transaction(function () use ($sourceRecipeUrl, $parser, $xpath) {
                 DB::statement('SELECT GET_LOCK(?, -1)', ['parse_recipe_lock']);
 
-                $category = $parser->parseCategory($xpath);
+                $recipes = $parser->parseRecipes($xpath);
 
-                $title = $parser->parseTitle($xpath);
-                if (!mb_strlen($title)) {
-                    throw new RecipeAttributeCantBeEmptyException("Title can't be empty");
+                foreach ($recipes as $recipeDTO) {
+                    $recipe = $this->recipeService->createOrUpdateRecipe([
+                        'source_recipe_url_id' => $sourceRecipeUrl->id,
+                        'category' => $recipeDTO->category,
+                        'title' => $recipeDTO->title,
+                        'complexity' => $recipeDTO->complexity,
+                        'time' => $recipeDTO->time,
+                        'portions' => $recipeDTO->portions,
+                        'image_url' => $recipeDTO->imageUrl,
+                    ]);
+
+                    $this->stepService->attachSteps($recipeDTO->steps, $recipe);
+                    $this->ingredientService->attachIngredients($recipeDTO->ingredients, $recipe);
                 }
-
-                $steps = $parser->parseSteps($xpath);
-                if (!count($steps)) {
-                    throw new RecipeAttributeCantBeEmptyException("Steps can't be empty");
-                }
-
-                $ingredients = $parser->parseIngredients($xpath);
-                if (!count($ingredients)) {
-                    throw new RecipeAttributeCantBeEmptyException("Ingredients can't be empty");
-                }
-
-                $recipe = $this->recipeService->createOrUpdateRecipe([
-                    'source_recipe_url_id' => $sourceRecipeUrl->id,
-                    'category' => $category,
-                    'title' => $title,
-                    'complexity' => $parser->parseComplexity($xpath),
-                    'time' => $parser->parseCookingTime($xpath),
-                    'portions' => $parser->parsePortions($xpath),
-                    'image_url' => $parser->parseImage($xpath),
-                ]);
-
-                $this->stepService->attachSteps($steps, $recipe);
-                $this->ingredientService->attachIngredients($ingredients, $recipe);
             });
-        } catch (UnsupportedCategoryException $exception) {
-            $sourceRecipeUrl->update([
-                'is_excluded' => true,
-            ]);
         } catch (Exception $exception) {
             Log::error($exception->getMessage());
         } finally {

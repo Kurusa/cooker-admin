@@ -17,7 +17,7 @@ class EtnocookParser extends BaseRecipeParser
         return $this->extractCleanSingleValue($xpath, "//h1[@class='entry-title']");
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return $this->extractCleanSingleValue($xpath, "//a[rel='category tag'][1]");
     }

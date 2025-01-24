@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
-use Illuminate\Database\Eloquent\Builder;
 
 /**
  * @property int $id
@@ -24,9 +25,14 @@ class Category extends Model
         'parent_id',
     ];
 
-    public function recipes(): HasMany
+    public function recipes(): BelongsToMany
     {
-        return $this->hasMany(Recipe::class);
+        return $this->belongsToMany(
+            Recipe::class,
+            'recipe_categories',
+            'category_id',
+            'recipe_id',
+        );
     }
 
     public function parent(): BelongsTo

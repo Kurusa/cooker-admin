@@ -221,6 +221,29 @@
                     }
                 });
             }
+
+            document.getElementById('deleteAllRecipes').addEventListener('click', function () {
+                $.ajax({
+                    url: '/recipe/recipes/all',
+                    method: 'DELETE',
+                    success: function () {
+                        Swal.fire({
+                            text: 'Success',
+                            icon: 'success',
+                            buttonsStyling: false,
+                            confirmButtonText: 'OK',
+                            customClass: {
+                                confirmButton: 'btn btn-primary',
+                            }
+                        }).then(() => {
+                            location.reload();
+                        });
+                    },
+                    error: function (xhr) {
+                        console.error('Error:', xhr.responseText);
+                    }
+                });
+            })
         </script>
     @endpush
 </x-default-layout>

@@ -15,7 +15,7 @@ class FayniReceptyParser extends BaseRecipeParser
         return CleanText::cleanText($xpath->query("//h2[@class='wprm-recipe-name wprm-block-text-bold']")?->item(0)?->nodeValue ?? '');
     }
 
-    public function parseCategory(DOMXPath $xpath): string
+    public function parseCategories(DOMXPath $xpath): array
     {
         return CleanText::cleanText($xpath->query("//ul[@class='trail-items']/li[2]/a/span/text()")?->item(0)?->nodeValue ?? '');
     }
