@@ -2,6 +2,7 @@
 
 namespace App\DTO;
 
+use App\Services\Parsers\Formatters\CleanText;
 use Spatie\LaravelData\Data;
 
 class CategoryDTO extends Data
@@ -10,5 +11,6 @@ class CategoryDTO extends Data
         public string $title,
     )
     {
+        $this->title = CleanText::cleanText($this->title);
     }
 }

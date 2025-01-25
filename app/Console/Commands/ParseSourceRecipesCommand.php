@@ -10,12 +10,12 @@ use Illuminate\Console\Command;
 
 class ParseSourceRecipesCommand extends Command
 {
-    protected $signature = 'parse:recipe:source {source}';
+    protected $signature = 'parse:recipes:source {source}';
 
     protected $description = 'Parse a all recipes by source title';
 
     public function __construct(
-        private readonly RecipeParserFactory $parserFactory,
+        private readonly RecipeParserFactory     $parserFactory,
         private readonly ProcessRecipeUrlService $processRecipeUrlService,
     )
     {

@@ -6,7 +6,6 @@ use App\Enums\Recipe\Complexity;
 use App\Exceptions\UnsupportedCategoryException;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
 
 class PatelnyaParser extends BaseRecipeParser
@@ -53,7 +52,7 @@ class PatelnyaParser extends BaseRecipeParser
     {
         $portions = $this->xpathService->extractCleanSingleValue("//div[i/span[contains(text(), 'Кількість порцій:')]]/i/span[@class='color-414141 yield']");
 
-        return $portions ? (int) str_replace(['порцій', 'порція'], '', CleanText::cleanText($portions)) : 1;
+        return $portions ? (int) str_replace(['порцій', 'порція'], '', $portions) : 1;
     }
 
     public function parseIngredients(bool $debug = false): array
@@ -72,7 +71,7 @@ class PatelnyaParser extends BaseRecipeParser
         }
 
         return array_filter(array_map(function ($step) {
-            return preg_replace('/[^\PC\s]/u', '', CleanText::cleanText($step));
+            return preg_replace('/[^\PC\s]/u', '', $step);
         }, array_unique($steps)));
     }
 

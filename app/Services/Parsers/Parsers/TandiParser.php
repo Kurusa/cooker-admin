@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 
 class TandiParser extends BaseRecipeParser
 {
@@ -44,7 +43,7 @@ class TandiParser extends BaseRecipeParser
 
         $ingredients = [];
         foreach ($ingredientNodes as $ingredientNode) {
-            $ingredients[] = CleanText::cleanText($ingredientNode->nodeValue);
+            $ingredients[] = $ingredientNode->nodeValue;
         }
 
         return $ingredients;
@@ -58,7 +57,7 @@ class TandiParser extends BaseRecipeParser
 
         $steps = [];
         foreach ($stepNodes as $step) {
-            $stepText = CleanText::cleanText($step->nodeValue);
+            $stepText = $step->nodeValue;
             if ($stepText === 'смачного!') {
                 continue;
             }

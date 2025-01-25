@@ -10,7 +10,7 @@ class SitemapUrlCollectorService
 {
     public function __construct(
         private readonly RecipeParserInterface $parser,
-        private readonly Source $source,
+        private readonly Source                $source,
     )
     {
     }

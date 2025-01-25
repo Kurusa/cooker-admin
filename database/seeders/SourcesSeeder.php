@@ -2,10 +2,8 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Faker\Generator;
+use App\Models\Source;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class SourcesSeeder extends Seeder
 {
@@ -13,12 +11,30 @@ class SourcesSeeder extends Seeder
     {
         $sources = [
             [
-                'title' => '',
-                'url' => '',
-                'sitemap_urls' => [
-
+                'title' => 'jisty',
+                'url' => 'https://jisty.com.ua',
+                'sitemaps' => [
+                    'https://jisty.com.ua/post-sitemap2.xml',
                 ],
             ]
         ];
+
+        foreach ($sources as $sourceData) {
+            if (Source::where('url', $sourceData['url'])->exists()) {
+                continue;
+            }
+
+            /** @var Source $source */
+            $source = Source::create([
+                'title' => $sourceData['title'],
+                'url' => $sourceData['url'],
+            ]);
+
+            foreach ($sourceData['sitemaps'] as $sitemap) {
+                $source->sitemaps()->create([
+                    'url' => $sitemap,
+                ]);
+            }
+        }
     }
 }

@@ -2,21 +2,21 @@
 
 namespace App\Services\Parsers\Parsers;
 
+use App\DTO\IngredientDTO;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 
 class FayniReceptyParser extends BaseRecipeParser
 {
     public function parseTitle(): string
     {
-        return CleanText::cleanText($this->xpath->query("//h2[@class='wprm-recipe-name wprm-block-text-bold']")?->item(0)?->nodeValue ?? '');
+        return $this->xpath->query("//h2[@class='wprm-recipe-name wprm-block-text-bold']")?->item(0)?->nodeValue;
     }
 
     public function parseCategories(): array
     {
-        return CleanText::cleanText($this->xpath->query("//ul[@class='trail-items']/li[2]/a/span/text()")?->item(0)?->nodeValue ?? '');
+        return $this->xpath->query("//ul[@class='trail-items']/li[2]/a/span/text()")?->item(0)?->nodeValue;
     }
 
     public function parseComplexity(): Complexity
@@ -43,13 +43,13 @@ class FayniReceptyParser extends BaseRecipeParser
         $nodes = $this->xpath->query("//ul[@class='wprm-recipe-ingredients']/li");
 
         foreach ($nodes as $node) {
-            $ingredient = implode(' ', [
-                $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-ingredient-name')]", $node),
-                $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $node),
-                $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $node),
-            ]);
-
-            $ingredients[] = CleanText::cleanText($ingredient);
+            $ingredients[] = new IngredientDTO(
+                title: implode(' ', [
+                    $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-ingredient-name')]", $node),
+                    $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-ingredient-amount')]", $node),
+                    $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $node),
+                ])
+            );
         }
 
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);

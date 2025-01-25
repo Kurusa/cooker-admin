@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\SourceRecipeUrl;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
+use App\Services\RecipeAttributes\CategoryService;
 use App\Services\RecipeAttributes\IngredientService;
 use App\Services\RecipeAttributes\RecipeService;
 use App\Services\RecipeAttributes\StepService;
@@ -14,15 +15,16 @@ use Illuminate\Support\Facades\Log;
 class ProcessRecipeUrlService
 {
     public function __construct(
-        private readonly RecipeService $recipeService,
+        private readonly RecipeService     $recipeService,
         private readonly IngredientService $ingredientService,
-        private readonly StepService $stepService,
+        private readonly StepService       $stepService,
+        private readonly CategoryService   $categoryService,
     )
     {
     }
 
     public function processRecipeUrl(
-        SourceRecipeUrl $sourceRecipeUrl,
+        SourceRecipeUrl       $sourceRecipeUrl,
         RecipeParserInterface $parser,
     ): void
     {
@@ -46,6 +48,7 @@ class ProcessRecipeUrlService
 
                     $this->stepService->attachSteps($recipeDTO->steps, $recipe);
                     $this->ingredientService->attachIngredients($recipeDTO->ingredients, $recipe);
+                    $this->categoryService->attachCategories($recipeDTO->categories, $recipe);
                 }
             });
         } catch (Exception $exception) {

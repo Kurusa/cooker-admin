@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
 
 class AllRecipesParser extends BaseRecipeParser
@@ -45,7 +44,7 @@ class AllRecipesParser extends BaseRecipeParser
 
         $ingredients = [];
         foreach ($listItems as $item) {
-            $ingredients[] = CleanText::cleanText($item->textContent);
+            $ingredients[] = $item->textContent;
         }
 
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
@@ -66,7 +65,7 @@ class AllRecipesParser extends BaseRecipeParser
             if (!$listItems->item($i + 1)?->getElementsByTagName('img')->length) {
                 $title = $listItems->item($i + 1)?->textContent ?? '';
                 $steps[] = [
-                    'description' => CleanText::cleanText($title),
+                    'description' => $title,
                     'image' => '',
                 ];
                 continue;
@@ -75,7 +74,7 @@ class AllRecipesParser extends BaseRecipeParser
             $image = $listItems->item($i + 1)->getElementsByTagName('img')->item(0)?->getAttribute('data-src') ?? '';
 
             $steps[] = [
-                'description' => CleanText::cleanText($title),
+                'description' => $title,
                 'image' => $image
             ];
         }

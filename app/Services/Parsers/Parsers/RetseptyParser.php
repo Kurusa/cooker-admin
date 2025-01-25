@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 
 class RetseptyParser extends BaseRecipeParser
 {
@@ -57,8 +56,8 @@ class RetseptyParser extends BaseRecipeParser
             $unitNode = $this->xpath->query("//span[contains(@class, 'wprm-recipe-ingredient-unit')]", $ingredientNode);
             $nameNode = $this->xpath->query("//span[contains(@class, 'wprm-recipe-ingredient-name')]", $ingredientNode);
 
-            $ingredient = CleanText::cleanText($nameNode->item(0)?->textContent) . ': ' . CleanText::cleanText($amountNode->item(0)?->textContent ?? '')
-                . ' ' . CleanText::cleanText($unitNode->item(0)?->textContent ?? '');
+            $ingredient = $nameNode->item(0)?->textContent . ': ' . $amountNode->item(0)?->textContent ?? ''
+            . ' ' . $unitNode->item(0)?->textContent ?? '';
             $ingredients[] = $ingredient;
         }
 

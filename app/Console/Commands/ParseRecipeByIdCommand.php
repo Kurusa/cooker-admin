@@ -14,7 +14,7 @@ class ParseRecipeByIdCommand extends Command
     protected $description = 'Parse a single recipe by its ID';
 
     public function __construct(
-        private readonly RecipeParserFactory $parserFactory,
+        private readonly RecipeParserFactory     $parserFactory,
         private readonly ProcessRecipeUrlService $processRecipeUrlService,
     )
     {

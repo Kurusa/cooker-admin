@@ -91,7 +91,7 @@ class SourceController extends Controller
 
     public function parse(Source $source)
     {
-        Artisan::call('parse:recipe:source', [
+        Artisan::call('parse:recipes:source', [
             'source' => $source->title,
         ]);
 

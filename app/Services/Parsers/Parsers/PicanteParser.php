@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 use DOMNode;
 
 class PicanteParser extends BaseRecipeParser
@@ -41,8 +40,8 @@ class PicanteParser extends BaseRecipeParser
         $ingredientNodes = $this->xpath->query("//ul[@class='ingredients']/li");
 
         foreach ($ingredientNodes as $node) {
-            $name = CleanText::cleanText($this->xpath->query("//span[@class='name']", $node)->item(0)->textContent);
-            $amount = CleanText::cleanText($this->xpath->query("//span[@class='amount']", $node)->item(0)->textContent);
+            $name = $this->xpath->query("//span[@class='name']", $node)->item(0)->textContent;
+            $amount = $this->xpath->query("//span[@class='amount']", $node)->item(0)->textContent;
 
             $ingredients[] = $amount ? "{$name}: {$amount}" : $name;
         }
@@ -58,7 +57,7 @@ class PicanteParser extends BaseRecipeParser
 
         /** @var DOMNode $paragraphNode */
         foreach ($paragraphNodes as $paragraphNode) {
-            $description = CleanText::cleanText($paragraphNode->textContent);
+            $description = $paragraphNode->textContent;
             if (preg_match('/^\d+\)/', $description)) {
                 $description = preg_replace('/^\d+\)\s*/', '', $description);
             }

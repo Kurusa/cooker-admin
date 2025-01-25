@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
 use DOMNode;
 
@@ -41,7 +40,7 @@ class YabpoelaParser extends BaseRecipeParser
 
     public function parseIngredients(bool $debug = false): array
     {
-        $ingredients = array_map(fn($item) => CleanText::cleanText($item->textContent),
+        $ingredients = array_map(fn($item) => $item->textContent,
             iterator_to_array($this->xpath->query("//div[@class='ing_block_list']/ul/li[concat(/span[@class='ingredient_title'], ' ', /span[@class='ing-amount'], ' ', /span[@class='ing-volume'])]")));
 
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);

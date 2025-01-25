@@ -5,19 +5,18 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
 
 class RudParser extends BaseRecipeParser
 {
     public function parseTitle(): string
     {
-        return CleanText::cleanText($this->xpath->query("//h2[@itemprop='name']")?->item(0)?->nodeValue ?? '');
+        return $this->xpath->query("//h2[@itemprop='name']")?->item(0)?->nodeValue;
     }
 
     public function parseCategories(): array
     {
-        return CleanText::cleanText($this->xpath->evaluate("string((//div[@class='wrapper']//span[@itemprop='itemListElement']//span[@itemprop='name'])[last()-1])"));
+        return $this->xpath->evaluate("string((//div[@class='wrapper']//span[@itemprop='itemListElement']//span[@itemprop='name'])[last()-1])");
     }
 
     public function parseComplexity(): Complexity
@@ -42,7 +41,7 @@ class RudParser extends BaseRecipeParser
     public function parseIngredients(bool $debug = false): array
     {
         $ingredients = array_map(
-            fn($row) => CleanText::cleanText($this->xpath->evaluate("string(.//td[1])", $row) . ':' . $this->xpath->evaluate("string(.//td[2])", $row)),
+            fn($row) => $this->xpath->evaluate("string(.//td[1])", $row) . ':' . $this->xpath->evaluate("string(.//td[2])", $row),
             iterator_to_array($this->xpath->query("//tr[@itemprop='recipeIngredient']"))
         );
 
@@ -58,7 +57,7 @@ class RudParser extends BaseRecipeParser
         foreach ($nodes as $node) {
             $newStepNumber = (int) substr($node->textContent, -1);
             if ($newStepNumber >= $stepNumber) {
-                $steps[] = CleanText::cleanText($node->nextSibling->textContent);
+                $steps[] = $node->nextSibling->textContent;
                 $stepNumber = $newStepNumber;
             } else {
                 break;
@@ -75,13 +74,13 @@ class RudParser extends BaseRecipeParser
         while ($currentNode) {
             if ($currentNode->nodeType === XML_ELEMENT_NODE) {
                 if ($currentNode->nodeName === 'p') {
-                    $steps[] = CleanText::cleanText($currentNode->textContent);
+                    $steps[] = $currentNode->textContent;
                 }
 
                 if ($currentNode->nodeName === 'ol' || $currentNode->nodeName === 'ul') {
                     foreach ($currentNode->childNodes as $liNode) {
                         if ($liNode->nodeName === 'li') {
-                            $steps[] = CleanText::cleanText($liNode->textContent);
+                            $steps[] = $liNode->textContent;
                         }
                     }
                 }

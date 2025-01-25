@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\DTO\IngredientDTO;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -14,13 +15,15 @@ class DeepseekService
     }
 
     /**
-     * @param array $ingredients
+     * @param IngredientDTO[] $ingredients
      * @return array
      * @throws GuzzleException
      */
     public function parseIngredients(array $ingredients): array
     {
         try {
+            $ingredientTitles = implode(',', array_map(fn(IngredientDTO $ingredient) => $ingredient->title, $ingredients));
+
             $response = $this->client->post('/chat/completions', [
                 'json' => [
                     'model' => 'deepseek-chat',
@@ -30,13 +33,24 @@ class DeepseekService
                             'role' => 'user',
                             'content' => "Розпарси інгредієнти у форматі JSON-масиву з об'єктами,де кожен об'єкт має ключі:title,unit,quantity,originalTitle.Поверни лише цей масив без пояснень,без додаткового тексту і описів.
                             Складні інгредієнти не розбивай на підінгредієнти.Юніти скорочуй без крапок, уніфіковуй (грами-г, ст ложки-ст.л) і надавай українською.Порожні поля залишай пустими.Назви інгредієнтів—у називному відмінку і нижньому регістрі.
-                            Замінюй нетипові лапки на стандартні.У originalTitle передай оригінальну назву інгредієнта.Інгредієнти:" . implode(',', $ingredients)],
+                            Замінюй нетипові лапки на стандартні.У originalTitle передай оригінальну назву інгредієнта.Інгредієнти:" . $ingredientTitles],
                     ],
                     'stream' => false,
                 ],
             ]);
 
-            return $this->parseDeepseekResponse($response->getBody()->getContents());
+
+            $responseData = $this->parseDeepseekResponse($response->getBody()->getContents());
+
+            return array_map(
+                fn(array $ingredientData) => new IngredientDTO(
+                    title        : $ingredientData['title'],
+                    quantity     : $ingredientData['quantity'] ?? null,
+                    unit         : $ingredientData['unit'] ?? null,
+                    originalTitle: $ingredientData['originalTitle'] ?? null,
+                ),
+                $responseData
+            );
         } catch (RequestException $e) {
             return [];
         }
@@ -90,7 +104,7 @@ class DeepseekService
         preg_match('/\[\s*{.*?}\s*\]/s', $content, $matches);
 
         if (empty($matches)) {
-            throw new Exception('No ingredients found in response');
+            throw new Exception('No data found in response');
         }
 
         return json_decode($matches[0], true);

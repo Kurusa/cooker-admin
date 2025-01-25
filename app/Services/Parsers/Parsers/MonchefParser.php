@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 
 class MonchefParser extends BaseRecipeParser
 {
@@ -40,7 +39,7 @@ class MonchefParser extends BaseRecipeParser
 
         $ingredients = [];
         foreach ($listItems as $item) {
-            $ingredients[] = CleanText::cleanText($item->textContent);
+            $ingredients[] = $item->textContent;
         }
 
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
@@ -53,7 +52,7 @@ class MonchefParser extends BaseRecipeParser
         $steps = [];
         foreach ($listItems as $item) {
             $steps[] = [
-                'description' => CleanText::cleanText($item->textContent),
+                'description' => $item->textContent,
                 'image' => '',
             ];
         }

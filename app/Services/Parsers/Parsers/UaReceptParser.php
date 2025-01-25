@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 use DOMNode;
 
 class UaReceptParser extends BaseRecipeParser
@@ -73,7 +72,7 @@ class UaReceptParser extends BaseRecipeParser
 
             if ($description) {
                 $steps[] = [
-                    'description' => CleanText::cleanText($description),
+                    'description' => $description,
                     'imageUrl' => $imageUrl,
                 ];
             }
@@ -89,7 +88,7 @@ class UaReceptParser extends BaseRecipeParser
 
                 if (mb_strlen($description)) {
                     $steps[] = [
-                        'description' => CleanText::cleanText($description),
+                        'description' => $description,
                         'imageUrl' => $imageUrl,
                     ];
                 }

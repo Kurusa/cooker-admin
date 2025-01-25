@@ -3,14 +3,13 @@
 namespace App\Services\Parsers\Contracts;
 
 use App\DTO\RecipeDTO;
+use App\DTO\StepDTO;
 use App\Enums\Recipe\Complexity;
 
 interface RecipeParserInterface
 {
-    /**
-     * @return RecipeDTO[]
-     */
-    public function parseRecipes(): array;
+    /** @return RecipeDTO[] */
+    public function parseRecipes(bool $debug = false): array;
 
     public function parseTitle(): string;
 
@@ -26,5 +25,6 @@ interface RecipeParserInterface
 
     public function parseIngredients(bool $debug = false): array;
 
+    /** @return StepDTO[] */
     public function parseSteps(bool $debug = false): array;
 }

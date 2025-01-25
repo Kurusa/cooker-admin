@@ -13,12 +13,12 @@
 
             <div id="myTabContent" class="tab-content">
                 <div class="tab-pane fade show active" id="kt_source_view_overview_tab" role="tabpanel">
-                    @include('pages.apps.management.sources.partials.cards.sitemap_list')
-                    @include('pages.apps.management.sources.partials.cards.debug_parse')
+                    @include('pages.apps.management.sources.partials.sitemap_list')
+                    @include('pages.apps.management.sources.partials.debug_parse')
                 </div>
 
                 <div class="tab-pane fade show" id="kt_source_view_unparsed_urls_tab" role="tabpanel">
-                    @include('pages.apps.management.sources.partials.cards.unparsed_urls_list')
+                    @include('pages.apps.management.sources.partials.unparsed_urls_list')
                 </div>
             </div>
         </div>

@@ -10,8 +10,6 @@ class CleanText
         $text = ltrim($text);
         $text = str_replace([
             "\r", "\n",
-            chr(160),
-            "\xC2\xA0"
         ], '', $text);
         $text = mb_strtolower($text);
 
@@ -21,18 +19,20 @@ class CleanText
 
         $text = preg_replace('/\x{00A0}/u', '', $text);
 
-        $text = trim($text);
-        $text = ltrim($text);
-
         $text = str_replace(['“', '”', '„', '"', '‟', "’", "«", '»'], "'", $text);
         $text = str_replace(' %', '%', $text);
         $text = str_replace('( ', ' (', $text);
         $text = str_replace(' )', ')', $text);
 
+        $text = preg_replace('/\s+/', ' ', $text);
+
         $text = rtrim($text, ':');
         $text = rtrim($text, ';');
 
-        $text = preg_replace('/\s+/', ' ', $text);
+        $text = preg_replace('/^\d+\.\s+/', ' ', $text);
+
+        $text = trim($text);
+        $text = ltrim($text);
 
         return $text;
     }

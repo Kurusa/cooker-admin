@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
 
 class TsnParser extends BaseRecipeParser
@@ -52,15 +51,15 @@ class TsnParser extends BaseRecipeParser
 
         foreach ($ingredientNodes as $node) {
             if ($node->nodeName === 'dt') {
-                $name = CleanText::cleanText($node->textContent);
+                $name = $node->textContent;
                 $quantityNode = $node->nextSibling;
                 while ($quantityNode && $quantityNode->nodeName !== 'dd') {
                     $quantityNode = $quantityNode->nextSibling;
                 }
-                $quantity = $quantityNode ? CleanText::cleanText($quantityNode->textContent) : '';
-                $ingredients[] = CleanText::cleanText($name . ':' . $quantity);
+                $quantity = $quantityNode ? $quantityNode->textContent : '';
+                $ingredients[] = $name . ':' . $quantity;
             } elseif ($node->nodeName === 'li') {
-                $ingredients[] = CleanText::cleanText($node->textContent);
+                $ingredients[] = $node->textContent;
             }
         }
 
@@ -72,20 +71,20 @@ class TsnParser extends BaseRecipeParser
         $steps = [];
         $stepNodes = $this->xpath->query("//div[@data-content='']/ol/li");
         foreach ($stepNodes as $node) {
-            $steps[] = CleanText::cleanText($node->textContent);
+            $steps[] = $node->textContent;
         }
 
         if (empty($steps)) {
             $paragraphNodes = $this->xpath->query("//h2[contains(text(), 'Інгредієнти')]/following::ul[1]/li");
             foreach ($paragraphNodes as $node) {
-                $steps[] = CleanText::cleanText($node->textContent);
+                $steps[] = $node->textContent;
             }
         }
 
         if (empty($steps)) {
             $paragraphNodes = $this->xpath->query("//div[@data-content='']/p");
             foreach ($paragraphNodes as $node) {
-                $text = CleanText::cleanText($node->textContent);
+                $text = $node->textContent;
 
                 if (preg_match('/^\d+\./', $text)) {
                     $text = preg_replace('/^\d+\.\s*/', '', $text);
@@ -99,7 +98,7 @@ class TsnParser extends BaseRecipeParser
             $isStepsStarted = false;
 
             foreach ($paragraphNodes as $node) {
-                $text = CleanText::cleanText($node->textContent);
+                $text = $node->textContent;
                 if (!$isStepsStarted && stripos($text, 'приготування') !== false) {
                     $isStepsStarted = true;
                     continue;

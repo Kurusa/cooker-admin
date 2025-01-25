@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 
 class SmachnoParser extends BaseRecipeParser
 {
@@ -62,11 +61,10 @@ class SmachnoParser extends BaseRecipeParser
             $descriptionNode = $this->xpath->query("//div[@class='step_text']", $node);
             $imageNode = $this->xpath->query("//img/@src", $node);
 
-            $description = trim($descriptionNode->item(0)?->textContent ?? '');
-            $image = trim($imageNode->item(0)?->nodeValue ?? '');
+            $image = $imageNode->item(0)?->nodeValue;
 
             $steps[] = [
-                'description' => CleanText::cleanText($description),
+                'description' => $descriptionNode->item(0)?->textContent,
                 'imageUrl' => $image ? 'https://www.smachno.in.ua/' . $image : '',
             ];
         }

@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
 
 class ReceptyTvParser extends BaseRecipeParser
@@ -39,7 +38,7 @@ class ReceptyTvParser extends BaseRecipeParser
 
     public function parseIngredients(bool $debug = false): array
     {
-        $ingredients = array_map(fn($item) => CleanText::cleanText(str_replace("\n", '', $item->textContent)),
+        $ingredients = array_map(fn($item) => str_replace("\n", '', $item->textContent),
             iterator_to_array($this->xpath->query("//div[@class='ingredients']/ul/li[normalize-space(concat(/p or /a, ' ', /span))]")));
 
         return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
@@ -48,7 +47,7 @@ class ReceptyTvParser extends BaseRecipeParser
     public function parseSteps(bool $debug = false): array
     {
         return array_map(fn($item) => [
-            'description' => CleanText::cleanText($item->textContent),
+            'description' => $item->textContent,
             'image' => '',
         ], iterator_to_array($this->xpath->query("//div[@class='recipe-item']/p[position() mod 2 = 0]")));
     }

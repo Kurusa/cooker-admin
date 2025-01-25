@@ -5,7 +5,6 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CleanText;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
 use DOMNode;
 
@@ -58,7 +57,7 @@ class EtnocookParser extends BaseRecipeParser
             $exploded = explode("<br>", $item->textContent);
 
             foreach ($exploded as $ingredient) {
-                $ingredients[] = CleanText::cleanText($ingredient);
+                $ingredients[] = $ingredient;
             }
         }, iterator_to_array($this->xpath->query("//p[contains(.,'………')]")));
 
@@ -74,7 +73,7 @@ class EtnocookParser extends BaseRecipeParser
 
             foreach ($exploded as $step) {
                 $steps[] = [
-                    'description' => CleanText::cleanText($step),
+                    'description' => $step,
                     'image' => '',
                 ];
             }
