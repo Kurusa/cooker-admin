@@ -15,7 +15,7 @@ class EditUnitModal extends Component
     public $unitId;
 
     protected $rules = [
-        'title' => 'required|string|max:255',
+        'title'      => 'required|string|max:255',
         'mergeUnits' => 'array',
     ];
 

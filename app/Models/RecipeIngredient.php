@@ -13,6 +13,8 @@ class RecipeIngredient extends Pivot
         'recipe_id',
         'ingredient_unit_id',
         'quantity',
+        'ingredient_title',
+        'unit_title',
     ];
 
     public function ingredientUnit(): BelongsTo

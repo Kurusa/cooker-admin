@@ -18,17 +18,23 @@ class IngredientService
     {
         foreach ($ingredients as $ingredientData) {
             /** @var Ingredient $ingredient */
-            $ingredient = Ingredient::firstOrCreate(['title' => $ingredientData->title]);
+            $ingredient = Ingredient::firstOrCreate([
+                'title'          => $ingredientData->title,
+                'original_title' => $ingredientData->originalTitle,
+            ]);
 
             $unit = $this->getUnit($ingredientData->unit);
 
+            /** @var IngredientUnit $ingredientUnit */
             $ingredientUnit = IngredientUnit::firstOrCreate([
                 'ingredient_id' => $ingredient->id,
-                'unit_id' => $unit?->id,
+                'unit_id'       => $unit?->id,
             ]);
 
             $recipe->ingredients()->attach($ingredientUnit->id, [
-                'quantity' => $ingredientData->quantity,
+                'quantity'         => $ingredientData->quantity,
+                'ingredient_title' => $ingredient->title,
+                'unit_title'       => $ingredientUnit->title,
             ]);
         }
     }

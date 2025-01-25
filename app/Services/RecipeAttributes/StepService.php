@@ -20,9 +20,9 @@ class StepService
 
         foreach ($steps as $step) {
             RecipeStep::create([
-                'recipe_id' => $recipe->id,
+                'recipe_id'   => $recipe->id,
                 'description' => $step->description,
-                'image_url' => $step->imageUrl,
+                'image_url'   => $step->image,
             ]);
         }
     }

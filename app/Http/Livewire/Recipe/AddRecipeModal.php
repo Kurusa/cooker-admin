@@ -21,14 +21,14 @@ class AddRecipeModal extends Component
     public $edit_mode = false;
 
     protected $rules = [
-        'title' => 'required|string|max:255',
-        'complexity' => 'required|in:easy,medium,hard',
-        'advice' => 'nullable|string|max:1024',
-        'time' => 'required|integer|min:1',
-        'portions' => 'required|integer|min:1',
-        'source_url' => 'nullable|url|max:255',
+        'title'       => 'required|string|max:255',
+        'complexity'  => 'required|in:easy,medium,hard',
+        'advice'      => 'nullable|string|max:1024',
+        'time'        => 'required|integer|min:1',
+        'portions'    => 'required|integer|min:1',
+        'source_url'  => 'nullable|url|max:255',
         'category_id' => 'required|integer|exists:categories,id',
-        'image_url' => 'nullable|url|max:255',
+        'image_url'   => 'nullable|url|max:255',
     ];
 
     protected $listeners = [
@@ -47,14 +47,14 @@ class AddRecipeModal extends Component
 
         DB::transaction(function () {
             $data = [
-                'title' => $this->title,
-                'complexity' => $this->complexity,
-                'advice' => $this->advice,
-                'time' => $this->time,
-                'portions' => $this->portions,
-                'source_url' => $this->source_url,
+                'title'       => $this->title,
+                'complexity'  => $this->complexity,
+                'advice'      => $this->advice,
+                'time'        => $this->time,
+                'portions'    => $this->portions,
+                'source_url'  => $this->source_url,
                 'category_id' => $this->category_id,
-                'image_url' => $this->image_url,
+                'image_url'   => $this->image_url,
             ];
 
             /** @var Recipe $recipe */

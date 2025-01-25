@@ -38,14 +38,15 @@ abstract class BaseRecipeParser implements RecipeParserInterface
     {
         return [
             new RecipeDTO(
-                title      : $this->parseTitle(),
-                complexity : $this->parseComplexity(),
-                time       : $this->parseCookingTime(),
-                portions   : $this->parsePortions(),
-                imageUrl   : $this->parseImage(),
-                categories : $this->parseCategories(),
-                ingredients: $this->parseIngredients($debug),
-                steps      : $this->parseSteps($debug),
+                title               : $this->parseTitle(),
+                complexity          : $this->parseComplexity(),
+                time                : $this->parseCookingTime(),
+                portions            : $this->parsePortions(),
+                imageUrl            : $this->parseImage(),
+                source_recipe_url_id: null,
+                categories          : $this->parseCategories(),
+                ingredients         : $this->parseIngredients($debug),
+                steps               : $this->parseSteps($debug),
             ),
         ];
     }

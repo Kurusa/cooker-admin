@@ -45,9 +45,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(DeepseekService::class, function () {
             return new DeepseekService(new Client([
                 'base_uri' => config('services.deepseek.base_uri'),
-                'headers' => [
+                'headers'  => [
                     'Authorization' => 'Bearer ' . config('services.deepseek.api_key'),
-                    'Content-Type' => 'application/json',
+                    'Content-Type'  => 'application/json',
                 ],
             ]));
         });

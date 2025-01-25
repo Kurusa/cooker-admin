@@ -14,7 +14,7 @@ class ReparseRecipeByIdsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'recipe_ids' => 'required|array|min:1',
+            'recipe_ids'   => 'required|array|min:1',
             'recipe_ids.*' => 'integer|exists:recipes,id',
         ];
     }

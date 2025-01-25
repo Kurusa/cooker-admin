@@ -44,10 +44,10 @@ class SitemapUrlCollectorService
             } else {
                 /** @var SourceRecipeUrl $sourceRecipeUrl */
                 $sourceRecipeUrl = SourceRecipeUrl::updateOrCreate([
-                    'url' => $url,
+                    'url'       => $url,
                     'source_id' => $this->source->id,
                 ], [
-                    'url' => $url,
+                    'url'       => $url,
                     'source_id' => $this->source->id,
                 ]);
 

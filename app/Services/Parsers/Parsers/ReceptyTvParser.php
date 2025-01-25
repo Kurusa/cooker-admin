@@ -48,7 +48,7 @@ class ReceptyTvParser extends BaseRecipeParser
     {
         return array_map(fn($item) => [
             'description' => $item->textContent,
-            'image' => '',
+            'image'       => '',
         ], iterator_to_array($this->xpath->query("//div[@class='recipe-item']/p[position() mod 2 = 0]")));
     }
 

@@ -17,10 +17,10 @@ class AddStepModal extends Component
     public $edit_mode = false;
 
     protected array $rules = [
-        'recipe_id' => 'required|integer',
+        'recipe_id'   => 'required|integer',
         'description' => 'required|string|max:1024',
-        'image_url' => 'nullable|string',
-        'index' => 'required|integer',
+        'image_url'   => 'nullable|string',
+        'index'       => 'required|integer',
     ];
 
     protected $listeners = [
@@ -39,10 +39,10 @@ class AddStepModal extends Component
 
         DB::transaction(function () {
             $data = [
-                'recipe_id' => $this->recipe_id,
+                'recipe_id'   => $this->recipe_id,
                 'description' => $this->description,
-                'image_url' => $this->image_url,
-                'index' => $this->index,
+                'image_url'   => $this->image_url,
+                'index'       => $this->index,
             ];
 
             /** @var RecipeStep $step */

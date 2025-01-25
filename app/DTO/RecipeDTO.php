@@ -14,6 +14,7 @@ class RecipeDTO extends Data
         public ?int       $time = null,
         public int        $portions = 1,
         public string     $imageUrl,
+        public ?int       $source_recipe_url_id = null,
         /** @var array<CategoryDTO> */
         public array      $categories,
         /** @var array<IngredientDTO> */

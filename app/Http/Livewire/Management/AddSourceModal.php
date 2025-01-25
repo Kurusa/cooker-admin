@@ -17,12 +17,12 @@ class AddSourceModal extends Component
     public $edit_mode = true;
 
     protected $rules = [
-        'url' => 'required|string',
+        'url'   => 'required|string',
         'title' => 'required|string',
     ];
 
     protected $listeners = [
-        'delete_source' => 'deleteSource',
+        'delete_source'       => 'deleteSource',
         'collect_recipe_urls' => 'collectRecipeUrls',
     ];
 
@@ -37,7 +37,7 @@ class AddSourceModal extends Component
 
         DB::transaction(function () {
             $data = [
-                'url' => $this->url,
+                'url'   => $this->url,
                 'title' => $this->title,
             ];
 

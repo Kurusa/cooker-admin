@@ -90,20 +90,20 @@ class RecipeController extends Controller
             $xpath = $parser->loadHtml($request->get('url'));
 
             $recipe = [
-                'title' => $parser->parseTitle($xpath),
-                'image' => $parser->parseImage($xpath),
-                'category' => $parser->parseCategory($xpath),
-                'complexity' => $parser->parseComplexity($xpath),
+                'title'       => $parser->parseTitle($xpath),
+                'image'       => $parser->parseImage($xpath),
+                'category'    => $parser->parseCategory($xpath),
+                'complexity'  => $parser->parseComplexity($xpath),
                 'cookingTime' => $parser->parseCookingTime($xpath),
-                'portions' => $parser->parsePortions($xpath),
+                'portions'    => $parser->parsePortions($xpath),
                 'ingredients' => $parser->parseIngredients($xpath, true),
-                'steps' => $parser->parseSteps($xpath),
+                'steps'       => $parser->parseSteps($xpath),
             ];
 
             return response()->json([
                 'success' => true,
-                'recipe' => $recipe,
-                'view' => view('pages.apps.recipe.recipes.partials.recipe-data', compact('recipe'))->render(),
+                'recipe'  => $recipe,
+                'view'    => view('pages.apps.recipe.recipes.partials.recipe-data', compact('recipe'))->render(),
             ]);
         } catch (Exception $e) {
             return response()->json([

@@ -65,7 +65,7 @@ class SmachnoParser extends BaseRecipeParser
 
             $steps[] = [
                 'description' => $descriptionNode->item(0)?->textContent,
-                'imageUrl' => $image ? 'https://www.smachno.in.ua/' . $image : '',
+                'imageUrl'    => $image ? 'https://www.smachno.in.ua/' . $image : '',
             ];
         }
 

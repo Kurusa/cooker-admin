@@ -16,7 +16,7 @@ class AddIngredientModal extends Component
 
     protected $rules = [
         'title' => 'required|string|max:255',
-        'unit' => 'nullable|string|max:50',
+        'unit'  => 'nullable|string|max:50',
     ];
 
     protected $listeners = [
@@ -36,7 +36,7 @@ class AddIngredientModal extends Component
         DB::transaction(function () {
             $data = [
                 'title' => $this->title,
-                'unit' => $this->unit,
+                'unit'  => $this->unit,
             ];
 
             /** @var Ingredient $ingredient */

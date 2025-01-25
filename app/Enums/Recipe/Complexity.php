@@ -4,9 +4,9 @@ namespace App\Enums\Recipe;
 
 enum Complexity: string
 {
-    case EASY = 'easy';
+    case EASY   = 'easy';
     case MEDIUM = 'medium';
-    case HARD = 'hard';
+    case HARD   = 'hard';
 
     public function getEmoji(): string
     {

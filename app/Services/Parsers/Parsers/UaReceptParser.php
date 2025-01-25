@@ -73,7 +73,7 @@ class UaReceptParser extends BaseRecipeParser
             if ($description) {
                 $steps[] = [
                     'description' => $description,
-                    'imageUrl' => $imageUrl,
+                    'imageUrl'    => $imageUrl,
                 ];
             }
         }
@@ -89,7 +89,7 @@ class UaReceptParser extends BaseRecipeParser
                 if (mb_strlen($description)) {
                     $steps[] = [
                         'description' => $description,
-                        'imageUrl' => $imageUrl,
+                        'imageUrl'    => $imageUrl,
                     ];
                 }
             }

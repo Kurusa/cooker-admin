@@ -56,7 +56,7 @@ class YabpoelaParser extends BaseRecipeParser
 
             return [
                 'description' => $description,
-                'image' => $image ? 'https://ua.yabpoela.net' . $image : '',
+                'image'       => $image ? 'https://ua.yabpoela.net' . $image : '',
             ];
         }, iterator_to_array($this->xpath->query("//div[contains(@id,'step-')]")));
     }

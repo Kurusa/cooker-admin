@@ -72,7 +72,7 @@ class PicanteParser extends BaseRecipeParser
 
                 $steps[] = [
                     'description' => $description,
-                    'imageUrl' => 'https://picantecooking.com' . $imageUrl,
+                    'imageUrl'    => 'https://picantecooking.com' . $imageUrl,
                 ];
             }
         }

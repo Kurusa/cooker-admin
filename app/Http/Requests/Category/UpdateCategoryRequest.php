@@ -14,8 +14,8 @@ class UpdateCategoryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|max:255',
-            'parentId' => 'nullable|exists:categories,id',
+            'title'           => 'required|string|max:255',
+            'parentId'        => 'nullable|exists:categories,id',
             'mergeCategories' => 'array|exists:categories,id',
             'childCategories' => 'array|exists:categories,id',
         ];

@@ -37,14 +37,8 @@ class ProcessRecipeUrlService
                 $recipes = $parser->parseRecipes();
 
                 foreach ($recipes as $recipeDTO) {
-                    $recipe = $this->recipeService->createOrUpdateRecipe([
-                        'source_recipe_url_id' => $sourceRecipeUrl->id,
-                        'title' => $recipeDTO->title,
-                        'complexity' => $recipeDTO->complexity,
-                        'time' => $recipeDTO->time,
-                        'portions' => $recipeDTO->portions,
-                        'image_url' => $recipeDTO->imageUrl,
-                    ]);
+                    $recipeDTO->source_recipe_url_id = $sourceRecipeUrl->id;
+                    $recipe = $this->recipeService->createOrUpdateRecipe($recipeDTO);
 
                     $this->stepService->attachSteps($recipeDTO->steps, $recipe);
                     $this->ingredientService->attachIngredients($recipeDTO->ingredients, $recipe);
@@ -52,7 +46,7 @@ class ProcessRecipeUrlService
                 }
             });
         } catch (Exception $exception) {
-            Log::error($exception->getMessage());
+            Log::error($exception->getMessage() . $exception->getTraceAsString());
         } finally {
             DB::statement('SELECT RELEASE_LOCK(?)', ['parse_recipe_lock']);
         }

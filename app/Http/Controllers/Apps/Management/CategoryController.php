@@ -18,9 +18,9 @@ class CategoryController extends Controller
     public function show(Category $category)
     {
         return response()->json([
-            'id' => $category->id,
-            'title' => $category->title,
-            'parent_id' => $category->parent_id,
+            'id'               => $category->id,
+            'title'            => $category->title,
+            'parent_id'        => $category->parent_id,
             'child_categories' => $category->children()->pluck('id')->toArray(),
         ]);
     }

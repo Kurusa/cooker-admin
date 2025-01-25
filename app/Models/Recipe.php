@@ -42,7 +42,7 @@ class Recipe extends Model
 
     protected $casts = [
         'complexity' => Complexity::class,
-        'rating' => 'integer',
+        'rating'     => 'integer',
     ];
 
     public function sourceRecipeUrl(): BelongsTo

@@ -18,11 +18,11 @@ class CategoryService
             ->unique(fn(CategoryDTO $category) => $category->title)
             ->filter();
 
-        foreach ($categories as $step) {
+        foreach ($categories as $categoryData) {
             /** @var Category $category */
             $category = Category::updateOrCreate([
-                'title' => $category->title,
-            ], ['title' => $category->title]);
+                'title' => $categoryData->title,
+            ], ['title' => $categoryData->title]);
 
             $recipe->categories()->attach($category->id);
         }
