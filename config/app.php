@@ -188,7 +188,6 @@ return [
         /*
          * Application Service Providers...
          */
-        App\Providers\HelperServiceProvider::class,
         App\Providers\AppServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 

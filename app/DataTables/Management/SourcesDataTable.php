@@ -40,6 +40,10 @@ class SourcesDataTable extends DataTable
                     $statusBadge = '<span class="badge py-3 px-4 fs-7 badge-light-dark">Doesn\'t have a sitemap</span>';
                 }
 
+                if ($source->sitemaps()->count() && $source->totalUrls() === 0) {
+                    $statusBadge = '<span class="badge py-3 px-4 fs-7 badge-light-dark">Doesn\'t have urls</span>';
+                }
+
                 if ($source->is_manual) {
                     $statusBadge = '<span class="badge py-3 px-4 fs-7 badge-light-secondary">Manual parsing required</span>';
                 }

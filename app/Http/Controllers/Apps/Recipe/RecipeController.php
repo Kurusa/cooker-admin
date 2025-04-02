@@ -87,23 +87,23 @@ class RecipeController extends Controller
             /** @var Source $source */
             $source = Source::find($request->get('source_id'));
             $parser = $this->recipeParserFactory->make($source->title);
-            $xpath = $parser->loadHtml($request->get('url'));
+            $parser->loadHtml($request->get('url'));
 
-            $recipe = [
-                'title'       => $parser->parseTitle($xpath),
-                'image'       => $parser->parseImage($xpath),
-                'category'    => $parser->parseCategory($xpath),
-                'complexity'  => $parser->parseComplexity($xpath),
-                'cookingTime' => $parser->parseCookingTime($xpath),
-                'portions'    => $parser->parsePortions($xpath),
-                'ingredients' => $parser->parseIngredients($xpath, true),
-                'steps'       => $parser->parseSteps($xpath),
+            $recipes = [
+                'title'       => $parser->parseTitle(),
+                'image'       => $parser->parseImage(),
+                'category'    => $parser->parseCategories(),
+                'complexity'  => $parser->parseComplexity(),
+                'cookingTime' => $parser->parseCookingTime(),
+                'portions'    => $parser->parsePortions(),
+                'ingredients' => $parser->parseIngredients(true),
+                'steps'       => $parser->parseSteps(true),
             ];
 
             return response()->json([
                 'success' => true,
-                'recipe'  => $recipe,
-                'view'    => view('pages.apps.recipe.recipes.partials.recipe-data', compact('recipe'))->render(),
+                'recipes'  => $recipes,
+                'view'    => view('pages.apps.recipe.recipes.partials.recipe-data', compact('recipes'))->render(),
             ]);
         } catch (Exception $e) {
             return response()->json([
