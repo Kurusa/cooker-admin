@@ -28,9 +28,11 @@ class RecipeStep extends Resource
         return [
             ID::make()->sortable(),
 
-            BelongsTo::make('Recipe', 'recipe', Recipe::class)->sortable(),
+            BelongsTo::make('Recipe', 'recipe', Recipe::class)
+                ->sortable(),
 
-            Text::make('Description')->rules('required'),
+            Text::make('Description')
+                ->rules('required'),
 
             Text::make('Image URL', 'image_url')
                 ->hideFromIndex()

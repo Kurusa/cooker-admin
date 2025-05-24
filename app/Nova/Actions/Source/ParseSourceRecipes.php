@@ -2,9 +2,7 @@
 
 namespace App\Nova\Actions\Source;
 
-use App\Models\Recipe\Recipe;
 use App\Models\Source\Source;
-use App\Models\Source\SourceRecipeUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;

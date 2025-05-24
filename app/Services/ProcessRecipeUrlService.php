@@ -2,16 +2,15 @@
 
 namespace App\Services;
 
-use App\DTO\RecipeDTO;
 use App\Models\Source\SourceRecipeUrl;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\RecipeAttributes\CategoryService;
+use App\Services\RecipeAttributes\CuisineService;
 use App\Services\RecipeAttributes\IngredientService;
 use App\Services\RecipeAttributes\RecipeService;
 use App\Services\RecipeAttributes\StepService;
 use Exception;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Database\ConnectionInterface as Database;
 
 class ProcessRecipeUrlService
 {
@@ -20,6 +19,8 @@ class ProcessRecipeUrlService
         private readonly IngredientService $ingredientService,
         private readonly StepService       $stepService,
         private readonly CategoryService   $categoryService,
+        private readonly CuisineService    $cuisineService,
+        private readonly Database          $db,
     )
     {
     }
@@ -30,26 +31,24 @@ class ProcessRecipeUrlService
     ): void
     {
         try {
-            $parser->loadHtml($sourceRecipeUrl->url);
+            $recipes = $parser->parseRecipes($sourceRecipeUrl->url);
 
-            DB::transaction(function () use ($sourceRecipeUrl, $parser) {
-                DB::statement('SELECT GET_LOCK(?, -1)', ['parse_recipe_lock']);
+            $this->db->beginTransaction();
 
-                $recipes = $parser->parseRecipes();
+            foreach ($recipes as $recipeDTO) {
+                $recipeDTO->source_recipe_url_id = $sourceRecipeUrl->id;
+                $recipe = $this->recipeService->createOrUpdateRecipe($recipeDTO);
 
-                foreach ($recipes as $recipeDTO) {
-                    $recipeDTO->source_recipe_url_id = $sourceRecipeUrl->id;
-                    $recipe = $this->recipeService->createOrUpdateRecipe($recipeDTO);
+                $this->stepService->attachSteps($recipeDTO->steps, $recipe);
+                $this->ingredientService->attachIngredients($recipeDTO->ingredients, $recipe);
+                $this->categoryService->attachCategories($recipeDTO->categories, $recipe);
+                $this->cuisineService->attachCuisines($recipeDTO->cuisines, $recipe);
+            }
 
-                    $this->stepService->attachSteps($recipeDTO->steps, $recipe);
-                    $this->ingredientService->attachIngredients($recipeDTO->ingredients, $recipe);
-                    $this->categoryService->attachCategories($recipeDTO->categories, $recipe);
-                }
-            });
+            $this->db->commit();
         } catch (Exception $exception) {
-            Log::error($exception->getMessage() . $exception->getTraceAsString());
-        } finally {
-            DB::statement('SELECT RELEASE_LOCK(?)', ['parse_recipe_lock']);
+            $this->db->rollBack();
+            throw $exception;
         }
     }
 }

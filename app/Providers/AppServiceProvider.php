@@ -45,24 +45,24 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(RecipeParserFactory::class, function () {
             $factory = new RecipeParserFactory();
-            $factory->registerParser('patelnya', PatelnyaParser::class);
+            //$factory->registerParser('patelnya', PatelnyaParser::class);
             $factory->registerParser('fayni', FayniReceptyParser::class);
-            $factory->registerParser('jisty', JistyParser::class);
-            $factory->registerParser('novastrava', NovaStravaParser::class);
-            $factory->registerParser('rud', RudParser::class);
-            $factory->registerParser('tsn', TsnParser::class);
-            $factory->registerParser('smachno', SmachnoParser::class);
-            $factory->registerParser('picante', PicanteParser::class);
-            $factory->registerParser('retsepty', RetseptyParser::class);
-            $factory->registerParser('vse-recepty', VseReceptyParser::class);
-            $factory->registerParser('ua-recept', UaReceptParser::class);
-            $factory->registerParser('tandi', TandiParser::class);
-            $factory->registerParser('allrecipes', AllRecipesParser::class);
-            $factory->registerParser('monchef', MonchefParser::class);
-            $factory->registerParser('receptytv', ReceptyTvParser::class);
-            $factory->registerParser('yabpoela', YabpoelaParser::class);
-            $factory->registerParser('foodcourt', FoodcourtParser::class);
-            $factory->registerParser('etnocook', EtnocookParser::class);
+//            $factory->registerParser('jisty', JistyParser::class);
+//            $factory->registerParser('novastrava', NovaStravaParser::class);
+//            $factory->registerParser('rud', RudParser::class);
+//            $factory->registerParser('tsn', TsnParser::class);
+//            $factory->registerParser('smachno', SmachnoParser::class);
+//            $factory->registerParser('picante', PicanteParser::class);
+//            $factory->registerParser('retsepty', RetseptyParser::class);
+//            $factory->registerParser('vse-recepty', VseReceptyParser::class);
+//            $factory->registerParser('ua-recept', UaReceptParser::class);
+//            $factory->registerParser('tandi', TandiParser::class);
+//            $factory->registerParser('allrecipes', AllRecipesParser::class);
+//            $factory->registerParser('monchef', MonchefParser::class);
+//            $factory->registerParser('receptytv', ReceptyTvParser::class);
+//            $factory->registerParser('yabpoela', YabpoelaParser::class);
+//            $factory->registerParser('foodcourt', FoodcourtParser::class);
+//            $factory->registerParser('etnocook', EtnocookParser::class);
             return $factory;
         });
     }

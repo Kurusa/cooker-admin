@@ -37,7 +37,7 @@ class TandiParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredientNodes = $this->xpath->query('//p[contains(text(), "Складові:")]/following-sibling::text()');
 
@@ -51,7 +51,7 @@ class TandiParser extends BaseRecipeParser
         return $service->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $stepNodes = $this->xpath->query('//strong[contains(text(), "Приготування:")]/following-sibling::text()');
 

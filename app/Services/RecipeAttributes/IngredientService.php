@@ -20,7 +20,6 @@ class IngredientService
             /** @var Ingredient $ingredient */
             $ingredient = Ingredient::firstOrCreate([
                 'title' => $ingredientData->title,
-                'original_title' => $ingredientData->originalTitle,
             ]);
 
             $unit = $this->getUnit($ingredientData->unit);

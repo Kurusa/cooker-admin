@@ -34,7 +34,7 @@ class PicanteParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredients = [];
         $ingredientNodes = $this->xpath->query("//ul[@class='ingredients']/li");
@@ -50,7 +50,7 @@ class PicanteParser extends BaseRecipeParser
         return $service->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $steps = [];
         $paragraphNodes = $this->xpath->query("//section[@class='instructions ck-content']/p");

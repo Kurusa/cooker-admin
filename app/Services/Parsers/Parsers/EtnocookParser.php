@@ -49,7 +49,7 @@ class EtnocookParser extends BaseRecipeParser
         return $this->xpathService->extractSingleMetaAttribute('og:image');
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredients = [];
 
@@ -61,10 +61,10 @@ class EtnocookParser extends BaseRecipeParser
             }
         }, iterator_to_array($this->xpath->query("//p[contains(.,'………')]")));
 
-        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
+        return app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $steps = [];
 
@@ -79,7 +79,7 @@ class EtnocookParser extends BaseRecipeParser
             }
         }, iterator_to_array($this->xpath->query("//p[contains(.,'Спосіб приготування:')]/following-sibling::p")));
 
-        return $debug ? $steps : app(DeepseekService::class)->parseSteps($steps);
+        return app(DeepseekService::class)->parseSteps($steps);
     }
 
 

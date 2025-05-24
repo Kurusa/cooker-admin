@@ -21,8 +21,12 @@ class IngredientUnit extends Resource
         return [
             ID::make()->sortable(),
 
-            BelongsTo::make('Ingredient', 'ingredient', Ingredient::class)->rules('required'),
-            BelongsTo::make('Unit', 'unit', Unit::class)->rules('required'),
+            BelongsTo::make('Ingredient', 'ingredient', Ingredient::class)
+                ->rules('required')
+                ->sortable(),
+
+            BelongsTo::make('Unit', 'unit', Unit::class)
+                ->rules('required'),
         ];
     }
 }

@@ -38,15 +38,15 @@ class YabpoelaParser extends BaseRecipeParser
         return (int)$this->xpathService->extractCleanSingleValue("//div[@class='entry-stats__item entry-stats__item_quantity-persons']/div[@class='entry-stats__value']/span");
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredients = array_map(fn($item) => $item->textContent,
             iterator_to_array($this->xpath->query("//div[@class='ing_block_list']/ul/li[concat(/span[@class='ingredient_title'], ' ', /span[@class='ing-amount'], ' ', /span[@class='ing-volume'])]")));
 
-        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
+        return app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         return array_map(function (DOMNode $item) {
             $id = $item->attributes->getNamedItem('id')->textContent;

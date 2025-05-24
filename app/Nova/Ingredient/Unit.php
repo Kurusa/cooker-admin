@@ -28,13 +28,16 @@ class Unit extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Title')->sortable()->rules('required', 'max:255'),
+            Text::make('Title')
+                ->sortable()
+                ->rules('required', 'max:255'),
 
             Text::make('Ingredients Count', function () {
                 return $this->ingredients()->count();
             }),
 
             HasMany::make('Ingredient Units', 'ingredientUnits', IngredientUnit::class),
+
             BelongsToMany::make('Ingredients', 'ingredients', Ingredient::class),
         ];
     }

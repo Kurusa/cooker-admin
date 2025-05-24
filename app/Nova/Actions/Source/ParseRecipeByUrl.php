@@ -2,12 +2,12 @@
 
 namespace App\Nova\Actions\Source;
 
+use App\Jobs\ProcessRecipeUrlJob;
 use App\Models\Recipe\Recipe;
 use App\Models\Source\SourceRecipeUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Artisan;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
@@ -24,9 +24,13 @@ class ParseRecipeByUrl extends Action
     {
         /** @var SourceRecipeUrl|Recipe $model */
         foreach ($models as $model) {
-            Artisan::call('parse:recipe:url', [
-                'url' => $model->url,
-            ]);
+            if ($model instanceof Recipe) {
+                $recipeUrlId = $model->sourceRecipeUrl->id;
+            } else {
+                $recipeUrlId = $model->id;
+            }
+
+            ProcessRecipeUrlJob::dispatch($recipeUrlId);
         }
 
         return Action::message('Parsing started.');

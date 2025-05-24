@@ -38,17 +38,17 @@ class RudParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredients = array_map(
             fn($row) => $this->xpath->evaluate("string(.//td[1])", $row) . ':' . $this->xpath->evaluate("string(.//td[2])", $row),
             iterator_to_array($this->xpath->query("//tr[@itemprop='recipeIngredient']"))
         );
 
-        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
+        return app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $steps = [];
         $nodes = $this->xpath->query("//p[strong[contains(text(), 'Етап')]]");

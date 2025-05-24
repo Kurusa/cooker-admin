@@ -74,7 +74,7 @@ class FoodcourtParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredientsNodes = [
             "//div[@class='wp-block-media-text__content']/ul[@class='wp-block-list']/li",
@@ -98,10 +98,10 @@ class FoodcourtParser extends BaseRecipeParser
 
         $ingredients = array_unique($ingredients);
 
-        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
+        return app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         return array_map(function (DOMNode $item) use ($xpath) {
             $id = $item->attributes->getNamedItem('id')->textContent;

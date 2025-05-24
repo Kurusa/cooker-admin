@@ -36,15 +36,15 @@ class ReceptyTvParser extends BaseRecipeParser
         return (int)$this->xpathService->extractCleanSingleValue("//div[@class='general-info']/div[1]/p[img[@src='https://recepty.24tv.ua/img/portion-icon.svg']]");
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredients = array_map(fn($item) => str_replace("\n", '', $item->textContent),
             iterator_to_array($this->xpath->query("//div[@class='ingredients']/ul/li[normalize-space(concat(/p or /a, ' ', /span))]")));
 
-        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
+        return app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         return array_map(fn($item) => [
             'description' => $item->textContent,

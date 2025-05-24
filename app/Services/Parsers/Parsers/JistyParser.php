@@ -48,14 +48,14 @@ class JistyParser extends BaseRecipeParser
         ];
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredientNodes = $this->xpath->query(".//div[@class='wp-block-wpzoom-recipe-card-block-ingredients'][1]/ul[@class='ingredients-list']/li");
 
         return $this->formatIngredients($ingredientNodes, $debug);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $stepNodes = $this->xpath->query("//div[@class='wp-block-wpzoom-recipe-card-block-directions'][1]/ul[@class='directions-list']/li[@class='direction-step']");
 
@@ -102,7 +102,7 @@ class JistyParser extends BaseRecipeParser
             );
         }
 
-        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
+        return app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
     private function formatSteps(DOMNodeList $stepNodes): array

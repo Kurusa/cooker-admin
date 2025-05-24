@@ -38,7 +38,7 @@ class AllRecipesParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $listItems = $this->xpath->query("//div[@class='mv-create-ingredients']//ul/li");
 
@@ -47,10 +47,10 @@ class AllRecipesParser extends BaseRecipeParser
             $ingredients[] = $item->textContent;
         }
 
-        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
+        return app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $listItems = $this->xpath->query("//div[@class='mv-create-instructions mv-create-instructions-slot-v2']//ol//p");
 

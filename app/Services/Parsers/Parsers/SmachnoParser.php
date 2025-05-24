@@ -33,7 +33,7 @@ class SmachnoParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredients = [];
         $ingredientNodes = $this->xpath->query("//span[@itemprop='ingredient']/ul/li");
@@ -52,7 +52,7 @@ class SmachnoParser extends BaseRecipeParser
         return $service->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $steps = [];
         $stepNodes = $this->xpath->query("//div[@itemprop='instructions']/div[@class='step']");

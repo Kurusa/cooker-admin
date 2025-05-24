@@ -49,7 +49,7 @@ class UaReceptParser extends BaseRecipeParser
         return (int)$this->xpathService->extractCleanSingleValue('//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p');
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredientNodes = $this->xpathService->extractMultipleValues("//ul[@class='ingredients-list layout-1-column']//li//p/text()");
 
@@ -57,7 +57,7 @@ class UaReceptParser extends BaseRecipeParser
         return $service->parseIngredients($ingredientNodes);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $stepNodes = $this->xpath->query("//div[contains(@class, 'recipe-card-directions')]//li[contains(@class, 'direction-step')]//p");
 

@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Source\SourceRecipeUrl;
-use App\Services\Parsers\Contracts\RecipeParserInterface;
+use App\Services\Parsers\RecipeParserFactory;
 use App\Services\ProcessRecipeUrlService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,16 +16,21 @@ class ProcessRecipeUrlJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public function __construct(
-        public readonly RecipeParserInterface $parser,
-        public readonly SourceRecipeUrl       $sourceRecipeUrl,
+        public readonly int $sourceRecipeUrlId,
     )
     {
     }
 
     public function handle(
+        RecipeParserFactory     $parserFactory,
         ProcessRecipeUrlService $service,
     ): void
     {
-        $service->processRecipeUrl($this->sourceRecipeUrl, $this->parser);
+        /** @var SourceRecipeUrl $sourceRecipeUrl */
+        $sourceRecipeUrl = SourceRecipeUrl::with('source')->findOrFail($this->sourceRecipeUrlId);
+
+        $parser = $parserFactory->make($sourceRecipeUrl->source->title);
+
+        $service->processRecipeUrl($sourceRecipeUrl, $parser);
     }
 }

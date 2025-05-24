@@ -5,7 +5,10 @@ namespace App\Nova\Recipe;
 use App\Enums\Recipe\Complexity;
 use App\Models\Recipe\Recipe as RecipeModel;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
+use App\Nova\Category;
+use App\Nova\Cuisine;
 use App\Nova\Resource;
+use App\Nova\Traits\NovaFieldMacros;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Avatar;
 use Laravel\Nova\Fields\BelongsTo;
@@ -20,6 +23,8 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Recipe extends Resource
 {
+    use NovaFieldMacros;
+
     public static string $model = RecipeModel::class;
 
     public static $title = 'title';
@@ -61,19 +66,27 @@ class Recipe extends Resource
 
             Textarea::make('Advice'),
 
-            Number::make('Time')->help('Minutes'),
+            Number::make('Time')
+                ->help('Minutes'),
+
             Number::make('Portions'),
 
-            BelongsTo::make('Source', 'source')->exceptOnForms(),
+            BelongsTo::make('Source', 'source')
+                ->exceptOnForms(),
 
-            HasMany::make('Ingredients', 'recipeIngredients', RecipeIngredient::class)
-                ->onlyOnDetail(),
+            HasMany::make('Cuisines', 'cuisines', Cuisine::class),
+
+            HasMany::make('Categories', 'categories', Category::class),
+
+            HasMany::make('Ingredients', 'recipeIngredients', RecipeIngredient::class),
 
             HasMany::make('Steps', 'steps', RecipeStep::class),
 
             Heading::make("<iframe src=\"{$this->sourceRecipeUrl?->url}\" width=\"100%\" height=\"500\" style=\"border:1px solid #ccc;\"></iframe>")
                 ->asHtml()
                 ->onlyOnDetail(),
+
+            self::formattedDateTime('Created at'),
         ];
     }
 

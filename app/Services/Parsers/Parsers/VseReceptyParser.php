@@ -49,7 +49,7 @@ class VseReceptyParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredients = [];
 
@@ -74,7 +74,7 @@ class VseReceptyParser extends BaseRecipeParser
         return $service->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $steps = [];
 

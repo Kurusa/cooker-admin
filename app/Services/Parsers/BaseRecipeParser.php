@@ -2,75 +2,106 @@
 
 namespace App\Services\Parsers;
 
-use App\DTO\RecipeDTO;
-use App\Enums\Recipe\Complexity;
+use App\Services\DeepseekService;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
-use App\Services\XPathService;
 use DOMDocument;
+use DOMElement;
+use DOMNode;
 use DOMXPath;
 
 abstract class BaseRecipeParser implements RecipeParserInterface
 {
     protected DOMXPath $xpath;
 
-    protected XPathService $xpathService;
-
     abstract public function urlRule(string $url): bool;
 
-    public function loadHtml(string $url = null, string $html = null): void
+    public function parseRecipes(string $url): array
     {
-        $html = $html ?: file_get_contents($url);
+        $html = file_get_contents($url);
 
         $dom = new DOMDocument();
         libxml_use_internal_errors(true);
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
         $dom->loadHTML($html);
-
         $this->xpath = new DOMXPath($dom);
 
-        $this->xpathService = app(XPathService::class);
-        $this->xpathService->setupXpath($this->xpath);
+        $block = $this->extractRecipeBlock();
+
+        if (strlen($block)) {
+            /** @var DeepseekService $service */
+            $service = app(DeepseekService::class);
+
+            return $service->parseRecipeFromHtml($block);
+        }
+
+        return [];
     }
 
-    public function parseRecipes(bool $debug = false): array
+    protected function removeGlobalJunkNodes(DOMNode $context): void
     {
-        return [
-            new RecipeDTO(
-                title: $this->parseTitle(),
-                complexity: $this->parseComplexity(),
-                time: $this->parseCookingTime(),
-                portions: $this->parsePortions(),
-                imageUrl: $this->parseImage(),
-                source_recipe_url_id: null,
-                categories: $this->parseCategories(),
-                ingredients: $this->parseIngredients($debug),
-                steps: $this->parseSteps($debug),
-            ),
+        $globalXpaths = [
+            './/style',
+            './/script',
+            './/svg',
         ];
+
+        foreach ($globalXpaths as $xpath) {
+            $nodes = (new DOMXPath($context->ownerDocument))->query($xpath, $context);
+            foreach (iterator_to_array($nodes) as $node) {
+                $node->parentNode?->removeChild($node);
+            }
+        }
     }
 
-    public function parseImage(): string
+    protected function cleanImageAttributes(DOMNode $node): void
     {
-        return $this->xpathService->extractSingleMetaAttribute('og:image');
+        foreach ($node->getElementsByTagName('img') as $img) {
+            foreach (iterator_to_array($img->attributes) as $attr) {
+                if (in_array($attr->nodeName, ['decoding', 'width', 'height', 'alt', 'loading', 'srcset', 'sizes'])
+                    || str_starts_with($attr->nodeName, 'data-')
+                    || str_starts_with($attr->nodeName, 'onload')
+                ) {
+                    $img->removeAttribute($attr->nodeName);
+                }
+            }
+        }
     }
 
-    public function parseTitle(): string
+    protected function removeAllClassesAndAttributes(DOMNode $node): void
     {
-        return $this->xpathService->extractSingleMetaAttribute('og:title');
+        if ($node instanceof DOMElement) {
+            $node->removeAttribute('class');
+            $node->removeAttribute('id');
+            $node->removeAttribute('style');
+            $node->removeAttribute('aria-hidden');
+            $node->removeAttribute('aria-label');
+
+            foreach (iterator_to_array($node->attributes) as $attribute) {
+                if (str_starts_with($attribute->nodeName, 'data-')) {
+                    $node->removeAttribute($attribute->nodeName);
+                }
+            }
+        }
+
+        foreach ($node->childNodes as $child) {
+            $this->removeAllClassesAndAttributes($child);
+        }
     }
 
-    public function parseComplexity(): Complexity
+    protected function removeEmptyDivs(DOMNode $node): void
     {
-        return Complexity::MEDIUM;
-    }
+        foreach (iterator_to_array($node->childNodes) as $child) {
+            if ($child instanceof DOMElement) {
+                $this->removeEmptyDivs($child);
 
-    public function parseCookingTime(): ?int
-    {
-        return null;
-    }
-
-    public function parsePortions(): int
-    {
-        return 1;
+                if (
+                    $child->tagName === 'div'
+                    && !$child->hasChildNodes()
+                    && trim($child->textContent) === ''
+                ) {
+                    $child->parentNode?->removeChild($child);
+                }
+            }
+        }
     }
 }

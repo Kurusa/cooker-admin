@@ -42,7 +42,7 @@ class TsnParser extends BaseRecipeParser
         return 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $class = 'c-bar c-bar--normal c-bar--dense c-bar--log c-bar--y-divided c-bar--unordered c-bar--label-px0';
         $ingredientNodes = $this->xpath->query("//div[@class='$class']/dl//dt | //h2[strong[text()='Інгредієнти:']]/following-sibling::ul//li");
@@ -63,10 +63,10 @@ class TsnParser extends BaseRecipeParser
             }
         }
 
-        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
+        return app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $steps = [];
         $stepNodes = $this->xpath->query("//div[@data-content='']/ol/li");

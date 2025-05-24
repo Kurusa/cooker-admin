@@ -33,11 +33,11 @@ class RecipeIngredient extends Resource
                 return $this->ingredientUnit?->ingredient?->title ?? '—';
             }),
 
+            Number::make('Quantity'),
+
             Text::make('Unit', function () {
                 return $this->ingredientUnit?->unit?->title ?? '—';
             }),
-
-            Number::make('Quantity'),
         ];
     }
 }

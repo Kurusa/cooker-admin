@@ -36,7 +36,7 @@ class ParseSourceRecipesCommand extends Command
         $sourceRecipeUrls = $service->getFilteredSitemapUrls();
 
         foreach ($sourceRecipeUrls as $sourceRecipeUrl) {
-            ProcessRecipeUrlJob::dispatch($parser, $sourceRecipeUrl);
+            ProcessRecipeUrlJob::dispatch($sourceRecipeUrl->id);
         }
     }
 }

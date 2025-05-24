@@ -21,7 +21,6 @@ class Ingredient extends Resource
     public static $search = [
         'id',
         'title',
-        'original_title',
     ];
 
     public function fields(Request $request): array
@@ -32,11 +31,6 @@ class Ingredient extends Resource
             Text::make('Title')
                 ->sortable()
                 ->rules('required', 'max:255'),
-
-            Text::make('Original title')
-                ->sortable()
-                ->rules('nullable', 'max:255')
-                ->onlyOnDetail(),
 
             HasMany::make('Ingredient units', 'units', IngredientUnit::class),
 

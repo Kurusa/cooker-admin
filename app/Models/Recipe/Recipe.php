@@ -4,6 +4,7 @@ namespace App\Models\Recipe;
 
 use App\Enums\Recipe\Complexity;
 use App\Models\Category;
+use App\Models\Cuisine;
 use App\Models\Ingredient;
 use App\Models\Source\Source;
 use App\Models\Source\SourceRecipeUrl;
@@ -31,6 +32,7 @@ use Illuminate\Support\Facades\DB;
  * @property string $ingredient_list
  * @property Collection $ingredients_collection
  * @property Collection<Ingredient> $ingredients
+ * @property Collection<Cuisine> $cuisines
  */
 class Recipe extends Model
 {
@@ -117,6 +119,11 @@ class Recipe extends Model
     public function steps(): HasMany
     {
         return $this->hasMany(RecipeStep::class);
+    }
+
+    public function cuisines(): BelongsToMany
+    {
+        return $this->belongsToMany(Cuisine::class);
     }
 
     public function hasImage(): bool

@@ -64,14 +64,14 @@ class PatelnyaParser extends BaseRecipeParser
         return $portions ? (int)str_replace(['порцій', 'порція'], '', $portions) : 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredients = $this->xpathService->extractMultipleValues("//div[@class='list-ingredient old-list']//ul[@class='ingredient']/li | .//div[@class='list-ingredient old-list']//ul/li");
 
-        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients(implode(',', $ingredients));
+        return app(DeepseekService::class)->parseIngredients(implode(',', $ingredients));
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $steps = $this->xpathService->extractMultipleValues("//div[@class='e-instructions step-instructions instructions']//ol/li/text()");
 
@@ -83,7 +83,7 @@ class PatelnyaParser extends BaseRecipeParser
             return preg_replace('/[^\PC\s]/u', '', $step);
         }, array_unique($steps)));
 
-        return $debug ? $steps : app(DeepseekService::class)->parseSteps(implode(',', $steps));
+        return app(DeepseekService::class)->parseSteps(implode(',', $steps));
     }
 
     public function parseImage(): string

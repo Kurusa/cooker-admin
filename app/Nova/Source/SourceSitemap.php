@@ -27,10 +27,12 @@ class SourceSitemap extends Resource
         return [
             ID::make()->sortable(),
 
-            BelongsTo::make('Source', 'source', Source::class)->sortable(),
+            BelongsTo::make('Source', 'source', Source::class)
+                ->sortable(),
 
             Text::make('URL', 'url')->sortable()->rules('required', 'url')
-                ->displayUsing(fn($value) => "<a href=\"{$value}\" target=\"_blank\">{$value}</a>")->asHtml(),
+                ->displayUsing(fn($value) => "<a href=\"{$value}\" target=\"_blank\">{$value}</a>")
+                ->asHtml(),
         ];
     }
 }

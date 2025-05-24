@@ -34,7 +34,10 @@ class Source extends Resource
             ID::make()->sortable(),
 
             Text::make('Title')->sortable()->rules('required', 'max:255'),
-            Text::make('URL')->sortable()->rules('required', 'url')->displayUsing(fn($value) => "<a href=\"{$value}\" target=\"_blank\">{$value}</a>")->asHtml(),
+
+            Text::make('URL')->sortable()->rules('required', 'url')
+                ->displayUsing(fn($value) => "<a href=\"{$value}\" target=\"_blank\">{$value}</a>")
+                ->asHtml(),
 
             new Panel('Stats', [
                 Number::make('Total URLs', fn() => $this->totalUrls()),
@@ -45,6 +48,8 @@ class Source extends Resource
             ]),
 
             HasMany::make('Sitemaps', 'sitemaps', SourceSitemap::class),
+
+            HasMany::make('Sitemaps recipe urls', 'recipeUrls', SourceRecipeUrl::class),
         ];
     }
 

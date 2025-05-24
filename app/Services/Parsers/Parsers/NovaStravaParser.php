@@ -50,14 +50,14 @@ class NovaStravaParser extends BaseRecipeParser
         return $portions > 0 ? $portions : 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredients = $this->xpathService->extractMultipleValues("//ul[@class='wprm-recipe-ingredients']/li");
 
-        return $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients);
+        return app(DeepseekService::class)->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         return $this->xpathService->extractMultipleValues("//ul[@class='wprm-recipe-instructions']/li");
     }

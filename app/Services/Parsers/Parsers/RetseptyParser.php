@@ -45,7 +45,7 @@ class RetseptyParser extends BaseRecipeParser
         return $portions > 0 ? $portions : 1;
     }
 
-    public function parseIngredients(bool $debug = false): array
+    public function parseIngredients(): array
     {
         $ingredients = [];
 
@@ -65,7 +65,7 @@ class RetseptyParser extends BaseRecipeParser
         return $service->parseIngredients($ingredients);
     }
 
-    public function parseSteps(bool $debug = false): array
+    public function parseSteps(): array
     {
         $steps = [];
 

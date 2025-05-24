@@ -10,13 +10,11 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 /**
  * @property int $id
  * @property string $title
- * @property string $original_title
  */
 class Ingredient extends Model
 {
     protected $fillable = [
         'title',
-        'original_title',
     ];
 
     public function units(): HasMany
