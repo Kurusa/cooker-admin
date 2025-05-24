@@ -59,7 +59,7 @@ class ReceptyTvParser extends BaseRecipeParser
         return $src ? 'https://recepty.24tv.ua' . $src : '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         $disallowedPatterns = [
             '/ru/'

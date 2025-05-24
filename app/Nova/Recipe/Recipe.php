@@ -4,9 +4,11 @@ namespace App\Nova\Recipe;
 
 use App\Enums\Recipe\Complexity;
 use App\Models\Recipe\Recipe as RecipeModel;
+use App\Nova\Actions\ExcludeRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
 use App\Nova\Category;
 use App\Nova\Cuisine;
+use App\Nova\Filters\RecipeHasOneIngredientOrStep;
 use App\Nova\Resource;
 use App\Nova\Traits\NovaFieldMacros;
 use Illuminate\Http\Request;
@@ -74,13 +76,13 @@ class Recipe extends Resource
             BelongsTo::make('Source', 'source')
                 ->exceptOnForms(),
 
-            HasMany::make('Cuisines', 'cuisines', Cuisine::class),
-
-            HasMany::make('Categories', 'categories', Category::class),
-
             HasMany::make('Ingredients', 'recipeIngredients', RecipeIngredient::class),
 
             HasMany::make('Steps', 'steps', RecipeStep::class),
+
+            HasMany::make('Cuisines', 'cuisines', Cuisine::class),
+
+            HasMany::make('Categories', 'categories', Category::class),
 
             Heading::make("<iframe src=\"{$this->sourceRecipeUrl?->url}\" width=\"100%\" height=\"500\" style=\"border:1px solid #ccc;\"></iframe>")
                 ->asHtml()
@@ -90,10 +92,18 @@ class Recipe extends Resource
         ];
     }
 
+    public function filters(NovaRequest $request): array
+    {
+        return [
+            new RecipeHasOneIngredientOrStep,
+        ];
+    }
+
     public function actions(NovaRequest $request): array
     {
         return [
             new ParseRecipeByUrl,
+            new ExcludeRecipeUrl,
         ];
     }
 }

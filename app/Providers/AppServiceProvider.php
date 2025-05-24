@@ -3,24 +3,8 @@
 namespace App\Providers;
 
 use App\Services\DeepseekService;
-use App\Services\Parsers\Parsers\AllRecipesParser;
-use App\Services\Parsers\Parsers\EtnocookParser;
 use App\Services\Parsers\Parsers\FayniReceptyParser;
-use App\Services\Parsers\Parsers\FoodcourtParser;
-use App\Services\Parsers\Parsers\JistyParser;
-use App\Services\Parsers\Parsers\MonchefParser;
-use App\Services\Parsers\Parsers\NovaStravaParser;
 use App\Services\Parsers\Parsers\PatelnyaParser;
-use App\Services\Parsers\Parsers\PicanteParser;
-use App\Services\Parsers\Parsers\ReceptyTvParser;
-use App\Services\Parsers\Parsers\RetseptyParser;
-use App\Services\Parsers\Parsers\RudParser;
-use App\Services\Parsers\Parsers\SmachnoParser;
-use App\Services\Parsers\Parsers\TandiParser;
-use App\Services\Parsers\Parsers\TsnParser;
-use App\Services\Parsers\Parsers\UaReceptParser;
-use App\Services\Parsers\Parsers\VseReceptyParser;
-use App\Services\Parsers\Parsers\YabpoelaParser;
 use App\Services\Parsers\RecipeParserFactory;
 use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
@@ -45,7 +29,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(RecipeParserFactory::class, function () {
             $factory = new RecipeParserFactory();
-            //$factory->registerParser('patelnya', PatelnyaParser::class);
+            $factory->registerParser('patelnya', PatelnyaParser::class);
             $factory->registerParser('fayni', FayniReceptyParser::class);
 //            $factory->registerParser('jisty', JistyParser::class);
 //            $factory->registerParser('novastrava', NovaStravaParser::class);

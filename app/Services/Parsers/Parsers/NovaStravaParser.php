@@ -73,7 +73,7 @@ class NovaStravaParser extends BaseRecipeParser
         return '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         $disallowedPatterns = [
             'all-posts',

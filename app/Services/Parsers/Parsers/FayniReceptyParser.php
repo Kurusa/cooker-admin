@@ -3,10 +3,11 @@
 namespace App\Services\Parsers\Parsers;
 
 use App\Services\Parsers\BaseRecipeParser;
+use DOMNode;
 
 class FayniReceptyParser extends BaseRecipeParser
 {
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         $disallowedPatterns = [
             'fayni-recepty.com.ua/yak-',
@@ -41,17 +42,16 @@ class FayniReceptyParser extends BaseRecipeParser
         return true;
     }
 
-    public function extractRecipeBlock(): string
+    public function extractRecipeNode(): DOMNode
     {
         $recipeNode = $this->xpath->query("//div[contains(@class, 'wprm-recipe wprm-recipe-template-cutout')]")->item(0);
-        if (!$recipeNode) return '';
 
         $unwantedXpaths = [
-            ".//div[contains(@class, 'wprm-recipe-rating')]",              // рейтинг
-            ".//a[contains(@class, 'wprm-recipe-print')]",                 // кнопка друку
-            ".//a[contains(@class, 'wprm-recipe-pin')]",                   // кнопка пінтерест
-            ".//a[contains(@class, 'wprm-recipe-jump-to-comments')]",     // кнопка коментарів
-            ".//div[contains(@class, 'wprm-spacer')]",                    // порожні відступи
+            ".//div[contains(@class, 'wprm-recipe-rating')]",
+            ".//a[contains(@class, 'wprm-recipe-print')]",
+            ".//a[contains(@class, 'wprm-recipe-pin')]",
+            ".//a[contains(@class, 'wprm-recipe-jump-to-comments')]",
+            ".//div[contains(@class, 'wprm-spacer')]",
         ];
 
         foreach ($unwantedXpaths as $xpath) {
@@ -68,11 +68,11 @@ class FayniReceptyParser extends BaseRecipeParser
             $recipeNode->insertBefore($clone, $recipeNode->firstChild);
         }
 
-        $this->removeEmptyDivs($recipeNode);
-        $this->removeAllClassesAndAttributes($recipeNode);
-        $this->cleanImageAttributes($recipeNode);
-        $this->removeGlobalJunkNodes($recipeNode);
+        return $recipeNode;
+    }
 
-        return str_replace("\n", '', $recipeNode->ownerDocument->saveHTML($recipeNode));
+    public function isExcludedByCategory(string $url): bool
+    {
+        return false;
     }
 }

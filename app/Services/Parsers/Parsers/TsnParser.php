@@ -124,7 +124,7 @@ class TsnParser extends BaseRecipeParser
         return $imageNode->item(0)->getAttribute('src');
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         return str_contains($url, 'recepty');
     }

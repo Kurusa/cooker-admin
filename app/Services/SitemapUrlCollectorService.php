@@ -36,10 +36,10 @@ class SitemapUrlCollectorService
         foreach ($sitemapElements as $sitemapElement) {
             $url = (string)$sitemapElement->loc;
 
-            $passRuleValidation = $this->parser->urlRule($url);
+            $isExcludedByUrlRule = $this->parser->isExcludedByUrlRule($url);
+            $isExcludedByCategoryRule = $this->parser->isExcludedByCategory($url);
 
             if ($this->isSitemap($url)) {
-                echo "Processing xml url: $url" . PHP_EOL;
                 $this->parseSitemapUrls($url, $urls);
             } else {
                 /** @var SourceRecipeUrl $sourceRecipeUrl */
@@ -51,20 +51,20 @@ class SitemapUrlCollectorService
                     'source_id' => $this->source->id,
                 ]);
 
-                if ($passRuleValidation) {
+                if ($isExcludedByUrlRule || $isExcludedByCategoryRule) {
+                    $sourceRecipeUrl->update([
+                        'is_excluded' => true,
+                    ]);
+                } else {
                     if (!$sourceRecipeUrl->recipe()->exists()) {
                         $urls[] = $sourceRecipeUrl;
                     }
 
-                    if ($sourceRecipeUrl->is_excluded && $sourceRecipeUrl->recipe()->exists()) {
+                    if ($sourceRecipeUrl->is_excluded) {
                         $sourceRecipeUrl->update([
                             'is_excluded' => false,
                         ]);
                     }
-                } else {
-                    $sourceRecipeUrl->update([
-                        'is_excluded' => true,
-                    ]);
                 }
             }
         }

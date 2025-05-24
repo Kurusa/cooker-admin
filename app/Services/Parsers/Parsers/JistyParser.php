@@ -62,7 +62,7 @@ class JistyParser extends BaseRecipeParser
         return $this->formatSteps($stepNodes);
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         $disallowedPatterns = [
             '/blog',

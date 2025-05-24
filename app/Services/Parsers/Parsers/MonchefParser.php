@@ -68,7 +68,7 @@ class MonchefParser extends BaseRecipeParser
         return str_replace(');', '', $imageUrl);
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         $disallowedPatterns = [
         ];

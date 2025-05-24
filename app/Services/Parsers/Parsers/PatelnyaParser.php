@@ -2,96 +2,40 @@
 
 namespace App\Services\Parsers\Parsers;
 
-use App\DTO\CategoryDTO;
-use App\Enums\Recipe\Complexity;
-use App\Exceptions\UnsupportedCategoryException;
-use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CookingTimeFormatter;
+use DOMDocument;
+use DOMNode;
+use DOMXPath;
 
 class PatelnyaParser extends BaseRecipeParser
 {
-    public function parseTitle(): string
+    public function extractRecipeNode(): DOMNode
     {
-        return $this->xpathService->extractCleanSingleValue("//h1[@class='p-name name-title fn']");
-    }
+        $recipeNode = $this->xpath->query("//article[contains(@class, 'hrecipe')]")->item(0);
 
-    /**
-     * @throws UnsupportedCategoryException
-     */
-    public function parseCategories(): array
-    {
-        $categoryText = $this->xpathService->extractCleanSingleValue("//div[@class='title-detail']/a/span |
-                                                           .//div[@id='crumbs']/a/span[last()]");
-        $disallowedCategories = [
-            'кулінарний словник',
-            'новини',
-            'дієти',
-            'конкурси',
+        $unwantedXpaths = [
+            ".//div[contains(@class, 'leave-comment-wrap margin-top-30')]",
+            ".//div[contains(@class, 'data-middle fl color-656464 margin-top-15')]",
         ];
 
-        foreach ($disallowedCategories as $category) {
-            if (str_contains($category, $categoryText)) {
-                throw new UnsupportedCategoryException();
+        foreach ($unwantedXpaths as $xpath) {
+            $nodes = $this->xpath->query($xpath, $recipeNode);
+
+            foreach (iterator_to_array($nodes) as $node) {
+                $node->parentNode?->removeChild($node);
             }
         }
 
-        return [
-            new CategoryDTO(
-                title: $categoryText,
-            ),
-        ];
-    }
-
-    public function parseComplexity(): Complexity
-    {
-        $complexity = $this->xpathService->extractCleanSingleValue("//div[i/span[contains(text(), 'Рівень складності:')]]/i/span[@class='color-414141']");
-
-        return Complexity::mapParsedValue(mb_strtolower($complexity));
-    }
-
-    public function parseCookingTime(): ?int
-    {
-        $time = $this->xpathService->extractCleanSingleValue("//div[i[@class='duration']]/i/span[@class='color-414141 value-title']");
-
-        return CookingTimeFormatter::formatCookingTime($time);
-    }
-
-    public function parsePortions(): int
-    {
-        $portions = $this->xpathService->extractCleanSingleValue("//div[i/span[contains(text(), 'Кількість порцій:')]]/i/span[@class='color-414141 yield']");
-
-        return $portions ? (int)str_replace(['порцій', 'порція'], '', $portions) : 1;
-    }
-
-    public function parseIngredients(): array
-    {
-        $ingredients = $this->xpathService->extractMultipleValues("//div[@class='list-ingredient old-list']//ul[@class='ingredient']/li | .//div[@class='list-ingredient old-list']//ul/li");
-
-        return app(DeepseekService::class)->parseIngredients(implode(',', $ingredients));
-    }
-
-    public function parseSteps(): array
-    {
-        $steps = $this->xpathService->extractMultipleValues("//div[@class='e-instructions step-instructions instructions']//ol/li/text()");
-
-        if (empty($steps)) {
-            $steps = $this->xpathService->extractMultipleValues("//div[@class='e-instructions step-instructions instructions']/p/text()[not(contains(., 'Готуємо так:'))]");
+        $categoriesNode = $this->xpath->query("//p[contains(@class, 'ast-terms-link')]")?->item(0);
+        if ($categoriesNode) {
+            $clone = $categoriesNode->cloneNode(true);
+            $recipeNode->insertBefore($clone, $recipeNode->firstChild);
         }
 
-        $steps = array_filter(array_map(function ($step) {
-            return preg_replace('/[^\PC\s]/u', '', $step);
-        }, array_unique($steps)));
-
-        return app(DeepseekService::class)->parseSteps(implode(',', $steps));
+        return $recipeNode;
     }
 
-    public function parseImage(): string
-    {
-        return $this->xpathService->extractCleanSingleValue("//img[contains(@class, 'article-img-left')]/@src");
-    }
-
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         $disallowedPatterns = [
             'yak-',
@@ -104,10 +48,38 @@ class PatelnyaParser extends BaseRecipeParser
 
         foreach ($disallowedPatterns as $pattern) {
             if (str_contains($url, $pattern)) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
+    }
+
+    public function isExcludedByCategory(string $url): bool
+    {
+        $html = file_get_contents($url);
+
+        $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+        $dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
+
+        $excludedCategories = [
+            'кулінарний словник',
+            'новини',
+            'дієти',
+            'конкурси',
+        ];
+
+        $categoryValue = $xpath->query("//div[@class='title-detail']/a/span | .//div[@id='crumbs']/a/span[last()]")->item(0)->nodeValue;
+
+        foreach ($excludedCategories as $excludedCategory) {
+            if (str_contains(mb_strtolower($categoryValue), $excludedCategory)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

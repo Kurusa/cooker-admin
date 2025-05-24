@@ -76,7 +76,7 @@ class TandiParser extends BaseRecipeParser
         return $this->xpath->query("//img[@class='$class']")->item(0)?->getAttribute('src') ?? '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         return true;
     }

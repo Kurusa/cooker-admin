@@ -15,16 +15,6 @@ WHERE unit_id = @unit1_id;
 DELETE FROM units WHERE id = @unit1_id;
 
 
-// з одним інгредієнтом або кроком
-SELECT *
-FROM recipes
-WHERE (SELECT COUNT(*)
-       FROM recipe_ingredients
-       WHERE recipe_ingredients.recipe_id = recipes.id) = 1
-   OR (SELECT COUNT(*)
-       FROM recipe_steps
-       WHERE recipe_steps.recipe_id = recipes.id) = 1;
-
 // чищення кроків
 UPDATE recipe_steps
 SET description = TRIM(BOTH '\n' FROM description); -- Прибирає переноси рядків на початку і в кінці

@@ -30,6 +30,10 @@ class ProcessRecipeUrlService
         RecipeParserInterface $parser,
     ): void
     {
+        if ($sourceRecipeUrl->is_excluded) {
+            return;
+        }
+
         try {
             $recipes = $parser->parseRecipes($sourceRecipeUrl->url);
 

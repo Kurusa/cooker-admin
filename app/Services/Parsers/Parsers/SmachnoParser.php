@@ -83,7 +83,7 @@ class SmachnoParser extends BaseRecipeParser
         return '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         return !str_contains($url, 'in.ua/ru/') && str_contains($url, '?id=');
     }

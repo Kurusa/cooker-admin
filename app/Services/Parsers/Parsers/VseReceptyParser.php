@@ -106,7 +106,7 @@ class VseReceptyParser extends BaseRecipeParser
         return $imageNode?->getAttribute('data-src') ?? '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         return !str_contains($url, '.com/en/');
     }

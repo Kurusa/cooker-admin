@@ -121,7 +121,7 @@ class FoodcourtParser extends BaseRecipeParser
         return $this->xpath->query("//figure[@class='wp-block-media-text__media']/img/@src")->item(0)?->textContent ?? '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         return true;
     }

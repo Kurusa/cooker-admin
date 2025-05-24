@@ -89,7 +89,7 @@ class AllRecipesParser extends BaseRecipeParser
         return $imageNode?->getAttribute('data-src') ?? '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         $disallowedPatterns = [
             '/ru/',

@@ -2,15 +2,17 @@
 
 namespace App\Services\Parsers\Contracts;
 
-use App\DTO\IngredientDTO;
 use App\DTO\RecipeDTO;
-use App\DTO\StepDTO;
-use App\Enums\Recipe\Complexity;
+use DOMNode;
 
 interface RecipeParserInterface
 {
     /** @return RecipeDTO[] */
     public function parseRecipes(string $url): array;
 
-    public function extractRecipeBlock(): string;
+    public function extractRecipeNode(): DOMNode;
+
+    public function isExcludedByCategory(string $url): bool;
+
+    public function isExcludedByUrlRule(string $url): bool;
 }

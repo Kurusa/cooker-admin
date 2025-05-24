@@ -106,7 +106,7 @@ class UaReceptParser extends BaseRecipeParser
         return $imageNode?->getAttribute('src') ?? '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         return true;
     }

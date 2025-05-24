@@ -68,7 +68,7 @@ class YabpoelaParser extends BaseRecipeParser
         return $src ? 'https://ua.yabpoela.net' . $src : '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         return str_ends_with($url, '.html');
     }

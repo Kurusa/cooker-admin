@@ -97,7 +97,7 @@ class RudParser extends BaseRecipeParser
         return $src ? 'https://rud.ua' . trim($src) : '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         $disallowedPatterns = [
             '/brands',

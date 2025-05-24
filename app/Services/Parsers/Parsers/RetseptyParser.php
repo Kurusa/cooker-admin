@@ -87,7 +87,7 @@ class RetseptyParser extends BaseRecipeParser
         return $imageNode?->getAttribute('data-lazy-src') ?? '';
     }
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         return true;
     }

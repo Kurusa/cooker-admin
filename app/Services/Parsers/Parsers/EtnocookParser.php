@@ -83,7 +83,7 @@ class EtnocookParser extends BaseRecipeParser
     }
 
 
-    public function urlRule(string $url): bool
+    public function isExcludedByUrlRule(string $url): bool
     {
         $disallowedPatterns = [
             '/tag/',
