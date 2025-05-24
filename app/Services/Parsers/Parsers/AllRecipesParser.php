@@ -66,7 +66,7 @@ class AllRecipesParser extends BaseRecipeParser
                 $title = $listItems->item($i + 1)?->textContent ?? '';
                 $steps[] = [
                     'description' => $title,
-                    'image'       => '',
+                    'image' => '',
                 ];
                 continue;
             }
@@ -75,7 +75,7 @@ class AllRecipesParser extends BaseRecipeParser
 
             $steps[] = [
                 'description' => $title,
-                'image'       => $image
+                'image' => $image
             ];
         }
 

@@ -65,7 +65,7 @@ class FoodcourtParser extends BaseRecipeParser
             if ($nodeList !== false && $nodeList->length > 0) {
                 foreach ($nodeList as $node) {
                     if (!empty($node->textContent)) {
-                        return (int) $node->textContent;
+                        return (int)$node->textContent;
                     }
                 }
             }
@@ -111,7 +111,7 @@ class FoodcourtParser extends BaseRecipeParser
 
             return [
                 'description' => $description,
-                'image'       => $image ? 'https://ua.yabpoela.net' . $image : '',
+                'image' => $image ? 'https://ua.yabpoela.net' . $image : '',
             ];
         }, iterator_to_array($this->xpath->query("//div[contains(@id,'step-')]")));
     }

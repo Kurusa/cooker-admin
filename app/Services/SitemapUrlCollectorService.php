@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\Source;
-use App\Models\SourceRecipeUrl;
+use App\Models\Source\Source;
+use App\Models\Source\SourceRecipeUrl;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 
 class SitemapUrlCollectorService
@@ -34,7 +34,7 @@ class SitemapUrlCollectorService
         $sitemapElements = simplexml_load_file($sitemapUrl);
 
         foreach ($sitemapElements as $sitemapElement) {
-            $url = (string) $sitemapElement->loc;
+            $url = (string)$sitemapElement->loc;
 
             $passRuleValidation = $this->parser->urlRule($url);
 
@@ -44,10 +44,10 @@ class SitemapUrlCollectorService
             } else {
                 /** @var SourceRecipeUrl $sourceRecipeUrl */
                 $sourceRecipeUrl = SourceRecipeUrl::updateOrCreate([
-                    'url'       => $url,
+                    'url' => $url,
                     'source_id' => $this->source->id,
                 ], [
-                    'url'       => $url,
+                    'url' => $url,
                     'source_id' => $this->source->id,
                 ]);
 

@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Models\Source;
+use App\Models\Source\Source;
 
 class FindSourceByTitle
 {

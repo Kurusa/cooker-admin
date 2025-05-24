@@ -55,7 +55,7 @@ class RudParser extends BaseRecipeParser
 
         $stepNumber = 1;
         foreach ($nodes as $node) {
-            $newStepNumber = (int) substr($node->textContent, -1);
+            $newStepNumber = (int)substr($node->textContent, -1);
             if ($newStepNumber >= $stepNumber) {
                 $steps[] = $node->nextSibling->textContent;
                 $stepNumber = $newStepNumber;

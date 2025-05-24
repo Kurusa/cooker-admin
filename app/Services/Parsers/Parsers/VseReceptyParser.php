@@ -43,7 +43,7 @@ class VseReceptyParser extends BaseRecipeParser
         $rawPortions = $this->xpathService->extractCleanSingleValue("//div[@class='recipe-feature_block recipe-portion']//span[@class='yield']");
 
         if ($rawPortions) {
-            return (int) str_replace(['порції', 'порцій', 'порція'], '', $rawPortions);
+            return (int)str_replace(['порції', 'порцій', 'порція'], '', $rawPortions);
         }
 
         return 1;

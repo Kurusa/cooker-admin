@@ -31,11 +31,11 @@ class NovaStravaParser extends BaseRecipeParser
         $rawMinutes = $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()");
 
         if ($rawHours) {
-            $totalCookingTime += (int) $rawHours * 60;
+            $totalCookingTime += (int)$rawHours * 60;
         }
 
         if ($rawMinutes) {
-            $totalCookingTime += (int) $rawMinutes;
+            $totalCookingTime += (int)$rawMinutes;
         }
 
         return $totalCookingTime;
@@ -45,7 +45,7 @@ class NovaStravaParser extends BaseRecipeParser
     {
         $class = 'wprm-recipe-servings wprm-recipe-details wprm-block-text-normal';
 
-        $portions = (int) $this->xpathService->extractCleanSingleValue("//span[@class='$class']");
+        $portions = (int)$this->xpathService->extractCleanSingleValue("//span[@class='$class']");
 
         return $portions > 0 ? $portions : 1;
     }

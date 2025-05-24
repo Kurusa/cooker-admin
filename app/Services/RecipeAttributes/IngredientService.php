@@ -5,7 +5,7 @@ namespace App\Services\RecipeAttributes;
 use App\DTO\IngredientDTO;
 use App\Models\Ingredient;
 use App\Models\IngredientUnit;
-use App\Models\Recipe;
+use App\Models\Recipe\Recipe;
 use App\Models\Unit;
 
 class IngredientService
@@ -19,7 +19,7 @@ class IngredientService
         foreach ($ingredients as $ingredientData) {
             /** @var Ingredient $ingredient */
             $ingredient = Ingredient::firstOrCreate([
-                'title'          => $ingredientData->title,
+                'title' => $ingredientData->title,
                 'original_title' => $ingredientData->originalTitle,
             ]);
 
@@ -28,13 +28,11 @@ class IngredientService
             /** @var IngredientUnit $ingredientUnit */
             $ingredientUnit = IngredientUnit::firstOrCreate([
                 'ingredient_id' => $ingredient->id,
-                'unit_id'       => $unit?->id,
+                'unit_id' => $unit?->id,
             ]);
 
             $recipe->ingredients()->attach($ingredientUnit->id, [
-                'quantity'         => $ingredientData->quantity,
-                'ingredient_title' => $ingredient->title,
-                'unit_title'       => $ingredientUnit->title,
+                'quantity' => $ingredientData->quantity,
             ]);
         }
     }

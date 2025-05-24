@@ -26,8 +26,8 @@ class FayniReceptyParser extends BaseRecipeParser
 
     public function parseCookingTime(): ?int
     {
-        $rawHours = (int) $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()");
-        $rawMinutes = (int) $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()");
+        $rawHours = (int)$this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()");
+        $rawMinutes = (int)$this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()");
 
         return ($rawHours * 60) + $rawMinutes;
     }

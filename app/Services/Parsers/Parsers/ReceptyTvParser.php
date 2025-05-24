@@ -33,7 +33,7 @@ class ReceptyTvParser extends BaseRecipeParser
 
     public function parsePortions(): int
     {
-        return (int) $this->xpathService->extractCleanSingleValue("//div[@class='general-info']/div[1]/p[img[@src='https://recepty.24tv.ua/img/portion-icon.svg']]");
+        return (int)$this->xpathService->extractCleanSingleValue("//div[@class='general-info']/div[1]/p[img[@src='https://recepty.24tv.ua/img/portion-icon.svg']]");
     }
 
     public function parseIngredients(bool $debug = false): array
@@ -48,7 +48,7 @@ class ReceptyTvParser extends BaseRecipeParser
     {
         return array_map(fn($item) => [
             'description' => $item->textContent,
-            'image'       => '',
+            'image' => '',
         ], iterator_to_array($this->xpath->query("//div[@class='recipe-item']/p[position() mod 2 = 0]")));
     }
 

@@ -74,7 +74,7 @@ class EtnocookParser extends BaseRecipeParser
             foreach ($exploded as $step) {
                 $steps[] = [
                     'description' => $step,
-                    'image'       => '',
+                    'image' => '',
                 ];
             }
         }, iterator_to_array($this->xpath->query("//p[contains(.,'Спосіб приготування:')]/following-sibling::p")));

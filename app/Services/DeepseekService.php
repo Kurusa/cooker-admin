@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\DTO\IngredientDTO;
+use App\DTO\StepDTO;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -15,29 +16,30 @@ class DeepseekService
     }
 
     /**
-     * @param IngredientDTO[] $ingredients
+     * @param string $ingredients
+     *
      * @return IngredientDTO[]
+     *
      * @throws GuzzleException
+     * @throws Exception
      */
-    public function parseIngredients(array $ingredients): array
+    public function parseIngredients(string $ingredients): array
     {
         try {
-            $ingredientTitles = implode(',', array_map(fn(IngredientDTO $ingredient) => $ingredient->title, $ingredients));
-
             $response = $this->client->post('/chat/completions', [
                 'json' => [
-                    'model'    => 'deepseek-chat',
+                    'model' => 'deepseek-chat',
                     'messages' => [
                         ['role' => 'system', 'content' => 'You are a helpful assistant.'],
                         [
-                            'role'    => 'user',
+                            'role' => 'user',
                             'content' => "Розпарси інгредієнти у форматі JSON-масиву з об'єктами,де кожен об'єкт має ключі:title(string),unit(string),quantity(int|float),
                             originalTitle(string).Поверни лише цей масив без пояснень,без додаткового тексту і описів.
                             Складні інгредієнти не розбивай на підінгредієнти.Юніти скорочуй без крапок, уніфіковуй (грами-г, ст ложки-ст.л) і надавай українською.Порожні поля залишай пустими.Назви інгредієнтів—у називному відмінку і нижньому регістрі.
                             Замінюй нетипові лапки на стандартні.У originalTitle передай оригінальну назву інгредієнта.
-                            Якщо інгредієнт без юніту і його назва є накшталт 'яйце','картопля','помідор',встанови 'шт'.Інгредієнти:" . $ingredientTitles],
+                            Якщо інгредієнт без юніту і його назва є накшталт 'яйце','картопля','помідор',встанови 'шт'.Інгредієнти:" . $ingredients],
                     ],
-                    'stream'   => false,
+                    'stream' => false,
                 ],
             ]);
 
@@ -45,9 +47,9 @@ class DeepseekService
 
             return array_map(
                 fn(array $ingredientData) => new IngredientDTO(
-                    title        : (string) $ingredientData['title'],
-                    quantity     : (float) $ingredientData['quantity'] ?? null,
-                    unit         : (string) $ingredientData['unit'] ?? null,
+                    title: (string)$ingredientData['title'],
+                    quantity: (float)$ingredientData['quantity'] ?? null,
+                    unit: (string)$ingredientData['unit'] ?? null,
                     originalTitle: $ingredientData['originalTitle'] ?? null,
                 ),
                 $responseData
@@ -58,30 +60,40 @@ class DeepseekService
     }
 
     /**
-     * @param array $steps
-     * @return array
+     * @param string $steps
+     *
+     * @return StepDTO[]
+     *
      * @throws GuzzleException
      */
-    public function parseSteps(array $steps): array
+    public function parseSteps(string $steps): array
     {
         try {
             $response = $this->client->post('/chat/completions', [
                 'json' => [
-                    'model'    => 'deepseek-chat',
+                    'model' => 'deepseek-chat',
                     'messages' => [
                         ['role' => 'system', 'content' => 'You are a helpful assistant.'],
                         [
-                            'role'    => 'user',
+                            'role' => 'user',
                             'content' => "Розпарси кроки у форматі JSON-масиву з об'єктами,де кожен об'єкт має ключі:description,image.
                             Поверни лише цей масив без пояснень,без додаткового тексту і описів.Фільтруй будь-які кроки, які містять слова на
-                            кшталт «смачного»,«примітки»,«кулінарні поради»,«instagram» або інші зайві дані.
-                            Якщо зображення немає,залишай image порожнім.Все у нижньому регістрі.Кроки:" . json_encode($steps)],
+                            кшталт 'смачного','примітки','кулінарні поради','instagram' або інші зайві дані.
+                            Якщо зображення немає,залишай image порожнім.Все у нижньому регістрі.Кроки:" . $steps],
                     ],
-                    'stream'   => false,
+                    'stream' => false,
                 ],
             ]);
 
-            return $this->parseDeepseekResponse($response->getBody()->getContents());
+            $responseData = $this->parseDeepseekResponse($response->getBody()->getContents());
+
+            return array_map(
+                fn(array $stepData) => new StepDTO(
+                    description: (string)$stepData['description'],
+                    image: (float)$stepData['image'] ?? null,
+                ),
+                $responseData
+            );
         } catch (RequestException $e) {
             return [];
         }

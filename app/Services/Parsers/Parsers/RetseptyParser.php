@@ -40,7 +40,7 @@ class RetseptyParser extends BaseRecipeParser
 
     public function parsePortions(): int
     {
-        $portions = (int) $this->xpathService->extractCleanSingleValue("//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']");
+        $portions = (int)$this->xpathService->extractCleanSingleValue("//span[@class='wprm-recipe-servings wprm-recipe-details wprm-block-text-normal']");
 
         return $portions > 0 ? $portions : 1;
     }

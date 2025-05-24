@@ -53,7 +53,7 @@ class MonchefParser extends BaseRecipeParser
         foreach ($listItems as $item) {
             $steps[] = [
                 'description' => $item->textContent,
-                'image'       => '',
+                'image' => '',
             ];
         }
 

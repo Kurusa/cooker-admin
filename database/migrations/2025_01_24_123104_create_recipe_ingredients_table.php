@@ -12,9 +12,6 @@ return new class extends Migration {
             $table->foreignId('ingredient_unit_id')->constrained('ingredient_units')->cascadeOnDelete();
             $table->float('quantity')->nullable();
 
-            $table->string('ingredient_title');
-            $table->string('unit_title')->nullable();
-
             $table->primary(['recipe_id', 'ingredient_unit_id']);
         });
     }

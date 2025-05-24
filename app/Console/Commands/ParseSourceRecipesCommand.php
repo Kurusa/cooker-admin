@@ -2,45 +2,41 @@
 
 namespace App\Console\Commands;
 
-use App\Services\FindSourceByTitle;
+use App\Exceptions\UnknownSourceException;
+use App\Jobs\ProcessRecipeUrlJob;
+use App\Models\Source\Source;
 use App\Services\Parsers\RecipeParserFactory;
-use App\Services\ProcessRecipeUrlService;
 use App\Services\SitemapUrlCollectorService;
 use Illuminate\Console\Command;
 
 class ParseSourceRecipesCommand extends Command
 {
-    protected $signature = 'parse:recipes:source {source}';
+    protected $signature = 'parse:source:recipes {sourceId}';
 
-    protected $description = 'Parse a all recipes by source title';
+    protected $description = 'Parse source recipes';
 
     public function __construct(
-        private readonly RecipeParserFactory     $parserFactory,
-        private readonly ProcessRecipeUrlService $processRecipeUrlService,
+        private readonly RecipeParserFactory $parserFactory,
     )
     {
         parent::__construct();
     }
 
+    /**
+     * @throws UnknownSourceException
+     */
     public function handle(): void
     {
-        $source = FindSourceByTitle::find($this->argument('source'));
+        /** @var Source $source */
+        $source = Source::find($this->argument('sourceId'));
+
         $parser = $this->parserFactory->make($source->title);
 
         $service = new SitemapUrlCollectorService($parser, $source);
         $sourceRecipeUrls = $service->getFilteredSitemapUrls();
 
-        $progressBar = $this->output->createProgressBar(count($sourceRecipeUrls));
-        $progressBar->start();
-
         foreach ($sourceRecipeUrls as $sourceRecipeUrl) {
-            $this->info(PHP_EOL . "Processing: {$sourceRecipeUrl->url}");
-
-            $this->processRecipeUrlService->processRecipeUrl($sourceRecipeUrl, $parser);
-
-            $progressBar->advance();
+            ProcessRecipeUrlJob::dispatch($parser, $sourceRecipeUrl);
         }
-
-        $progressBar->finish();
     }
 }

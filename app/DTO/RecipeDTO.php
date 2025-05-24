@@ -10,7 +10,7 @@ class RecipeDTO extends Data
 {
     public function __construct(
         public string     $title,
-        public Complexity $complexity = Complexity::MEDIUM,
+        public Complexity $complexity,
         public ?int       $time = null,
         public int        $portions = 1,
         public string     $imageUrl,

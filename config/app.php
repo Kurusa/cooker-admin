@@ -1,5 +1,6 @@
 <?php
 
+use App\Providers\NovaServiceProvider;
 use Illuminate\Support\Facades\Facade;
 
 return [
@@ -190,7 +191,7 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-
+        NovaServiceProvider::class,
     ],
 
     /*

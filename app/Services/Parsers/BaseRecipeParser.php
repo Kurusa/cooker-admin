@@ -26,8 +26,6 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
         $dom->loadHTML($html);
 
-        //file_put_contents('storage/logs/html.html', $html);
-
         $this->xpath = new DOMXPath($dom);
 
         $this->xpathService = app(XPathService::class);
@@ -38,15 +36,15 @@ abstract class BaseRecipeParser implements RecipeParserInterface
     {
         return [
             new RecipeDTO(
-                title               : $this->parseTitle(),
-                complexity          : $this->parseComplexity(),
-                time                : $this->parseCookingTime(),
-                portions            : $this->parsePortions(),
-                imageUrl            : $this->parseImage(),
+                title: $this->parseTitle(),
+                complexity: $this->parseComplexity(),
+                time: $this->parseCookingTime(),
+                portions: $this->parsePortions(),
+                imageUrl: $this->parseImage(),
                 source_recipe_url_id: null,
-                categories          : $this->parseCategories(),
-                ingredients         : $this->parseIngredients($debug),
-                steps               : $this->parseSteps($debug),
+                categories: $this->parseCategories(),
+                ingredients: $this->parseIngredients($debug),
+                steps: $this->parseSteps($debug),
             ),
         ];
     }

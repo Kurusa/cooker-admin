@@ -3,8 +3,8 @@
 namespace App\Services\RecipeAttributes;
 
 use App\DTO\StepDTO;
-use App\Models\Recipe;
-use App\Models\RecipeStep;
+use App\Models\Recipe\Recipe;
+use App\Models\Recipe\RecipeStep;
 
 class StepService
 {
@@ -20,9 +20,9 @@ class StepService
 
         foreach ($steps as $step) {
             RecipeStep::create([
-                'recipe_id'   => $recipe->id,
+                'recipe_id' => $recipe->id,
                 'description' => $step->description,
-                'image_url'   => $step->image,
+                'image_url' => $step->image,
             ]);
         }
     }

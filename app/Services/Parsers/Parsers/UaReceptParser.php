@@ -37,16 +37,16 @@ class UaReceptParser extends BaseRecipeParser
     {
         $cookingTime = 0;
 
-        $cookingTime += (int) $this->xpathService->extractCleanSingleValue('//div[contains(@class, "detail-item")]/span[text()="Час підготовки"]/following-sibling::p');
+        $cookingTime += (int)$this->xpathService->extractCleanSingleValue('//div[contains(@class, "detail-item")]/span[text()="Час підготовки"]/following-sibling::p');
 
-        $cookingTime += (int) $this->xpathService->extractCleanSingleValue('//div[contains(@class, "detail-item")]/span[text()="Час приготування"]/following-sibling::p');
+        $cookingTime += (int)$this->xpathService->extractCleanSingleValue('//div[contains(@class, "detail-item")]/span[text()="Час приготування"]/following-sibling::p');
 
         return $cookingTime;
     }
 
     public function parsePortions(): int
     {
-        return (int) $this->xpathService->extractCleanSingleValue('//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p');
+        return (int)$this->xpathService->extractCleanSingleValue('//div[contains(@class, "detail-item")]/span[text()="Порції"]/following-sibling::p');
     }
 
     public function parseIngredients(bool $debug = false): array
@@ -73,7 +73,7 @@ class UaReceptParser extends BaseRecipeParser
             if ($description) {
                 $steps[] = [
                     'description' => $description,
-                    'imageUrl'    => $imageUrl,
+                    'imageUrl' => $imageUrl,
                 ];
             }
         }
@@ -89,7 +89,7 @@ class UaReceptParser extends BaseRecipeParser
                 if (mb_strlen($description)) {
                     $steps[] = [
                         'description' => $description,
-                        'imageUrl'    => $imageUrl,
+                        'imageUrl' => $imageUrl,
                     ];
                 }
             }

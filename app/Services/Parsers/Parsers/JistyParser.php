@@ -23,14 +23,14 @@ class JistyParser extends BaseRecipeParser
         if ($recipeNodes->length <= 1) {
             return [
                 new RecipeDTO(
-                    title               : $this->parseTitle(),
-                    complexity          : $this->parseComplexity(),
-                    time                : $this->parseCookingTime(),
-                    portions            : $this->parsePortions(),
-                    imageUrl            : $this->parseImage(),
-                    categories          : $this->parseCategories(),
-                    ingredients         : $this->parseIngredients($debug),
-                    steps               : $this->parseSteps($debug),
+                    title: $this->parseTitle(),
+                    complexity: $this->parseComplexity(),
+                    time: $this->parseCookingTime(),
+                    portions: $this->parsePortions(),
+                    imageUrl: $this->parseImage(),
+                    categories: $this->parseCategories(),
+                    ingredients: $this->parseIngredients($debug),
+                    steps: $this->parseSteps($debug),
                     source_recipe_url_id: null,
                 ),
             ];
@@ -123,7 +123,7 @@ class JistyParser extends BaseRecipeParser
             if (!in_array($description, array_column($steps, 'description'))) {
                 $steps[] = new StepDTO(
                     description: $description,
-                    image      : $imageUrl,
+                    image: $imageUrl,
                 );
             }
         }
@@ -150,14 +150,14 @@ class JistyParser extends BaseRecipeParser
             $steps = $this->formatSteps($stepNodes);
 
             $recipes[] = new RecipeDTO(
-                title               : $recipeNode->textContent,
-                complexity          : $this->parseComplexity(),
-                time                : $this->parseCookingTime(),
-                portions            : $this->parsePortions(),
-                imageUrl            : $imageUrl,
-                categories          : $this->parseCategories(),
-                ingredients         : $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients),
-                steps               : $steps,
+                title: $recipeNode->textContent,
+                complexity: $this->parseComplexity(),
+                time: $this->parseCookingTime(),
+                portions: $this->parsePortions(),
+                imageUrl: $imageUrl,
+                categories: $this->parseCategories(),
+                ingredients: $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients),
+                steps: $steps,
                 source_recipe_url_id: null,
             );
         }

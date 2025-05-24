@@ -35,7 +35,7 @@ class YabpoelaParser extends BaseRecipeParser
 
     public function parsePortions(): int
     {
-        return (int) $this->xpathService->extractCleanSingleValue("//div[@class='entry-stats__item entry-stats__item_quantity-persons']/div[@class='entry-stats__value']/span");
+        return (int)$this->xpathService->extractCleanSingleValue("//div[@class='entry-stats__item entry-stats__item_quantity-persons']/div[@class='entry-stats__value']/span");
     }
 
     public function parseIngredients(bool $debug = false): array
@@ -56,7 +56,7 @@ class YabpoelaParser extends BaseRecipeParser
 
             return [
                 'description' => $description,
-                'image'       => $image ? 'https://ua.yabpoela.net' . $image : '',
+                'image' => $image ? 'https://ua.yabpoela.net' . $image : '',
             ];
         }, iterator_to_array($this->xpath->query("//div[contains(@id,'step-')]")));
     }

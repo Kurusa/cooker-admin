@@ -2,7 +2,8 @@
 
 namespace App\Services;
 
-use App\Models\SourceRecipeUrl;
+use App\DTO\RecipeDTO;
+use App\Models\Source\SourceRecipeUrl;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\RecipeAttributes\CategoryService;
 use App\Services\RecipeAttributes\IngredientService;

@@ -4,7 +4,7 @@ namespace App\Services\RecipeAttributes;
 
 use App\DTO\CategoryDTO;
 use App\Models\Category;
-use App\Models\Recipe;
+use App\Models\Recipe\Recipe;
 
 class CategoryService
 {
@@ -22,7 +22,9 @@ class CategoryService
             /** @var Category $category */
             $category = Category::updateOrCreate([
                 'title' => $categoryData->title,
-            ], ['title' => $categoryData->title]);
+            ], [
+                'title' => $categoryData->title,
+            ]);
 
             $recipe->categories()->attach($category->id);
         }

@@ -2,21 +2,19 @@
 
 namespace App\Console\Commands;
 
-use App\Models\SourceRecipeUrl;
-use App\Services\FindSourceByTitle;
+use App\Jobs\ProcessRecipeUrlJob;
+use App\Models\Source\SourceRecipeUrl;
 use App\Services\Parsers\RecipeParserFactory;
-use App\Services\ProcessRecipeUrlService;
 use Illuminate\Console\Command;
 
 class ParseRecipeByUrlCommand extends Command
 {
-    protected $signature = 'parse:recipe:url {source} {url}';
+    protected $signature = 'parse:recipe:url {url}';
 
     protected $description = 'Parse a single recipe by its URL';
 
     public function __construct(
-        private readonly RecipeParserFactory     $parserFactory,
-        private readonly ProcessRecipeUrlService $processRecipeUrlService,
+        private readonly RecipeParserFactory $parserFactory,
     )
     {
         parent::__construct();
@@ -24,14 +22,11 @@ class ParseRecipeByUrlCommand extends Command
 
     public function handle(): void
     {
-        $source = FindSourceByTitle::find($this->argument('source'));
-
         /** @var SourceRecipeUrl $sourceRecipeUrl */
-        $sourceRecipeUrl = $source->recipeUrls()->updateOrCreate(['url' => $this->argument('url')], [
-            'url' => $this->argument('url'),
-        ]);
+        $sourceRecipeUrl = SourceRecipeUrl::where('url', $this->argument('url'))->first();
 
-        $parser = $this->parserFactory->make($source->title);
-        $this->processRecipeUrlService->processRecipeUrl($sourceRecipeUrl, $parser);
+        $parser = $this->parserFactory->make($sourceRecipeUrl->source->title);
+
+        ProcessRecipeUrlJob::dispatch($parser, $sourceRecipeUrl);
     }
 }

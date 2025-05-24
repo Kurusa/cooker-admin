@@ -29,15 +29,15 @@ class CookingTimeFormatter
         $hours = 0;
 
         if (preg_match('/(\d+)\s*(година|години|год|hours)/iu', $time, $matches)) {
-            $hours = (int) $matches[1];
+            $hours = (int)$matches[1];
         }
 
         if (preg_match('/(\d+)\s*(хвилина|хвилини|хв|min|minutes)/iu', $time, $matches)) {
-            $minutes = (int) $matches[1];
+            $minutes = (int)$matches[1];
         }
 
         if (preg_match('/^\d+$/', $time)) {
-            $minutes = (int) $time;
+            $minutes = (int)$time;
         }
 
         return $hours * 60 + $minutes;
