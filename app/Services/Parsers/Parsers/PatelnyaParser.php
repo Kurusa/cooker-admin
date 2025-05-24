@@ -70,6 +70,8 @@ class PatelnyaParser extends BaseRecipeParser
             'новини',
             'дієти',
             'конкурси',
+            'здорове харчування',
+            'кулінарні таблиці',
         ];
 
         $categoryValue = $xpath->query("//div[@class='title-detail']/a/span | .//div[@id='crumbs']/a/span[last()]")->item(0)->nodeValue;

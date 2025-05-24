@@ -13,7 +13,8 @@
         "laravel/horizon": "^5.32",
         "laravel/nova": "^5.0",
         "laravel/tinker": "^2.7",
-        "spatie/laravel-data": "^4.15"
+        "spatie/laravel-data": "^4.15",
+        "ext-simplexml": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

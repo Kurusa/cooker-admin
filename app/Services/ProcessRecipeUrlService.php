@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Exceptions\RecipeBlockNotFoundException;
 use App\Models\Source\SourceRecipeUrl;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\RecipeAttributes\CategoryService;
@@ -11,6 +12,7 @@ use App\Services\RecipeAttributes\RecipeService;
 use App\Services\RecipeAttributes\StepService;
 use Exception;
 use Illuminate\Database\ConnectionInterface as Database;
+use Illuminate\Support\Facades\Log;
 
 class ProcessRecipeUrlService
 {
@@ -50,6 +52,11 @@ class ProcessRecipeUrlService
             }
 
             $this->db->commit();
+        } catch (RecipeBlockNotFoundException $exception) {
+            Log::info('Recipe block not found for ' . $sourceRecipeUrl->url);
+
+            $this->db->rollBack();
+            throw $exception;
         } catch (Exception $exception) {
             $this->db->rollBack();
             throw $exception;

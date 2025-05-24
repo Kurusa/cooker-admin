@@ -6,6 +6,7 @@ use App\Models\Source\SourceRecipeUrl as SourceRecipeUrlModel;
 use App\Nova\Actions\Source\ExcludeSourceRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
 use App\Nova\Filters\SourceFilter;
+use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlExcludedFilter;
 use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlParsedFilter;
 use App\Nova\Recipe\Recipe;
 use App\Nova\Resource;
@@ -65,6 +66,7 @@ class SourceRecipeUrl extends Resource
         return [
             new SourceFilter,
             new SourceRecipeUrlParsedFilter,
+            new SourceRecipeUrlExcludedFilter,
         ];
     }
 

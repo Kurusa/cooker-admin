@@ -11,6 +11,7 @@ use App\Enums\Recipe\Complexity;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use Illuminate\Support\Facades\Log;
 
 class DeepseekService
 {
@@ -35,7 +36,7 @@ class DeepseekService
 -cookingTime(int):загальний час у хвилинах
 -portions(int):кількість порцій(визнач сам,якщо не вказано)
 -image(string):URL головного зображення рецепта
--ingredients(array<object>):кожен об’єкт має title,unit,quantity
+-ingredients(array<object>):кожен об’єкт має title,unit,quantity(завжди float або int).Якщо трапляються кілька записів з однаковою парою title+unit,підсумуй їхні quantity і поверни єдиний об’єкт
 -cuisines(array<string>):кухня страви(визнач сам,якщо не вказано)
 -steps(array<object>):кожен об’єкт має description,image
 Обов’язкові правила:
@@ -52,6 +53,7 @@ class DeepseekService
                     'stream' => false,
                 ],
             ]);
+
             return $this->parseDeepseekResponse($response->getBody()->getContents());
         } catch (RequestException $e) {
             return [];
@@ -79,27 +81,33 @@ class DeepseekService
             throw new Exception('No recipe data found');
         }
 
-        return array_map(function (array $response) {
-            return new RecipeDTO(
-                title: $response['title'],
-                complexity: Complexity::from($response['complexity']),
-                time: $response['cookingTime'] ?? null,
-                portions: $response['portions'] ?? 1,
-                imageUrl: $response['image'] ?? '',
-                source_recipe_url_id: null,
-                cuisines: array_map(fn($cuisine) => new CuisineDTO(title: $cuisine), $response['cuisines'] ?? []),
-                categories: array_map(fn($category) => new CategoryDTO(title: $category), $response['categories'] ?? []),
-                ingredients: array_map(fn($ingredient) => new IngredientDTO(
-                    title: $ingredient['title'],
-                    quantity: $ingredient['quantity'] ?? null,
-                    unit: $ingredient['unit'] ?? null,
-                    originalTitle: $ingredient['originalTitle'] ?? null,
-                ), $response['ingredients'] ?? []),
-                steps: array_map(fn($step) => new StepDTO(
-                    description: $step['description'],
-                    image: $step['image'] ?? '',
-                ), $response['steps'] ?? []),
-            );
-        }, $recipes);
+        try {
+            return array_map(function (array $response) {
+                return new RecipeDTO(
+                    title: $response['title'],
+                    complexity: Complexity::from($response['complexity']),
+                    time: $response['cookingTime'] ?? null,
+                    portions: $response['portions'] ?? 1,
+                    imageUrl: $response['image'] ?? '',
+                    source_recipe_url_id: null,
+                    cuisines: array_map(fn($cuisine) => new CuisineDTO(title: $cuisine), $response['cuisines'] ?? []),
+                    categories: array_map(fn($category) => new CategoryDTO(title: $category), $response['categories'] ?? []),
+                    ingredients: array_map(fn($ingredient) => new IngredientDTO(
+                        title: $ingredient['title'],
+                        quantity: $ingredient['quantity'] ?? null,
+                        unit: $ingredient['unit'] ?? null,
+                        originalTitle: $ingredient['originalTitle'] ?? null,
+                    ), $response['ingredients'] ?? []),
+                    steps: array_map(fn($step) => new StepDTO(
+                        description: $step['description'],
+                        image: $step['image'] ?? '',
+                    ), $response['steps'] ?? []),
+                );
+            }, $recipes);
+        } catch (Exception $exception) {
+            Log::error('Exception when builder response from Deepseek. Response:' . json_encode($recipes) . '. Error:' . $exception->getMessage());
+
+            throw $exception;
+        }
     }
 }

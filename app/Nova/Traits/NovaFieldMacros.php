@@ -3,7 +3,6 @@
 namespace App\Nova\Traits;
 
 use Carbon\Carbon;
-use Laravel\Nova\Fields\Currency;
 use Laravel\Nova\Fields\Date;
 use Laravel\Nova\Fields\DateTime;
 

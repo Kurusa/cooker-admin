@@ -2,6 +2,7 @@
 
 namespace App\Services\Parsers;
 
+use App\Exceptions\RecipeBlockNotFoundException;
 use App\Services\DeepseekService;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use DOMAttr;
@@ -17,10 +18,11 @@ abstract class BaseRecipeParser implements RecipeParserInterface
 
     abstract public function isExcludedByUrlRule(string $url): bool;
 
+    /**
+     * @throws RecipeBlockNotFoundException
+     */
     public function parseRecipes(string $url): array
     {
-        Log::info('Parsing recipe: ' . $url);
-
         $html = file_get_contents($url);
 
         $dom = new DOMDocument();
@@ -34,7 +36,7 @@ abstract class BaseRecipeParser implements RecipeParserInterface
 
         $block = $this->cleanupRecipeNode($this->extractRecipeNode());
 
-        return $service->parseRecipeFromHtml($block);
+        return !strlen($block) ? throw new RecipeBlockNotFoundException() : $service->parseRecipeFromHtml($block);
     }
 
     private function cleanupRecipeNode(DomNode $recipeNode): string
