@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Ingredient\Ingredient;
+use App\Models\Ingredient\IngredientUnit;
 use App\Models\Recipe\RecipeIngredient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;

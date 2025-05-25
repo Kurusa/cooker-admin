@@ -2,7 +2,7 @@
 
 namespace App\Nova\Ingredient;
 
-use App\Models\Ingredient as IngredientModel;
+use App\Models\Ingredient\Ingredient as IngredientModel;
 use App\Nova\Recipe\RecipeIngredient;
 use App\Nova\Resource;
 use Illuminate\Http\Request;

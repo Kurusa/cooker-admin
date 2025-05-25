@@ -41,12 +41,12 @@ class RecipeCategory extends Resource
                 return $this->recipes()->count();
             }),
 
+            BelongsToMany::make('Recipes', 'recipes', Recipe::class),
+
             BelongsTo::make('Parent category', 'parent', self::class)
                 ->nullable(),
 
             HasMany::make('Child categories', 'children', self::class),
-
-            BelongsToMany::make('Recipes', 'recipes', Recipe::class),
 
             self::formattedDateTime('Created at'),
         ];

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Ingredient;
 
 use App\Models\Recipe\RecipeIngredient;
 use Illuminate\Database\Eloquent\Model;

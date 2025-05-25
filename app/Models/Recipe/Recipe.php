@@ -4,7 +4,8 @@ namespace App\Models\Recipe;
 
 use App\Enums\Recipe\Complexity;
 use App\Models\Cuisine;
-use App\Models\Ingredient;
+use App\Models\Ingredient\Ingredient;
+use App\Models\Ingredient\IngredientGroup;
 use App\Models\Source\Source;
 use App\Models\Source\SourceRecipeUrl;
 use Illuminate\Database\Eloquent\Builder;
@@ -123,6 +124,11 @@ class Recipe extends Model
     public function cuisines(): BelongsToMany
     {
         return $this->belongsToMany(Cuisine::class);
+    }
+
+    public function ingredientGroups(): HasMany
+    {
+        return $this->hasMany(IngredientGroup::class);
     }
 
     public function hasImage(): bool

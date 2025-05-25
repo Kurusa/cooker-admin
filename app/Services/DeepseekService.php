@@ -2,12 +2,14 @@
 
 namespace App\Services;
 
-use App\DTO\RecipeCategoryDTO;
 use App\DTO\CuisineDTO;
 use App\DTO\IngredientDTO;
+use App\DTO\IngredientGroupDTO;
+use App\DTO\RecipeCategoryDTO;
 use App\DTO\RecipeDTO;
 use App\DTO\StepDTO;
 use App\Enums\Recipe\Complexity;
+use App\Exceptions\DeepseekDidntFindRecipeException;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
@@ -30,14 +32,15 @@ class DeepseekService
                         [
                             'role' => 'user',
                             'content' => "На цій сторінці можуть бути один або кілька рецептів.Розпізнай кожен із них і поверни масив об’єктів у форматі JSON без жодних описів і пояснень.Кожен об’єкт має ключі:
--title(string):назва рецепта
+-title(string)
 -categories(array<string>):категорії без дублювання(це обов'язкове поле,тож визнач сам,якщо не вказано)
 -complexity(string):easy|medium|hard(визнач сам,якщо не вказано)
 -cookingTime(int):загальний час у хвилинах
 -portions(int):кількість порцій(визнач сам,якщо не вказано)
 -image(string):URL головного зображення рецепта
--ingredients(array<object>):кожен об’єкт має title,unit,quantity(завжди float або int).Якщо трапляються кілька записів з однаковою парою title+unit,підсумуй їхні quantity і поверни єдиний об’єкт
--cuisines(array<string>):кухня страви(визнач сам,якщо не вказано)
+-ingredientGroups (array<object>):якщо інгредієнти розбиті по групам,кожен такий розділ–окремий об’єкт з ключами:-group (string)–назва групи(наприклад, 'для тіста'),-ingredients (array<object>):title,unit,quantity(завжди int або float)
+Якщо груп немає–поверни один елемент зі group =''та всі інгредієнти всередині
+-cuisines(array<string>):кухня страви(це обов'язкове поле,тож визнач сам,якщо не вказано)
 -steps(array<object>):кожен об’єкт має description,image
 Обов’язкові правила:
 Уніфікуй одиниці виміру лише за написанням,НЕ конвертуючи значення(г,кг,мл,л,ч.л,ст.л,склянка,чашка тощо;cups не перетворюй у л,а у склянки).
@@ -73,12 +76,16 @@ class DeepseekService
             throw new Exception('Invalid response structure');
         }
 
-        $content = $data['choices'][0]['message']['content'];
+        $response = $data['choices'][0]['message']['content'];
 
-        if (preg_match('/```json\s*(\[\s*{.*?}\s*])\s*```/s', $content, $matches)) {
+        Log::info('Deepseek response', [
+            'response' => $response,
+        ]);
+
+        if (preg_match('/```json\s*(\[\s*{.*?}\s*])\s*```/s', $response, $matches)) {
             $recipes = json_decode($matches[1], true);
         } else {
-            throw new Exception('No recipe data found');
+            throw new DeepseekDidntFindRecipeException();
         }
 
         try {
@@ -92,12 +99,22 @@ class DeepseekService
                     source_recipe_url_id: null,
                     cuisines: array_map(fn($cuisine) => new CuisineDTO(title: $cuisine), $response['cuisines'] ?? []),
                     categories: array_map(fn($category) => new RecipeCategoryDTO(title: $category), $response['categories'] ?? []),
-                    ingredients: array_map(fn($ingredient) => new IngredientDTO(
-                        title: $ingredient['title'],
-                        quantity: $ingredient['quantity'] ?? null,
-                        unit: $ingredient['unit'] ?? null,
-                        originalTitle: $ingredient['originalTitle'] ?? null,
-                    ), $response['ingredients'] ?? []),
+                    ingredientGroups: array_map(function ($group) {
+                        return new IngredientGroupDTO(
+                            group: $group['group'] ?? '',
+                            ingredients: array_map(fn($ingredient) => new IngredientDTO(
+                                title: $ingredient['title'],
+                                quantity: $ingredient['quantity'] ?? null,
+                                unit: $ingredient['unit'] ?? null,
+                                originalTitle: $ingredient['originalTitle'] ?? null,
+                            ), $group['ingredients'] ?? [])
+                        );
+                    }, $response['ingredientGroups'] ?? [
+                        [
+                            'group' => '',
+                            'ingredients' => $response['ingredients'] ?? [],
+                        ]
+                    ]),
                     steps: array_map(fn($step) => new StepDTO(
                         description: $step['description'],
                         image: $step['image'] ?? '',
@@ -105,7 +122,10 @@ class DeepseekService
                 );
             }, $recipes);
         } catch (Exception $exception) {
-            Log::error('Exception when builder response from Deepseek. Response:' . json_encode($recipes) . '. Error:' . $exception->getMessage());
+            Log::error('Exception when builder response from Deepseek',[
+                'response' => $response,
+                'error' => $exception->getMessage(),
+            ]);
 
             throw $exception;
         }

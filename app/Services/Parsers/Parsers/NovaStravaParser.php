@@ -31,7 +31,7 @@ class NovaStravaParser extends BaseRecipeParser
             'https://novastrava.com/shtambovi-troyandi/',
             'https://novastrava.com/chim-vidriznyayetsya-vugilnii-gril-vid-mangala/',
             'tovari-',
-            'mac-book',
+            'https://novastrava.com/m4-macbook-air-dopomagaye-apple-zalishatsya-na-plavu/',
         ];
 
         foreach ($disallowedPatterns as $pattern) {

@@ -46,7 +46,7 @@ class ProcessRecipeUrlService
                 $recipe = $this->recipeService->createOrUpdateRecipe($recipeDTO);
 
                 $this->stepService->attachSteps($recipeDTO->steps, $recipe);
-                $this->ingredientService->attachIngredients($recipeDTO->ingredients, $recipe);
+                $this->ingredientService->attachIngredientGroups($recipeDTO->ingredientGroups, $recipe);
                 $this->categoryService->attachCategories($recipeDTO->categories, $recipe);
                 $this->cuisineService->attachCuisines($recipeDTO->cuisines, $recipe);
             }

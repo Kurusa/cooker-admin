@@ -4,6 +4,7 @@ namespace App\Nova\Recipe;
 
 use App\Enums\Recipe\Complexity;
 use App\Models\Recipe\Recipe as RecipeModel;
+use App\Models\Recipe\RecipeCategory as RecipeCategoryModel;
 use App\Nova\Actions\ExcludeRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
 use App\Nova\Cuisine;
@@ -56,6 +57,13 @@ class Recipe extends Resource
 
                 return "<span style='background:{$color};color:white;padding:4px 8px;border-radius:6px;font-weight:600;font-size:12px;'>{$label}</span>";
             })->asHtml(),
+
+            Text::make('Categories', function () {
+                return $this->categories->map(function (RecipeCategoryModel $category) {
+                    return "<span style='background:#104b2e;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;margin-right:4px;'>{$category->title}</span>";
+                })->implode('');
+            })->asHtml()
+                ->onlyOnIndex(),
 
             Select::make('Complexity')
                 ->options(collect(Complexity::cases())->mapWithKeys(fn($case) => [

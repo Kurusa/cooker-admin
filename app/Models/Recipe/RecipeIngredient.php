@@ -2,7 +2,8 @@
 
 namespace App\Models\Recipe;
 
-use App\Models\IngredientUnit;
+use App\Models\Ingredient\IngredientGroup;
+use App\Models\Ingredient\IngredientUnit;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\Pivot;
 
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  * @property int $recipe_id
  * @property int $ingredient_unit_id
  * @property float $quantity
+ * @property int $ingredient_group_id
  *
  * @property IngredientUnit $ingredientUnit
  * @property Recipe $recipe
@@ -23,6 +25,7 @@ class RecipeIngredient extends Pivot
         'recipe_id',
         'ingredient_unit_id',
         'quantity',
+        'ingredient_group_id',
     ];
 
     public function recipe(): BelongsTo
@@ -33,5 +36,10 @@ class RecipeIngredient extends Pivot
     public function ingredientUnit(): BelongsTo
     {
         return $this->belongsTo(IngredientUnit::class, 'ingredient_unit_id');
+    }
+
+    public function ingredientGroup(): BelongsTo
+    {
+        return $this->belongsTo(IngredientGroup::class, 'ingredient_group_id');
     }
 }

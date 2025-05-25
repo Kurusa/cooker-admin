@@ -19,8 +19,8 @@ class RecipeDTO extends Data
         public array      $cuisines,
         /** @var array<RecipeCategoryDTO> */
         public array      $categories,
-        /** @var array<IngredientDTO> */
-        public array      $ingredients,
+        /** @var array<IngredientGroupDTO> */
+        public array      $ingredientGroups,
         /** @var array<StepDTO> */
         public array      $steps,
     )

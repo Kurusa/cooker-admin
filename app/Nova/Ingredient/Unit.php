@@ -5,7 +5,6 @@ namespace App\Nova\Ingredient;
 use App\Models\Unit as UnitModel;
 use App\Nova\Resource;
 use Illuminate\Http\Request;
-use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
@@ -37,8 +36,6 @@ class Unit extends Resource
             }),
 
             HasMany::make('Ingredient Units', 'ingredientUnits', IngredientUnit::class),
-
-            BelongsToMany::make('Ingredients', 'ingredients', Ingredient::class),
         ];
     }
 }

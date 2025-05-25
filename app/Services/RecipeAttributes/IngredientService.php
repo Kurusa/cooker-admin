@@ -3,36 +3,42 @@
 namespace App\Services\RecipeAttributes;
 
 use App\DTO\IngredientDTO;
-use App\Models\Ingredient;
-use App\Models\IngredientUnit;
+use App\DTO\IngredientGroupDTO;
+use App\Models\Ingredient\Ingredient;
+use App\Models\Ingredient\IngredientUnit;
 use App\Models\Recipe\Recipe;
 use App\Models\Unit;
 
 class IngredientService
 {
     /**
-     * @param IngredientDTO[] $ingredients
+     * @param IngredientGroupDTO[] $ingredientGroups
      * @param Recipe $recipe
      */
-    public function attachIngredients(array $ingredients, Recipe $recipe): void
+    public function attachIngredientGroups(array $ingredientGroups, Recipe $recipe): void
     {
-        foreach ($ingredients as $ingredientData) {
-            /** @var Ingredient $ingredient */
-            $ingredient = Ingredient::firstOrCreate([
-                'title' => $ingredientData->title,
-            ]);
+        foreach ($ingredientGroups as $groupDTO) {
+            $groupModel = $groupDTO->group
+                ? $recipe->ingredientGroups()->firstOrCreate(['title' => $groupDTO->group])
+                : null;
 
-            $unit = $this->getUnit($ingredientData->unit);
+            foreach ($groupDTO->ingredients as $ingredientData) {
+                $ingredient = Ingredient::firstOrCreate([
+                    'title' => $ingredientData->title,
+                ]);
 
-            /** @var IngredientUnit $ingredientUnit */
-            $ingredientUnit = IngredientUnit::firstOrCreate([
-                'ingredient_id' => $ingredient->id,
-                'unit_id' => $unit?->id,
-            ]);
+                $unit = $this->getUnit($ingredientData->unit);
 
-            $recipe->ingredients()->attach($ingredientUnit->id, [
-                'quantity' => $ingredientData->quantity,
-            ]);
+                $ingredientUnit = IngredientUnit::firstOrCreate([
+                    'ingredient_id' => $ingredient->id,
+                    'unit_id' => $unit?->id,
+                ]);
+
+                $recipe->ingredients()->attach($ingredientUnit->id, [
+                    'quantity' => $ingredientData->quantity,
+                    'ingredient_group_id' => $groupModel?->id,
+                ]);
+            }
         }
     }
 

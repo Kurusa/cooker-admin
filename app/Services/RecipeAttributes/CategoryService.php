@@ -3,8 +3,8 @@
 namespace App\Services\RecipeAttributes;
 
 use App\DTO\RecipeCategoryDTO;
-use App\Models\Recipe\RecipeCategory;
 use App\Models\Recipe\Recipe;
+use App\Models\Recipe\RecipeCategory;
 
 class CategoryService
 {
