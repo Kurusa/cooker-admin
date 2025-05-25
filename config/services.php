@@ -12,4 +12,9 @@ return [
         'api_key' => env('DEEPSEEK_API_KEY'),
         'base_uri' => 'https://api.deepseek.com',
     ],
+
+    'telegram' => [
+        'chat_id' => env('TELEGRAM_CHAT_ID'),
+        'token' => env('TELEGRAM_BOT_TOKEN'),
+    ],
 ];

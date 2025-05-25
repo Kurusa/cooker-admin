@@ -13,7 +13,7 @@ use Laravel\Nova\Resource;
 class IngredientGroup extends Resource
 {
     public static string $model = IngredientGroupModel::class;
-    public static $title = 'name';
+
     public static $group = 'Ingredients';
 
     public function fields(Request $request): array
@@ -21,7 +21,7 @@ class IngredientGroup extends Resource
         return [
             ID::make()->sortable(),
 
-            Text::make('Name', 'name')
+            Text::make('Title', 'title')
                 ->nullable(),
 
             HasMany::make('Ingredients', 'ingredients', RecipeIngredient::class),

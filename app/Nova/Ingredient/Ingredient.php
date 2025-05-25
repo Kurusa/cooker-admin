@@ -9,19 +9,13 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
+use Laravel\Nova\Tabs\Tab;
 
 class Ingredient extends Resource
 {
     public static string $model = IngredientModel::class;
 
-    public static $title = 'title';
-
     public static $group = 'Ingredients';
-
-    public static $search = [
-        'id',
-        'title',
-    ];
 
     public function fields(Request $request): array
     {
@@ -32,10 +26,10 @@ class Ingredient extends Resource
                 ->sortable()
                 ->rules('required', 'max:255'),
 
-            HasMany::make('Ingredient units', 'units', IngredientUnit::class),
-
-            HasMany::make('Recipe Ingredient Usages', 'recipeIngredients', RecipeIngredient::class)
-                ->onlyOnDetail(),
+            Tab::group('Relations', [
+                HasMany::make('Ingredient Units', 'units', IngredientUnit::class),
+                HasMany::make('Recipe Ingredient Usages', 'recipeIngredients', RecipeIngredient::class),
+            ]),
         ];
     }
 }

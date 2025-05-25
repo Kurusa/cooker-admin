@@ -2,7 +2,6 @@
 
 namespace App\Services\RecipeAttributes;
 
-use App\DTO\IngredientDTO;
 use App\DTO\IngredientGroupDTO;
 use App\Models\Ingredient\Ingredient;
 use App\Models\Ingredient\IngredientUnit;

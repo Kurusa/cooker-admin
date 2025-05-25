@@ -12,7 +12,6 @@ use App\Enums\Recipe\Complexity;
 use App\Exceptions\DeepseekDidntFindRecipeException;
 use Exception;
 use GuzzleHttp\Client;
-use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Log;
 
 class DeepseekService
@@ -23,15 +22,14 @@ class DeepseekService
 
     public function parseRecipeFromHtml(string $html): array
     {
-        try {
-            $response = $this->client->post('/chat/completions', [
-                'json' => [
-                    'model' => 'deepseek-chat',
-                    'messages' => [
-                        ['role' => 'system', 'content' => 'You are a helpful assistant.'],
-                        [
-                            'role' => 'user',
-                            'content' => "На цій сторінці можуть бути один або кілька рецептів.Розпізнай кожен із них і поверни масив об’єктів у форматі JSON без жодних описів і пояснень.Кожен об’єкт має ключі:
+        $response = $this->client->post('/chat/completions', [
+            'json' => [
+                'model' => 'deepseek-chat',
+                'messages' => [
+                    ['role' => 'system', 'content' => 'You are a helpful assistant.'],
+                    [
+                        'role' => 'user',
+                        'content' => "На цій сторінці можуть бути один або кілька рецептів.Розпізнай кожен із них і поверни масив об’єктів у форматі JSON без жодних описів і пояснень.Кожен об’єкт має ключі:
 -title(string)
 -categories(array<string>):категорії без дублювання(це обов'язкове поле,тож визнач сам,якщо не вказано)
 -complexity(string):easy|medium|hard(визнач сам,якщо не вказано)
@@ -51,16 +49,13 @@ class DeepseekService
 Прибери будь-які префікси виду крок N або їхні варіації на початку описів кроків
 Ігноруй неінформативні кроки,що містять лише слова на кшталт “Подаємо”,“Смачного”,“Enjoy”
 Якщо на сторінці один рецепт поверни масив із одним об’єктом. Ось HTML:" . $html,
-                        ],
                     ],
-                    'stream' => false,
                 ],
-            ]);
+                'stream' => false,
+            ],
+        ]);
 
-            return $this->parseDeepseekResponse($response->getBody()->getContents());
-        } catch (RequestException $e) {
-            return [];
-        }
+        return $this->parseDeepseekResponse($response->getBody()->getContents());
     }
 
     /**
@@ -85,7 +80,7 @@ class DeepseekService
         if (preg_match('/```json\s*(\[\s*{.*?}\s*])\s*```/s', $response, $matches)) {
             $recipes = json_decode($matches[1], true);
         } else {
-            throw new DeepseekDidntFindRecipeException();
+            throw new DeepseekDidntFindRecipeException(json_encode($response));
         }
 
         try {
@@ -122,7 +117,7 @@ class DeepseekService
                 );
             }, $recipes);
         } catch (Exception $exception) {
-            Log::error('Exception when builder response from Deepseek',[
+            Log::error('Exception when builder response from Deepseek', [
                 'response' => $response,
                 'error' => $exception->getMessage(),
             ]);

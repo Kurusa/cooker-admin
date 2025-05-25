@@ -14,6 +14,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property int $id
  * @property int $ingredient_id
  * @property int $unit_id
+ *
+ * @property Ingredient $ingredient
+ * @property Unit $unit
  */
 class IngredientUnit extends Model
 {

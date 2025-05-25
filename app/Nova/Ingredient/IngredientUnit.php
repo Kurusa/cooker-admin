@@ -14,8 +14,6 @@ class IngredientUnit extends Resource
 {
     public static string $model = IngredientUnitModel::class;
 
-    public static $search = ['id'];
-
     public static $group = 'Ingredients';
 
     public function fields(Request $request): array

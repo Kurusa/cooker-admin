@@ -2,26 +2,26 @@
 
 namespace App\Nova\Recipe;
 
-use App\Enums\Recipe\Complexity;
 use App\Models\Recipe\Recipe as RecipeModel;
-use App\Models\Recipe\RecipeCategory as RecipeCategoryModel;
 use App\Nova\Actions\ExcludeRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
 use App\Nova\Cuisine;
 use App\Nova\Filters\RecipeHasOneIngredientOrStep;
+use App\Nova\Ingredient\IngredientGroup;
 use App\Nova\Resource;
 use App\Nova\Traits\NovaFieldMacros;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Avatar;
 use Laravel\Nova\Fields\BelongsTo;
+use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\Heading;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
-use Laravel\Nova\Fields\Select;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Laravel\Nova\Tabs\Tab;
 
 class Recipe extends Resource
 {
@@ -51,49 +51,30 @@ class Recipe extends Resource
                 ->sortable()
                 ->rules('required', 'max:255'),
 
-            Text::make('Complexity', function () {
-                $label = ucfirst($this->complexity?->value);
-                $color = $this->complexity?->getBadgeColor();
-
-                return "<span style='background:{$color};color:white;padding:4px 8px;border-radius:6px;font-weight:600;font-size:12px;'>{$label}</span>";
-            })->asHtml(),
-
-            Text::make('Categories', function () {
-                return $this->categories->map(function (RecipeCategoryModel $category) {
-                    return "<span style='background:#104b2e;color:#fff;padding:4px 8px;border-radius:6px;font-size:12px;margin-right:4px;'>{$category->title}</span>";
-                })->implode('');
-            })->asHtml()
-                ->onlyOnIndex(),
-
-            Select::make('Complexity')
-                ->options(collect(Complexity::cases())->mapWithKeys(fn($case) => [
-                    $case->value => $case->getEmoji() . ' ' . ucfirst($case->value)
-                ])->toArray())
-                ->rules('required')
-                ->displayUsingLabels()
-                ->onlyOnForms(),
-
-            Textarea::make('Advice'),
-
-            Number::make('Time')
-                ->help('Minutes'),
-
-            Number::make('Portions'),
-
-            BelongsTo::make('Source', 'source')
-                ->exceptOnForms(),
-
-            HasMany::make('Ingredients', 'recipeIngredients', RecipeIngredient::class),
-
-            HasMany::make('Steps', 'steps', RecipeStep::class),
-
-            HasMany::make('Cuisines', 'cuisines', Cuisine::class),
-
-            HasMany::make('Categories', 'categories', RecipeCategory::class),
-
             Heading::make("<iframe src=\"{$this->sourceRecipeUrl?->url}\" width=\"100%\" height=\"500\" style=\"border:1px solid #ccc;\"></iframe>")
                 ->asHtml()
                 ->onlyOnDetail(),
+
+            Tab::group('Details', [
+                Tab::make('Main', [
+                    Text::make('Complexity', function () {
+                        $label = ucfirst($this->complexity?->value);
+                        $color = $this->complexity?->getBadgeColor();
+                        return "<span style='background:{$color};color:white;padding:4px 8px;border-radius:6px;font-weight:600;font-size:12px;'>{$label}</span>";
+                    })->asHtml(),
+                    Number::make('Time')->help('Minutes'),
+                    Number::make('Portions'),
+                    Textarea::make('Advice'),
+                    BelongsTo::make('Source', 'source')->exceptOnForms(),
+                ]),
+                Tab::make('Relations', [
+                    HasMany::make('Ingredients', 'recipeIngredients', RecipeIngredient::class),
+                    HasMany::make('Ingredient Groups', 'ingredientGroups', IngredientGroup::class),
+                    HasMany::make('Steps', 'steps', RecipeStep::class),
+                    BelongsToMany::make('Cuisines', 'cuisines', Cuisine::class),
+                    BelongsToMany::make('Categories', 'categories', RecipeCategory::class),
+                ]),
+            ]),
 
             self::formattedDateTime('Created at'),
         ];

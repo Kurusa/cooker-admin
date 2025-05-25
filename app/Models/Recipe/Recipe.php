@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\DB;
 /**
  * @property int $id
  * @property string $title
- * @property string $complexity
+ * @property Complexity $complexity
  * @property string $advice
  * @property int $time
  * @property int $portions
@@ -30,7 +30,8 @@ use Illuminate\Support\Facades\DB;
  * @property Source $source
  * @property SourceRecipeUrl $sourceRecipeUrl
  * @property string $ingredient_list
- * @property Collection $ingredients_collection
+ * @property Collection<RecipeIngredient> $recipeIngredients
+ * @property Collection<RecipeCategory> $categories
  * @property Collection<Ingredient> $ingredients
  * @property Collection<Cuisine> $cuisines
  */

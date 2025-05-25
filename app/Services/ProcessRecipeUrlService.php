@@ -2,8 +2,12 @@
 
 namespace App\Services;
 
+use App\Exceptions\DeepseekDidntFindRecipeException;
 use App\Exceptions\RecipeBlockNotFoundException;
 use App\Models\Source\SourceRecipeUrl;
+use App\Notifications\DeepseekDidntFindRecipeNotification;
+use App\Notifications\RecipeBlockNotFoundNotification;
+use App\Notifications\RecipeParsingCompleted;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\RecipeAttributes\CategoryService;
 use App\Services\RecipeAttributes\CuisineService;
@@ -12,7 +16,7 @@ use App\Services\RecipeAttributes\RecipeService;
 use App\Services\RecipeAttributes\StepService;
 use Exception;
 use Illuminate\Database\ConnectionInterface as Database;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 
 class ProcessRecipeUrlService
 {
@@ -49,11 +53,21 @@ class ProcessRecipeUrlService
                 $this->ingredientService->attachIngredientGroups($recipeDTO->ingredientGroups, $recipe);
                 $this->categoryService->attachCategories($recipeDTO->categories, $recipe);
                 $this->cuisineService->attachCuisines($recipeDTO->cuisines, $recipe);
+
+                Notification::route('telegram', config('services.telegram.chat_id'))->notify(new RecipeParsingCompleted($recipe));
             }
 
             $this->db->commit();
         } catch (RecipeBlockNotFoundException $exception) {
-            Log::info('Recipe block not found for ' . $sourceRecipeUrl->url);
+            Notification::route('telegram', config('services.telegram.chat_id'))->notify(new RecipeBlockNotFoundNotification($sourceRecipeUrl));
+
+            $this->db->rollBack();
+            throw $exception;
+        } catch (DeepseekDidntFindRecipeException $exception) {
+            Notification::route('telegram', config('services.telegram.chat_id'))->notify(new DeepseekDidntFindRecipeNotification(
+                $sourceRecipeUrl,
+                $exception->getMessage(),
+            ));
 
             $this->db->rollBack();
             throw $exception;
