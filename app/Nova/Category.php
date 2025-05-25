@@ -4,6 +4,7 @@ namespace App\Nova;
 
 use App\Models\Category as CategoryModel;
 use App\Nova\Recipe\Recipe;
+use App\Nova\Traits\NovaFieldMacros;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
@@ -15,6 +16,8 @@ use Laravel\Nova\Resource;
 
 class Category extends Resource
 {
+    use NovaFieldMacros;
+
     public static string $model = CategoryModel::class;
 
     public static $title = 'title';
@@ -43,6 +46,8 @@ class Category extends Resource
             HasMany::make('Child categories', 'children', self::class),
 
             BelongsToMany::make('Recipes', 'recipes', Recipe::class),
+
+            self::formattedDateTime('Created at'),
         ];
     }
 }

@@ -2,64 +2,68 @@
 
 namespace App\Services\Parsers\Parsers;
 
-use App\DTO\CategoryDTO;
-use App\DTO\IngredientDTO;
-use App\DTO\RecipeDTO;
-use App\DTO\StepDTO;
-use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use DOMElement;
+use DOMDocument;
 use DOMNode;
-use DOMNodeList;
+use DOMXPath;
 
 class JistyParser extends BaseRecipeParser
 {
-    private const DOMAIN = 'https://jisty.com.ua';
-
-    public function parseRecipes(bool $debug = false): array
+    public function extractRecipeNode(): DOMNode
     {
-        $recipeNodes = $this->xpath->query("//h3[contains(@class, 'has-text-align-center wp-block-heading')]");
+        $headerNode = $this->xpath->query("//main[@class='position-relative']//div[@class='container']/div[@class='text-center']")?->item(0);
+        $contentNode = $this->xpath->query("//main[@class='position-relative']//div[@class='container']//div[@class='col-lg-8 col-md-12']")?->item(0);
 
-        if ($recipeNodes->length <= 1) {
-            return [
-                new RecipeDTO(
-                    title: $this->parseTitle(),
-                    complexity: $this->parseComplexity(),
-                    time: $this->parseCookingTime(),
-                    portions: $this->parsePortions(),
-                    imageUrl: $this->parseImage(),
-                    categories: $this->parseCategories(),
-                    ingredients: $this->parseIngredients($debug),
-                    steps: $this->parseSteps($debug),
-                    source_recipe_url_id: null,
-                ),
-            ];
+        $wrapper = $this->xpath->document->createElement('div');
+        $wrapper->setAttribute('class', 'recipe-wrapper');
+
+        if ($headerNode) {
+            $wrapper->appendChild($headerNode->cloneNode(true));
         }
 
-        return $this->parseMultipleRecipes($recipeNodes, $debug);
+        if ($contentNode) {
+            $wrapper->appendChild($contentNode->cloneNode(true));
+        }
+
+        $comments = $this->xpath->query(".//div[@id='comments']", $wrapper);
+        foreach (iterator_to_array($comments) as $comment) {
+            $comment->parentNode?->removeChild($comment);
+        }
+
+        return $wrapper;
     }
 
-    public function parseCategories(): array
+    public function isExcludedByCategory(string $url): bool
     {
-        return [
-            new CategoryDTO(
-                title: $this->xpathService->extractCleanSingleValue("//span[@class='post-cat bg-warning']")
-            ),
+        $html = file_get_contents($url);
+
+        $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+        $dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
+
+        $excludedCategories = [
+            'вінегрет',
+            'техніка для кухні',
+            'продукти',
+            'ресторани',
+            'гроші',
         ];
-    }
 
-    public function parseIngredients(): array
-    {
-        $ingredientNodes = $this->xpath->query(".//div[@class='wp-block-wpzoom-recipe-card-block-ingredients'][1]/ul[@class='ingredients-list']/li");
+        $categoryValue = $xpath->query("//span[@class='post-cat bg-warning']")->item(0)?->nodeValue;
 
-        return $this->formatIngredients($ingredientNodes, $debug);
-    }
+        if (!$categoryValue) {
+            return false;
+        }
 
-    public function parseSteps(): array
-    {
-        $stepNodes = $this->xpath->query("//div[@class='wp-block-wpzoom-recipe-card-block-directions'][1]/ul[@class='directions-list']/li[@class='direction-step']");
+        foreach ($excludedCategories as $excludedCategory) {
+            if (str_contains(mb_strtolower($categoryValue), $excludedCategory)) {
+                return true;
+            }
+        }
 
-        return $this->formatSteps($stepNodes);
+        return false;
     }
 
     public function isExcludedByUrlRule(string $url): bool
@@ -74,94 +78,16 @@ class JistyParser extends BaseRecipeParser
             'kuhar',
             'najsmachnishih-retseptiv-mlintsiv',
             'yak-pr',
-            'najkrash'
+            'najkrash',
+            'posud',
         ];
 
         foreach ($disallowedPatterns as $pattern) {
             if (str_contains($url, $pattern)) {
-                return false;
+                return true;
             }
         }
 
-        return true;
-    }
-
-    private function formatIngredients(DOMNodeList $ingredientNodes, bool $debug = false): array
-    {
-        $ingredients = [];
-        /** @var DOMElement $ingredient */
-        foreach ($ingredientNodes as $ingredient) {
-            $ingredient = str_replace([
-                '(adsbygoogle=window.adsbygoogle||[]).push({})',
-                '(adsbygoogle = window.adsbygoogle || []).push({})',
-                'спеції:',
-            ], '', $ingredient->textContent);
-
-            $ingredients[] = new IngredientDTO(
-                title: $ingredient
-            );
-        }
-
-        return app(DeepseekService::class)->parseIngredients($ingredients);
-    }
-
-    private function formatSteps(DOMNodeList $stepNodes): array
-    {
-        $steps = [];
-
-        /** @var DOMNode $stepNode */
-        foreach ($stepNodes as $stepNode) {
-            $imageNode = $this->xpath->query("//img", $stepNode);
-            $imageUrl = ($src = $imageNode
-                ->item(0)
-                ?->getAttribute('data-src')
-            )
-                ? self::DOMAIN . $src
-                : '';
-
-            $description = $stepNode->textContent;
-            if (!in_array($description, array_column($steps, 'description'))) {
-                $steps[] = new StepDTO(
-                    description: $description,
-                    image: $imageUrl,
-                );
-            }
-        }
-
-        return $steps;
-    }
-
-    private function parseMultipleRecipes(DOMNodeList $recipeNodes, bool $debug = false): array
-    {
-        $recipes = [];
-        foreach ($recipeNodes as $index => $recipeNode) {
-            $imageNode = $this->xpath->query("//figure[@class='aligncenter size-large is-resized'][$index+1]/img");
-            $imageUrl = ($src = $imageNode
-                ->item(0)
-                ?->getAttribute('src')
-            )
-                ? self::DOMAIN . $src
-                : '';
-
-            $ingredientNodes = $this->xpath->query(".//div[contains(@class, 'wp-block-wpzoom-recipe-card-block-ingredients')][$index+1]/ul[@class='ingredients-list']/li");
-            $ingredients = $this->formatIngredients($ingredientNodes, $debug);
-
-            $stepNodes = $this->xpath->query(".//div[contains(@class, 'wp-block-wpzoom-recipe-card-block-directions')][$index+1]/ul[@class='directions-list']/li");
-            $steps = $this->formatSteps($stepNodes);
-
-            $recipes[] = new RecipeDTO(
-                title: $recipeNode->textContent,
-                complexity: $this->parseComplexity(),
-                time: $this->parseCookingTime(),
-                portions: $this->parsePortions(),
-                imageUrl: $imageUrl,
-                categories: $this->parseCategories(),
-                ingredients: $debug ? $ingredients : app(DeepseekService::class)->parseIngredients($ingredients),
-                steps: $steps,
-                source_recipe_url_id: null,
-            );
-        }
-
-        return $recipes;
+        return false;
     }
 }

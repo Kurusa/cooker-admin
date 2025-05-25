@@ -4,6 +4,7 @@ namespace App\Services\Parsers;
 
 use App\Exceptions\UnknownSourceException;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use InvalidArgumentException;
 
 class RecipeParserFactory
@@ -21,6 +22,7 @@ class RecipeParserFactory
 
     /**
      * @throws UnknownSourceException
+     * @throws BindingResolutionException
      */
     public function make(string $sourceTitle): RecipeParserInterface
     {
@@ -28,6 +30,8 @@ class RecipeParserFactory
             throw new UnknownSourceException();
         }
 
-        return new $this->parsers[$sourceTitle];
+        $parserClass = $this->parsers[$sourceTitle];
+
+        return app()->make($parserClass);
     }
 }

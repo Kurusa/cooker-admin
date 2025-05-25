@@ -2,83 +2,15 @@
 
 namespace App\Services\Parsers\Parsers;
 
-use App\Enums\Recipe\Complexity;
-use App\Services\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
+use DOMNode;
 
 class NovaStravaParser extends BaseRecipeParser
 {
-    public function parseTitle(): string
-    {
-        return $this->xpathService->extractCleanSingleValue("//h1[@class='sc_layouts_title_caption']");
-    }
-
-    public function parseCategories(): array
-    {
-        return $this->xpathService->extractCleanSingleValue("//a[@class='breadcrumbs_item cat_post']");
-    }
-
-    public function parseComplexity(): Complexity
-    {
-        return Complexity::MEDIUM;
-    }
-
-    public function parseCookingTime(): ?int
-    {
-        $totalCookingTime = 0;
-
-        $rawHours = $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-total_time-hours')]/text()");
-        $rawMinutes = $this->xpathService->extractCleanSingleValue("//span[contains(@class, 'wprm-recipe-total_time-minutes')]/text()");
-
-        if ($rawHours) {
-            $totalCookingTime += (int)$rawHours * 60;
-        }
-
-        if ($rawMinutes) {
-            $totalCookingTime += (int)$rawMinutes;
-        }
-
-        return $totalCookingTime;
-    }
-
-    public function parsePortions(): int
-    {
-        $class = 'wprm-recipe-servings wprm-recipe-details wprm-block-text-normal';
-
-        $portions = (int)$this->xpathService->extractCleanSingleValue("//span[@class='$class']");
-
-        return $portions > 0 ? $portions : 1;
-    }
-
-    public function parseIngredients(): array
-    {
-        $ingredients = $this->xpathService->extractMultipleValues("//ul[@class='wprm-recipe-ingredients']/li");
-
-        return app(DeepseekService::class)->parseIngredients($ingredients);
-    }
-
-    public function parseSteps(): array
-    {
-        return $this->xpathService->extractMultipleValues("//ul[@class='wprm-recipe-instructions']/li");
-    }
-
-    public function parseImage(): string
-    {
-        $imageNode = $this->xpath->query("//div[@class='wprm-recipe-image wprm-block-image-normal']/img")->item(0);
-
-        if ($src = $imageNode?->getAttribute('src')) {
-            return str_replace('150', '370', $src);
-        }
-
-        return '';
-    }
-
     public function isExcludedByUrlRule(string $url): bool
     {
         $disallowedPatterns = [
             'all-posts',
-            '-yak-',
-            '/yak-',
             'yaki-',
             'yaku-',
             'yakij-',
@@ -98,14 +30,26 @@ class NovaStravaParser extends BaseRecipeParser
             'https://novastrava.com/budinok-dlya-litnikh-lyudei-u-kiyevi/',
             'https://novastrava.com/shtambovi-troyandi/',
             'https://novastrava.com/chim-vidriznyayetsya-vugilnii-gril-vid-mangala/',
+            'tovari-',
+            'mac-book',
         ];
 
         foreach ($disallowedPatterns as $pattern) {
             if (str_contains($url, $pattern)) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
+    }
+
+    public function extractRecipeNode(): DOMNode
+    {
+        return $this->xpath->query("//div[contains(@class, 'wprm-recipe wprm-recipe-template-classic')]")->item(0);
+    }
+
+    public function isExcludedByCategory(string $url): bool
+    {
+        return false;
     }
 }

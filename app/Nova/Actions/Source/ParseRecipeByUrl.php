@@ -4,13 +4,14 @@ namespace App\Nova\Actions\Source;
 
 use App\Jobs\ProcessRecipeUrlJob;
 use App\Models\Recipe\Recipe;
-use App\Models\Source\SourceRecipeUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
+use Laravel\Nova\Fields\Boolean;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 class ParseRecipeByUrl extends Action
 {
@@ -22,17 +23,28 @@ class ParseRecipeByUrl extends Action
 
     public function handle(ActionFields $fields, Collection $models): ActionResponse
     {
-        /** @var SourceRecipeUrl|Recipe $model */
         foreach ($models as $model) {
-            if ($model instanceof Recipe) {
-                $recipeUrlId = $model->sourceRecipeUrl->id;
-            } else {
-                $recipeUrlId = $model->id;
-            }
+            $recipeUrlId = $model instanceof Recipe
+                ? $model->sourceRecipeUrl->id
+                : $model->id;
 
-            ProcessRecipeUrlJob::dispatch($recipeUrlId);
+            if ($fields->run_sync) {
+                ProcessRecipeUrlJob::dispatchSync($recipeUrlId);
+            } else {
+                ProcessRecipeUrlJob::dispatch($recipeUrlId);
+            }
         }
 
-        return Action::message('Parsing started.');
+        return Action::message($fields->run_sync ? 'Parsed synchronously.' : 'Parsing started.');
+    }
+
+    public function fields(NovaRequest $request): array
+    {
+        return [
+            Boolean::make('Run synchronously', 'run_sync')
+                ->trueValue(1)
+                ->falseValue(0)
+                ->help('If enabled, the job will run immediately in the current process.'),
+        ];
     }
 }

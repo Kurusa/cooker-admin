@@ -13,7 +13,7 @@ class SourceRecipeUrlExcludedFilter extends BooleanFilter
     public function apply(Request $request, $query, $value): Builder
     {
         if ($value['Excluded'] ?? false) {
-            $query->isExluded();
+            $query->isExcluded();
         }
 
         if ($value['Not excluded'] ?? false) {
