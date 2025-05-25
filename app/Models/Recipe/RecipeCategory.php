@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Recipe;
 
-use App\Models\Recipe\Recipe;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,10 +15,10 @@ use Illuminate\Support\Collection;
  * @property int $parent_id
  *
  * @property Collection<Recipe> $recipes
- * @property Collection<Category> $children
- * @property Category $parent
+ * @property Collection<RecipeCategory> $children
+ * @property RecipeCategory $parent
  */
-class Category extends Model
+class RecipeCategory extends Model
 {
     protected $fillable = [
         'title',
@@ -30,7 +29,7 @@ class Category extends Model
     {
         return $this->belongsToMany(
             Recipe::class,
-            'recipe_categories',
+            'recipe_categories_map',
             'category_id',
             'recipe_id',
         );
@@ -38,12 +37,12 @@ class Category extends Model
 
     public function parent(): BelongsTo
     {
-        return $this->belongsTo(Category::class, 'parent_id');
+        return $this->belongsTo(RecipeCategory::class, 'parent_id');
     }
 
     public function children(): HasMany
     {
-        return $this->hasMany(Category::class, 'parent_id');
+        return $this->hasMany(RecipeCategory::class, 'parent_id');
     }
 
     public function scopeParentCategories(Builder $query): void

@@ -3,7 +3,6 @@
 namespace App\Models\Recipe;
 
 use App\Enums\Recipe\Complexity;
-use App\Models\Category;
 use App\Models\Cuisine;
 use App\Models\Ingredient;
 use App\Models\Source\Source;
@@ -109,8 +108,8 @@ class Recipe extends Model
     public function categories(): BelongsToMany
     {
         return $this->belongsToMany(
-            Category::class,
-            'recipe_categories',
+            RecipeCategory::class,
+            'recipe_categories_map',
             'recipe_id',
             'category_id'
         );

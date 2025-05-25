@@ -2,25 +2,25 @@
 
 namespace App\Services\RecipeAttributes;
 
-use App\DTO\CategoryDTO;
-use App\Models\Category;
+use App\DTO\RecipeCategoryDTO;
+use App\Models\Recipe\RecipeCategory;
 use App\Models\Recipe\Recipe;
 
 class CategoryService
 {
     /**
-     * @param CategoryDTO[] $categories
+     * @param RecipeCategoryDTO[] $categories
      * @param Recipe $recipe
      */
     public function attachCategories(array $categories, Recipe $recipe): void
     {
         $categories = collect($categories)
-            ->unique(fn(CategoryDTO $category) => $category->title)
+            ->unique(fn(RecipeCategoryDTO $category) => $category->title)
             ->filter();
 
         foreach ($categories as $categoryData) {
-            /** @var Category $category */
-            $category = Category::updateOrCreate([
+            /** @var RecipeCategory $category */
+            $category = RecipeCategory::updateOrCreate([
                 'title' => $categoryData->title,
             ], [
                 'title' => $categoryData->title,

@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Nova;
+namespace App\Nova\Recipe;
 
-use App\Models\Category as CategoryModel;
-use App\Nova\Recipe\Recipe;
+use App\Models\Recipe\RecipeCategory as CategoryModel;
 use App\Nova\Traits\NovaFieldMacros;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
@@ -14,13 +13,15 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Resource;
 
-class Category extends Resource
+class RecipeCategory extends Resource
 {
     use NovaFieldMacros;
 
     public static string $model = CategoryModel::class;
 
     public static $title = 'title';
+
+    public static $group = 'Recipes';
 
     public static $search = [
         'id',

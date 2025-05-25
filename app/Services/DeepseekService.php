@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\DTO\CategoryDTO;
+use App\DTO\RecipeCategoryDTO;
 use App\DTO\CuisineDTO;
 use App\DTO\IngredientDTO;
 use App\DTO\RecipeDTO;
@@ -91,7 +91,7 @@ class DeepseekService
                     imageUrl: $response['image'] ?? '',
                     source_recipe_url_id: null,
                     cuisines: array_map(fn($cuisine) => new CuisineDTO(title: $cuisine), $response['cuisines'] ?? []),
-                    categories: array_map(fn($category) => new CategoryDTO(title: $category), $response['categories'] ?? []),
+                    categories: array_map(fn($category) => new RecipeCategoryDTO(title: $category), $response['categories'] ?? []),
                     ingredients: array_map(fn($ingredient) => new IngredientDTO(
                         title: $ingredient['title'],
                         quantity: $ingredient['quantity'] ?? null,

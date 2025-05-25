@@ -6,7 +6,6 @@ use App\Enums\Recipe\Complexity;
 use App\Models\Recipe\Recipe as RecipeModel;
 use App\Nova\Actions\ExcludeRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
-use App\Nova\Category;
 use App\Nova\Cuisine;
 use App\Nova\Filters\RecipeHasOneIngredientOrStep;
 use App\Nova\Resource;
@@ -82,7 +81,7 @@ class Recipe extends Resource
 
             HasMany::make('Cuisines', 'cuisines', Cuisine::class),
 
-            HasMany::make('Categories', 'categories', Category::class),
+            HasMany::make('Categories', 'categories', RecipeCategory::class),
 
             Heading::make("<iframe src=\"{$this->sourceRecipeUrl?->url}\" width=\"100%\" height=\"500\" style=\"border:1px solid #ccc;\"></iframe>")
                 ->asHtml()

@@ -5,7 +5,7 @@ namespace App\DTO;
 use App\Services\Parsers\Formatters\CleanText;
 use Spatie\LaravelData\Data;
 
-class CategoryDTO extends Data
+class RecipeCategoryDTO extends Data
 {
     public function __construct(
         public string $title,
