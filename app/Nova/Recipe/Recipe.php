@@ -65,6 +65,7 @@ class Recipe extends Resource
                     Number::make('Time')->help('Minutes'),
                     Number::make('Portions'),
                     Textarea::make('Advice'),
+                    Text::make('image_url'),
                     BelongsTo::make('Source', 'source')->exceptOnForms(),
                 ]),
                 Tab::make('Relations', [

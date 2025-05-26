@@ -16,6 +16,7 @@ use App\Services\RecipeAttributes\RecipeService;
 use App\Services\RecipeAttributes\StepService;
 use Exception;
 use Illuminate\Database\ConnectionInterface as Database;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 
 class ProcessRecipeUrlService
@@ -40,40 +41,45 @@ class ProcessRecipeUrlService
             return;
         }
 
-        try {
-            $recipes = $parser->parseRecipes($sourceRecipeUrl->url);
+        $recipes = $parser->parseRecipes($sourceRecipeUrl->url);
 
-            $this->db->beginTransaction();
+        foreach ($recipes as $recipeDTO) {
+            try {
+                $this->db->beginTransaction();
 
-            foreach ($recipes as $recipeDTO) {
                 $recipeDTO->source_recipe_url_id = $sourceRecipeUrl->id;
-                $recipe = $this->recipeService->createOrUpdateRecipe($recipeDTO);
+                $recipe = $this->recipeService->createRecipe($recipeDTO);
 
                 $this->stepService->attachSteps($recipeDTO->steps, $recipe);
                 $this->ingredientService->attachIngredientGroups($recipeDTO->ingredientGroups, $recipe);
                 $this->categoryService->attachCategories($recipeDTO->categories, $recipe);
                 $this->cuisineService->attachCuisines($recipeDTO->cuisines, $recipe);
 
-                Notification::route('telegram', config('services.telegram.chat_id'))->notify(new RecipeParsingCompleted($recipe));
+                $this->db->commit();
+
+                try {
+                    Notification::route('telegram', config('services.telegram.chat_id'))->notify(new RecipeParsingCompleted($recipe));
+                } catch (Exception $e) {
+                    Log::error('Notification error:' . $e->getMessage());
+                    continue;
+                }
+            } catch (RecipeBlockNotFoundException $exception) {
+                Notification::route('telegram', config('services.telegram.chat_id'))->notify(new RecipeBlockNotFoundNotification($sourceRecipeUrl));
+
+                $this->db->rollBack();
+                throw $exception;
+            } catch (DeepseekDidntFindRecipeException $exception) {
+                Notification::route('telegram', config('services.telegram.chat_id'))->notify(new DeepseekDidntFindRecipeNotification(
+                    $sourceRecipeUrl,
+                    $exception->getMessage(),
+                ));
+
+                $this->db->rollBack();
+                throw $exception;
+            } catch (Exception $exception) {
+                $this->db->rollBack();
+                throw $exception;
             }
-
-            $this->db->commit();
-        } catch (RecipeBlockNotFoundException $exception) {
-            Notification::route('telegram', config('services.telegram.chat_id'))->notify(new RecipeBlockNotFoundNotification($sourceRecipeUrl));
-
-            $this->db->rollBack();
-            throw $exception;
-        } catch (DeepseekDidntFindRecipeException $exception) {
-            Notification::route('telegram', config('services.telegram.chat_id'))->notify(new DeepseekDidntFindRecipeNotification(
-                $sourceRecipeUrl,
-                $exception->getMessage(),
-            ));
-
-            $this->db->rollBack();
-            throw $exception;
-        } catch (Exception $exception) {
-            $this->db->rollBack();
-            throw $exception;
         }
     }
 }

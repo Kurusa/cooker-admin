@@ -28,6 +28,6 @@ class CollectSourceSitemapUrls extends Action
             ]);
         }
 
-        return Action::message('Collection started.');
+        return Action::message('Collection finished.');
     }
 }

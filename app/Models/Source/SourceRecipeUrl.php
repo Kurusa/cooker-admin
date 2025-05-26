@@ -6,7 +6,7 @@ use App\Models\Recipe\Recipe;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * @property int $id
@@ -33,19 +33,19 @@ class SourceRecipeUrl extends Model
         return $this->belongsTo(Source::class, 'source_id');
     }
 
-    public function recipe(): HasOne
+    public function recipes(): HasMany
     {
-        return $this->hasOne(Recipe::class, 'source_recipe_url_id');
+        return $this->hasMany(Recipe::class, 'source_recipe_url_id');
     }
 
     public function scopeIsParsed(Builder $query): void
     {
-        $query->whereHas('recipe');
+        $query->whereHas('recipes');
     }
 
     public function scopeNotParsed(Builder $query): void
     {
-        $query->whereDoesntHave('recipe');
+        $query->whereDoesntHave('recipes');
     }
 
     public function scopeIsExcluded(Builder $query): void

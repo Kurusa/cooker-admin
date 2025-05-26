@@ -6,6 +6,10 @@ use App\Models\Recipe\Recipe;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
+/**
+ * @property int $id
+ * @property string $title
+ */
 class Cuisine extends Model
 {
     protected $fillable = [

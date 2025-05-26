@@ -19,7 +19,7 @@ class DeepseekDidntFindRecipeNotification extends Notification implements Should
     {
     }
 
-    public function via($notifiable)
+    public function via($notifiable): array
     {
         return ['telegram'];
     }
@@ -39,6 +39,7 @@ class DeepseekDidntFindRecipeNotification extends Notification implements Should
 
         return TelegramMessage::create()
             ->content($text)
-            ->options(['parse_mode' => 'HTML']);
+            ->options(['parse_mode' => 'HTML'])
+            ->token(config('services.telegram.token'));
     }
 }

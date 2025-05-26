@@ -13,7 +13,7 @@ use App\Nova\Resource;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\Boolean;
-use Laravel\Nova\Fields\HasOne;
+use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\Heading;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
@@ -23,18 +23,13 @@ class SourceRecipeUrl extends Resource
 {
     public static string $model = SourceRecipeUrlModel::class;
 
-    public static $title = 'url';
+    public static $perPageViaRelationship = 20;
 
     public static $group = 'Sources';
 
-    public static $search = [
-        'id',
-        'url',
-    ];
-
     public function fields(Request $request): array
     {
-        if (!$this->recipe()->exists()) {
+        if (!$this->recipes()->exists()) {
             $iframe = '<iframe src="' . $this->url . '" width="100%" height="500" style="border:1px solid #ccc;"></iframe>';
         }
 
@@ -48,7 +43,7 @@ class SourceRecipeUrl extends Resource
                 ->displayUsing(fn($value) => "<a href=\"{$value}\" target=\"_blank\">{$value}</a>")
                 ->asHtml(),
 
-            Boolean::make('Is Parsed', fn() => $this->recipe()->exists())
+            Boolean::make('Is Parsed', fn() => $this->recipes()->exists())
                 ->exceptOnForms(),
 
             Boolean::make('Is Excluded', 'is_excluded'),
@@ -57,7 +52,7 @@ class SourceRecipeUrl extends Resource
                 ->asHtml()
                 ->onlyOnDetail(),
 
-            HasOne::make('Recipe', 'recipe', Recipe::class)
+            HasMany::make('Recipes', 'recipes', Recipe::class)
         ];
     }
 
@@ -76,5 +71,10 @@ class SourceRecipeUrl extends Resource
             new ExcludeSourceRecipeUrl,
             new ParseRecipeByUrl,
         ];
+    }
+
+    public static function authorizedToCreate(Request $request): bool
+    {
+        return false;
     }
 }

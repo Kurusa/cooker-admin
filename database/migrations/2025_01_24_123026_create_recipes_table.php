@@ -15,7 +15,7 @@ return new class extends Migration
             $table->text('advice')->nullable();
             $table->integer('time')->nullable();
             $table->integer('portions')->nullable();
-            $table->string('image_url')->nullable();
+            $table->text('image_url')->nullable();
             $table->foreignId('source_recipe_url_id')->constrained('source_recipe_urls')->cascadeOnDelete();
             $table->timestamps();
         });

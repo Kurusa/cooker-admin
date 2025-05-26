@@ -8,6 +8,8 @@ use App\Models\Ingredient\Ingredient;
 use App\Models\Ingredient\IngredientGroup;
 use App\Models\Source\Source;
 use App\Models\Source\SourceRecipeUrl;
+use App\Observers\RecipeObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -35,6 +37,7 @@ use Illuminate\Support\Facades\DB;
  * @property Collection<Ingredient> $ingredients
  * @property Collection<Cuisine> $cuisines
  */
+#[ObservedBy([RecipeObserver::class])]
 class Recipe extends Model
 {
     protected $fillable = [
@@ -124,7 +127,12 @@ class Recipe extends Model
 
     public function cuisines(): BelongsToMany
     {
-        return $this->belongsToMany(Cuisine::class);
+        return $this->belongsToMany(
+            Cuisine::class,
+            'recipe_cuisines_map',
+            'recipe_id',
+            'cuisine_id',
+        );
     }
 
     public function ingredientGroups(): HasMany

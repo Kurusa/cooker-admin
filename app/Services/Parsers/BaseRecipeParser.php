@@ -35,7 +35,7 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         $recipeNode = $this->extractRecipeNode();
         $cleanHtml = $this->htmlCleaner->cleanup($recipeNode);
 
-        if (!strlen($cleanHtml)) {
+        if (strlen($cleanHtml) <= 100) {
             throw new RecipeBlockNotFoundException();
         }
 

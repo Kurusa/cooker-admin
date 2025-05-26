@@ -5,6 +5,9 @@ namespace App\Services\RecipeAttributes;
 use App\DTO\RecipeCategoryDTO;
 use App\Models\Recipe\Recipe;
 use App\Models\Recipe\RecipeCategory;
+use App\Notifications\DuplicateRecipeCategoryAttachNotification;
+use Exception;
+use Illuminate\Support\Facades\Notification;
 
 class CategoryService
 {
@@ -26,7 +29,15 @@ class CategoryService
                 'title' => $categoryData->title,
             ]);
 
-            $recipe->categories()->attach($category->id);
+            try {
+                $recipe->categories()->attach($category->id);
+            } catch (Exception $exception) {
+                Notification::route('telegram', config('services.telegram.chat_id'))->notify(new DuplicateRecipeCategoryAttachNotification(
+                    $recipe,
+                    $category,
+                ));
+                continue;
+            }
         }
     }
 }

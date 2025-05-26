@@ -7,10 +7,13 @@ use App\Models\Recipe\Recipe;
 
 class RecipeService
 {
-    public function createOrUpdateRecipe(RecipeDTO $recipeDTO): Recipe
+    public function createRecipe(RecipeDTO $recipeDTO): Recipe
     {
         return Recipe::updateOrCreate(
-            ['source_recipe_url_id' => $recipeDTO->source_recipe_url_id],
+            [
+                'source_recipe_url_id' => $recipeDTO->source_recipe_url_id,
+                'title' => $recipeDTO->title,
+            ],
             [
                 'title' => $recipeDTO->title,
                 'complexity' => $recipeDTO->complexity,

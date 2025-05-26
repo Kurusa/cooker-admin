@@ -5,6 +5,9 @@ namespace App\Services\RecipeAttributes;
 use App\DTO\CuisineDTO;
 use App\Models\Cuisine;
 use App\Models\Recipe\Recipe;
+use App\Notifications\DuplicateRecipeCuisineAttachNotification;
+use Exception;
+use Illuminate\Support\Facades\Notification;
 
 class CuisineService
 {
@@ -25,7 +28,15 @@ class CuisineService
                 'title' => $cuisineData->title,
             ]);
 
-            $recipe->cuisines()->attach($cuisine->id);
+            try {
+                $recipe->cuisines()->attach($cuisine->id);
+            } catch (Exception $exception) {
+                Notification::route('telegram', config('services.telegram.chat_id'))->notify(new DuplicateRecipeCuisineAttachNotification(
+                    $recipe,
+                    $cuisine,
+                ));
+                continue;
+            }
         }
     }
 }

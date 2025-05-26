@@ -4,9 +4,10 @@
 namespace App\Notifications;
 
 use App\Models\Recipe\Recipe;
-use App\Models\Recipe\RecipeIngredient;
 use Illuminate\Notifications\Notification;
+use Illuminate\Support\Facades\View;
 use NotificationChannels\Telegram\TelegramFile;
+use NotificationChannels\Telegram\TelegramMessage;
 
 class RecipeParsingCompleted extends Notification
 {
@@ -21,24 +22,23 @@ class RecipeParsingCompleted extends Notification
         return ['telegram'];
     }
 
-    public function toTelegram($notifiable)
+    public function toTelegram($notifiable): TelegramMessage|TelegramFile
     {
-        $text = "🍽️ <b>Рецепт додано:</b>\n"
-            . "<b>Назва:</b> {$this->recipe->title}\n"
-            . "<b>Категорії:</b> " . implode(', ', $this->recipe->categories->pluck('title')->all()) . "\n"
-            . "<b>Кухня:</b> " . implode(', ', $this->recipe->cuisines->pluck('title')->all()) . "\n"
-            . "<b>Складність:</b> " . ucfirst($this->recipe->complexity->value) . "\n"
-            . "<b>Інгредієнти:</b>\n" . collect($this->recipe->recipeIngredients)
-                ->map(fn(RecipeIngredient $ingredient) => '• ' . $ingredient->ingredientUnit->ingredient->title
-                    . ($ingredient->quantity ? " — {$ingredient->quantity}" : '')
-                    . ($ingredient->ingredientUnit->unit?->title ? " {$ingredient->ingredientUnit->unit->title}" : '')
-                )->implode("\n")
-            . "\n\n" . "<b>Джерело:</b> {$this->recipe->sourceRecipeUrl?->url}";
+        $text = View::make('notifications.recipe_parsing_completed', [
+            'recipe' => $this->recipe,
+            'source' => $this->recipe->sourceRecipeUrl->source,
+        ])->render();
 
-        return TelegramFile::create()
+        if ($this->recipe->image_url && filter_var($this->recipe->image_url, FILTER_VALIDATE_URL)) {
+            $message = TelegramFile::create()
+                ->photo($this->recipe->image_url);
+        } else {
+            $message = TelegramMessage::create();
+        }
+
+        return $message
             ->content($text)
             ->options(['parse_mode' => 'HTML'])
-            ->when($this->recipe->image_url, fn($m) => $m->photo($this->recipe->image_url, 'photo'))
             ->token(config('services.telegram.token'));
     }
 }

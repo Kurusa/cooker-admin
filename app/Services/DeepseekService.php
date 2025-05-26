@@ -36,7 +36,7 @@ class DeepseekService
 -cookingTime(int):загальний час у хвилинах
 -portions(int):кількість порцій(визнач сам,якщо не вказано)
 -image(string):URL головного зображення рецепта
--ingredientGroups (array<object>):якщо інгредієнти розбиті по групам,кожен такий розділ–окремий об’єкт з ключами:-group (string)–назва групи(наприклад, 'для тіста'),-ingredients (array<object>):title,unit,quantity(завжди int або float)
+-ingredientGroups(array<object>):якщо інгредієнти розбиті по групам,кожен такий розділ–окремий об’єкт з ключами:-group (string)–назва групи(наприклад, 'для тіста'),-ingredients (array<object>):title,unit,quantity(завжди int або float,це обовязково.не може бути стрінгою.дроби переводь у float)
 Якщо груп немає–поверни один елемент зі group =''та всі інгредієнти всередині
 -cuisines(array<string>):кухня страви(це обов'язкове поле,тож визнач сам,якщо не вказано)
 -steps(array<object>):кожен об’єкт має description,image
@@ -73,10 +73,6 @@ class DeepseekService
 
         $response = $data['choices'][0]['message']['content'];
 
-        Log::info('Deepseek response', [
-            'response' => $response,
-        ]);
-
         if (preg_match('/```json\s*(\[\s*{.*?}\s*])\s*```/s', $response, $matches)) {
             $recipes = json_decode($matches[1], true);
         } else {
@@ -99,7 +95,7 @@ class DeepseekService
                             group: $group['group'] ?? '',
                             ingredients: array_map(fn($ingredient) => new IngredientDTO(
                                 title: $ingredient['title'],
-                                quantity: $ingredient['quantity'] ?? null,
+                                quantity: isset($ingredient['quantity']) ? (float)$ingredient['quantity'] : null,
                                 unit: $ingredient['unit'] ?? null,
                                 originalTitle: $ingredient['originalTitle'] ?? null,
                             ), $group['ingredients'] ?? [])

@@ -2,18 +2,20 @@
 
 namespace App\Notifications;
 
-use App\Models\Source\SourceRecipeUrl;
+use App\Models\Cuisine;
+use App\Models\Recipe\Recipe;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramMessage;
 
-class RecipeBlockNotFoundNotification extends Notification implements ShouldQueue
+class DuplicateRecipeCuisineAttachNotification extends Notification implements ShouldQueue
 {
     use Queueable;
 
     public function __construct(
-        private readonly SourceRecipeUrl $sourceRecipeUrl,
+        private readonly Recipe  $recipe,
+        private readonly Cuisine $cuisine,
     )
     {
     }
@@ -25,13 +27,16 @@ class RecipeBlockNotFoundNotification extends Notification implements ShouldQueu
 
     public function toTelegram($notifiable): TelegramMessage
     {
-        $text = "⚠️ <b>Recipe block not found</b>\n"
-            . "<b>URL:</b> {$this->sourceRecipeUrl->url}\n"
-            . "<b>Джерело:</b> " . ($this->sourceRecipeUrl->source?->title ?? '—');
+        $text = "⚠️ <b>Помилка дублювання кухні</b>\n"
+            . "<b>Рецепт:</b> {$this->recipe->title}\n"
+            . "<b>Кухня:</b> {$this->cuisine->title}\n"
+            . "<b>ID рецепта:</b> {$this->recipe->id}\n"
+            . "<b>ID кухні:</b> {$this->cuisine->id}";
 
         return TelegramMessage::create()
             ->content($text)
             ->options(['parse_mode' => 'HTML'])
             ->token(config('services.telegram.token'));
+
     }
 }

@@ -13,6 +13,7 @@ use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Panel;
 use Laravel\Nova\Resource;
+use Laravel\Nova\Tabs\Tab;
 
 class Source extends Resource
 {
@@ -39,17 +40,29 @@ class Source extends Resource
                 ->displayUsing(fn($value) => "<a href=\"{$value}\" target=\"_blank\">{$value}</a>")
                 ->asHtml(),
 
-            new Panel('Stats', [
-                Number::make('Total URLs', fn() => $this->totalUrls()),
-                Number::make('Parsed URLs', fn() => $this->parsedUrlsCount()),
-                Number::make('Pending URLs', fn() => $this->pendingUrlsCount()),
-                Number::make('Excluded URLs', fn() => $this->excludedUrlsCount()),
-                Number::make('Parsed %', fn() => $this->percentageParsed())->displayUsing(fn($val) => $val . '%'),
+            Text::make('Status', function () {
+                $status = $this->getStatus();
+                $color = $status->getBadgeColor();
+                $label = $status->getLabel();
+                return "<span style='background:{$color};color:white;padding:4px 8px;border-radius:6px;font-weight:600;font-size:12px;'>{$label}</span>";
+            })->asHtml()->onlyOnIndex(),
+
+            Tab::group('Details', [
+                Tab::make('Relations', [
+                    HasMany::make('Sitemaps recipe urls', 'recipeUrls', SourceRecipeUrl::class),
+
+                    HasMany::make('Sitemaps', 'sitemaps', SourceSitemap::class),
+                ]),
+                Tab::make('Stats', [
+                    new Panel('Stats', [
+                        Number::make('Total URLs', fn() => $this->totalUrls()),
+                        Number::make('Parsed URLs', fn() => $this->parsedUrlsCount()),
+                        Number::make('Pending URLs', fn() => $this->pendingUrlsCount()),
+                        Number::make('Excluded URLs', fn() => $this->excludedUrlsCount()),
+                        Number::make('Parsed %', fn() => $this->percentageParsed())->displayUsing(fn($val) => $val . '%'),
+                    ]),
+                ]),
             ]),
-
-            HasMany::make('Sitemaps', 'sitemaps', SourceSitemap::class),
-
-            HasMany::make('Sitemaps recipe urls', 'recipeUrls', SourceRecipeUrl::class),
         ];
     }
 

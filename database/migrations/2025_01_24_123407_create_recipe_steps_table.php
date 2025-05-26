@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
             $table->text('description');
-            $table->string('image_url')->nullable();
+            $table->text('image_url')->nullable();
             $table->unsignedBigInteger('step_group_id')->nullable();
             $table->timestamps();
 

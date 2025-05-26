@@ -2,6 +2,7 @@
 
 namespace App\Models\Source;
 
+use App\Enums\Source\SourceStatus;
 use App\Models\Recipe\Recipe;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -13,6 +14,7 @@ use Illuminate\Support\Collection;
  * @property string $url
  * @property string $title
  * @property bool $is_manual
+ * @property bool $is_being_parsed
  *
  * @property Collection<Recipe> $recipes
  * @property Collection<SourceSitemap> $sitemaps
@@ -104,9 +106,37 @@ class Source extends Model
 
     public function percentageParsed(): int
     {
-        $totalUrls = $this->notExcludedUrlsCount();
-        $parsedCount = $this->parsedUrlsCount();
+        $total = $this->notExcludedUrlsCount();
+        $parsed = $this->parsedUrlsCount();
 
-        return ($totalUrls > 0) ? round(($parsedCount / $totalUrls) * 100, 2) : 0;
+        return ($total > 0 && $parsed <= $total)
+            ? (int)round(($parsed / $total) * 100)
+            : 100;
+    }
+
+    public function getStatus(): SourceStatus
+    {
+        $total = $this->totalUrls();
+        $excluded = $this->excludedUrlsCount();
+        $parsed = $this->parsedUrlsCount();
+        $pending = $this->pendingUrlsCount();
+
+        if ($total === 0) {
+            return SourceStatus::EMPTY;
+        }
+
+        if ($parsed === 0 && $excluded === $total) {
+            return SourceStatus::EXCLUDED_ONLY;
+        }
+
+        if ($parsed === 0 && $pending > 0) {
+            return SourceStatus::COLLECTED;
+        }
+
+        if ($parsed > 0 && $pending > 0) {
+            return SourceStatus::PARTIALLY_PARSED;
+        }
+
+        return SourceStatus::PARSED;
     }
 }

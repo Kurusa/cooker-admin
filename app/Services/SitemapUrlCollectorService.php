@@ -56,7 +56,7 @@ class SitemapUrlCollectorService
                         'is_excluded' => true,
                     ]);
                 } else {
-                    if (!$sourceRecipeUrl->recipe()->exists()) {
+                    if (!$sourceRecipeUrl->recipes()->exists()) {
                         $urls[] = $sourceRecipeUrl;
                     }
 
