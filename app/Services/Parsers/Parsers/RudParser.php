@@ -71,4 +71,9 @@ class RudParser extends BaseRecipeParser
 
         return false;
     }
+
+    public function getSourceKey(): string
+    {
+        return 'rud';
+    }
 }

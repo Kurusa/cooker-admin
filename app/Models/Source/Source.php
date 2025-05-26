@@ -92,8 +92,10 @@ class Source extends Model
 
     public function parsedUrlsCount(): int
     {
-        return $this->recipes
-            ->count();
+        return $this->recipes()
+            ->select('recipes.source_recipe_url_id')
+            ->distinct()
+            ->count('recipes.source_recipe_url_id');
     }
 
     public function pendingUrlsCount(): int
@@ -112,6 +114,15 @@ class Source extends Model
         return ($total > 0 && $parsed <= $total)
             ? (int)round(($parsed / $total) * 100)
             : 100;
+    }
+
+    public function getParsedSummaryText(): string
+    {
+        $parsed = $this->parsedUrlsCount();
+        $total = $this->notExcludedUrlsCount();
+        $percent = $this->percentageParsed();
+
+        return "{$parsed} recipes (out of {$total}) — {$percent}%";
     }
 
     public function getStatus(): SourceStatus

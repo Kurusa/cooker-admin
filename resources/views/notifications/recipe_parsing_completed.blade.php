@@ -19,4 +19,4 @@
 
 <b>Джерело:</b> {{ $recipe->sourceRecipeUrl?->url }}
 
-<b>Парсинг по сорсу:</b> {{ $source->parsedUrlsCount() ?? 0 }}/{{ $source->notExcludedUrlsCount() }} ({{ $source->percentageParsed() }}%) — залишилось {{ $source->pendingUrlsCount() }}
+{{ $source->getParsedSummaryText() }}

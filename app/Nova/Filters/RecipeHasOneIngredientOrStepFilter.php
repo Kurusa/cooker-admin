@@ -6,7 +6,7 @@ use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Laravel\Nova\Filters\Filter;
 
-class RecipeHasOneIngredientOrStep extends Filter
+class RecipeHasOneIngredientOrStepFilter extends Filter
 {
     public $name = 'Has 1 ingredient or 1 step';
 

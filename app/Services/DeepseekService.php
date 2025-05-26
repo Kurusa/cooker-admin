@@ -76,7 +76,7 @@ class DeepseekService
         if (preg_match('/```json\s*(\[\s*{.*?}\s*])\s*```/s', $response, $matches)) {
             $recipes = json_decode($matches[1], true);
         } else {
-            throw new DeepseekDidntFindRecipeException(json_encode($response));
+            throw new DeepseekDidntFindRecipeException(substr(json_encode($response), 0, 100));
         }
 
         try {
@@ -113,7 +113,7 @@ class DeepseekService
                 );
             }, $recipes);
         } catch (Exception $exception) {
-            Log::error('Exception when builder response from Deepseek', [
+            Log::error('Exception when building response from Deepseek', [
                 'response' => $response,
                 'error' => $exception->getMessage(),
             ]);

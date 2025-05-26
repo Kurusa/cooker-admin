@@ -6,9 +6,11 @@ use App\Models\Recipe\Recipe as RecipeModel;
 use App\Nova\Actions\ExcludeRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
 use App\Nova\Cuisine;
-use App\Nova\Filters\RecipeHasOneIngredientOrStep;
+use App\Nova\Filters\RecipeHasOneIngredientOrStepFilter;
+use App\Nova\Filters\SourceFilter;
 use App\Nova\Ingredient\IngredientGroup;
 use App\Nova\Resource;
+use App\Nova\Source\SourceRecipeUrl;
 use App\Nova\Traits\NovaFieldMacros;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Avatar;
@@ -65,8 +67,9 @@ class Recipe extends Resource
                     Number::make('Time')->help('Minutes'),
                     Number::make('Portions'),
                     Textarea::make('Advice'),
-                    Text::make('image_url'),
-                    BelongsTo::make('Source', 'source')->exceptOnForms(),
+                    Text::make('image_url')->onlyOnDetail(),
+                    BelongsTo::make('Source', 'source'),
+                    BelongsTo::make('Source recipe url', 'sourceRecipeUrl', SourceRecipeUrl::class),
                 ]),
                 Tab::make('Relations', [
                     HasMany::make('Ingredients', 'recipeIngredients', RecipeIngredient::class),
@@ -84,7 +87,8 @@ class Recipe extends Resource
     public function filters(NovaRequest $request): array
     {
         return [
-            new RecipeHasOneIngredientOrStep,
+            new SourceFilter,
+            new RecipeHasOneIngredientOrStepFilter,
         ];
     }
 

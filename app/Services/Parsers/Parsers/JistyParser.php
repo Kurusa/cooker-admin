@@ -76,9 +76,6 @@ class JistyParser extends BaseRecipeParser
             '-productiv-',
             'restoran-',
             'kuhar',
-            'najsmachnishih-retseptiv-mlintsiv',
-            'yak-pr',
-            'najkrash',
             'posud',
         ];
 
@@ -89,5 +86,10 @@ class JistyParser extends BaseRecipeParser
         }
 
         return false;
+    }
+
+    public function getSourceKey(): string
+    {
+        return 'jisty';
     }
 }

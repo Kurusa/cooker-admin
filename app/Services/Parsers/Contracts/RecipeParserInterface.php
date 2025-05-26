@@ -15,4 +15,6 @@ interface RecipeParserInterface
     public function isExcludedByCategory(string $url): bool;
 
     public function isExcludedByUrlRule(string $url): bool;
+
+    public function getSourceKey(): string;
 }

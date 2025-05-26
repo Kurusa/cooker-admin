@@ -5,6 +5,7 @@ namespace App\Nova\Source;
 use App\Models\Source\Source as SourceModel;
 use App\Nova\Actions\Source\CollectSourceSitemapUrls;
 use App\Nova\Actions\Source\ParseSourceRecipes;
+use App\Nova\Recipe\Recipe;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
@@ -50,7 +51,7 @@ class Source extends Resource
             Tab::group('Details', [
                 Tab::make('Relations', [
                     HasMany::make('Sitemaps recipe urls', 'recipeUrls', SourceRecipeUrl::class),
-
+                    HasMany::make('Recipes', 'recipes', Recipe::class),
                     HasMany::make('Sitemaps', 'sitemaps', SourceSitemap::class),
                 ]),
                 Tab::make('Stats', [

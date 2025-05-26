@@ -6,6 +6,7 @@ use App\Services\DeepseekService;
 use App\Services\Parsers\Contracts\HtmlCleanerInterface;
 use App\Services\Parsers\HtmlCleaner;
 use App\Services\Parsers\Parsers\FayniReceptyParser;
+use App\Services\Parsers\Parsers\JistyParser;
 use App\Services\Parsers\Parsers\NovaStravaParser;
 use App\Services\Parsers\Parsers\PatelnyaParser;
 use App\Services\Parsers\Parsers\RudParser;
@@ -20,10 +21,6 @@ use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
-    public function register()
-    {
-    }
-
     public function boot(): void
     {
         $this->app->singleton(DeepseekService::class, function () {
@@ -42,7 +39,7 @@ class AppServiceProvider extends ServiceProvider
             $factory->registerParser('fayni', FayniReceptyParser::class);
             $factory->registerParser('novastrava', NovaStravaParser::class);
             $factory->registerParser('rud', RudParser::class);
-//            $factory->registerParser('jisty', JistyParser::class);
+            $factory->registerParser('jisty', JistyParser::class);
 //            $factory->registerParser('tsn', TsnParser::class);
 //            $factory->registerParser('smachno', SmachnoParser::class);
 //            $factory->registerParser('picante', PicanteParser::class);

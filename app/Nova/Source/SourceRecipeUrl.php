@@ -7,6 +7,7 @@ use App\Nova\Actions\Source\ExcludeSourceRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
 use App\Nova\Filters\SourceFilter;
 use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlExcludedFilter;
+use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlHasMoreThanOneRecipeFilter;
 use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlParsedFilter;
 use App\Nova\Recipe\Recipe;
 use App\Nova\Resource;
@@ -26,6 +27,10 @@ class SourceRecipeUrl extends Resource
     public static $perPageViaRelationship = 20;
 
     public static $group = 'Sources';
+
+    public static $search = [
+        'url',
+    ];
 
     public function fields(Request $request): array
     {
@@ -60,6 +65,7 @@ class SourceRecipeUrl extends Resource
     {
         return [
             new SourceFilter,
+            new SourceRecipeUrlHasMoreThanOneRecipeFilter,
             new SourceRecipeUrlParsedFilter,
             new SourceRecipeUrlExcludedFilter,
         ];

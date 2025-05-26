@@ -27,7 +27,8 @@ class DuplicateRecipeCategoryAttachNotification extends Notification implements 
 
     public function toTelegram($notifiable): TelegramMessage
     {
-        $text = "⚠️ <b>Помилка дублювання категорії</b>\n"
+        $text = "<b>[ERROR]</b>\n"
+            . "⚠️ <b>Помилка дублювання категорії</b>\n"
             . "<b>Рецепт:</b> {$this->recipe->title}\n"
             . "<b>Категорія:</b> {$this->category->title}\n"
             . "<b>ID рецепта:</b> {$this->recipe->id}\n"

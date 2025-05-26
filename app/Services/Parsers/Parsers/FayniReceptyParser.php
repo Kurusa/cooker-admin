@@ -7,41 +7,6 @@ use DOMNode;
 
 class FayniReceptyParser extends BaseRecipeParser
 {
-    public function isExcludedByUrlRule(string $url): bool
-    {
-        $disallowedPatterns = [
-            'fayni-recepty.com.ua/yak-',
-            '/blog',
-            'novyi-rik',
-            'novyy-rik',
-            'kvashena-kapusta-koryst',
-            'halva-koryst-ta-shkoda',
-            'pisni-stravy-na-pist',
-            'shcho-pryhotuvaty',
-            'sho-pryhotuvaty',
-            'sho-pyhotuvaty',
-            'koryst',
-            'retsepty',
-            'shcho-',
-            'stravy-',
-            'vse-pro',
-            'chym-',
-            'den-',
-            'vlastyvosti-',
-            'korysni-',
-            'tradytsiyi-',
-            'yak-hotuvaty',
-        ];
-
-        foreach ($disallowedPatterns as $pattern) {
-            if (str_contains($url, $pattern)) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     public function extractRecipeNode(): DOMNode
     {
         $recipeNode = $this->xpath->query("//div[contains(@class, 'wprm-recipe wprm-recipe-template-cutout')]")->item(0);
@@ -71,8 +36,42 @@ class FayniReceptyParser extends BaseRecipeParser
         return $recipeNode;
     }
 
+    public function isExcludedByUrlRule(string $url): bool
+    {
+        $disallowedPatterns = [
+            'fayni-recepty.com.ua/yak-',
+            '/blog',
+            'novyi-rik',
+            'novyy-rik',
+            'pisni-stravy-na-pist',
+            'shcho-pryhotuvaty',
+            'sho-pryhotuvaty',
+            'sho-pyhotuvaty',
+            'vse-pro',
+            'vlastyvosti-',
+            'korysni-',
+            'tradytsiyi-',
+            'yak-hotuvaty',
+            'koryst-',
+            'koryst/',
+        ];
+
+        foreach ($disallowedPatterns as $pattern) {
+            if (str_contains($url, $pattern)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function isExcludedByCategory(string $url): bool
     {
         return false;
+    }
+
+    public function getSourceKey(): string
+    {
+        return 'fayni';
     }
 }

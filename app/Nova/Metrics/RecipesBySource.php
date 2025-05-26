@@ -2,32 +2,38 @@
 
 namespace App\Nova\Metrics;
 
+use App\Models\Source\Source;
 use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Metrics\Partition;
-use Laravel\Nova\Metrics\PartitionResult;
+use Laravel\Nova\Metrics\MetricTableRow;
+use Laravel\Nova\Metrics\Table;
 
-class RecipesBySource extends Partition
+class RecipesBySource extends Table
 {
     public function name(): string
     {
-        return 'Рецепти за джерелами';
+        return 'Recipes by source';
     }
 
-    public function calculate(NovaRequest $request): PartitionResult
+    public function calculate(NovaRequest $request): array
     {
-        $data = DB::table('recipes')
-            ->join('source_recipe_urls', 'recipes.source_recipe_url_id', '=', 'source_recipe_urls.id')
-            ->join('sources', 'source_recipe_urls.source_id', '=', 'sources.id')
-            ->select('sources.title as label', DB::raw('COUNT(recipes.id) as value'))
-            ->groupBy('sources.title')
-            ->pluck('value', 'label');
-
-        return $this->result($data->toArray());
+        return Source::withCount([
+            'recipes',
+            'recipeUrls as not_excluded_urls_count' => fn($q) => $q->notExcluded()
+        ])
+            ->orderByDesc('recipes_count')
+            ->get()
+            ->map(function (Source $source) {
+                return MetricTableRow::make()
+                    ->title($source->title)
+                    ->subtitle($source->getParsedSummaryText())
+                    ->icon('book-open')
+                    ->iconClass('text-blue-500');
+            })->all();
     }
 
     public function uriKey(): string
     {
-        return 'recipes-by-source';
+        return 'recipes-by-source-table';
     }
 }

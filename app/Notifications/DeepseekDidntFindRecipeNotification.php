@@ -26,7 +26,8 @@ class DeepseekDidntFindRecipeNotification extends Notification implements Should
 
     public function toTelegram($notifiable): TelegramMessage
     {
-        $text = "🤖 <b>Deepseek не знайшов рецепт</b>\n"
+        $text = "<b>[ERROR]</b>\n"
+            . "🤖 <b>Deepseek не знайшов рецепт</b>\n"
             . "<b>URL:</b> {$this->sourceRecipeUrl->url}\n"
             . "<b>Джерело:</b> " . ($this->sourceRecipeUrl->source?->title ?? '—');
 

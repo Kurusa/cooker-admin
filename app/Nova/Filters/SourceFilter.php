@@ -13,7 +13,17 @@ class SourceFilter extends Filter
 
     public function apply(Request $request, $query, $value): Builder
     {
-        return $query->where('source_id', $value);
+        if ($request->resource === 'recipes') {
+            return $query->whereHas('sourceRecipeUrl', function ($q) use ($value) {
+                $q->where('source_id', $value);
+            });
+        }
+
+        if ($request->resource === 'source-recipe-urls') {
+            return $query->where('source_id', $value);
+        }
+
+        return $query;
     }
 
     public function options(Request $request): array
