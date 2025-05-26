@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Exceptions\UnknownSourceException;
 use App\Models\Source\Source;
 use App\Services\Parsers\RecipeParserFactory;
 use App\Services\SitemapUrlCollectorService;
@@ -21,9 +20,6 @@ class CollectSourceSitemapUrlsCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * @throws UnknownSourceException
-     */
     public function handle(): void
     {
         /** @var Source $source */

@@ -36,8 +36,7 @@ class SitemapUrlCollectorService
         foreach ($sitemapElements as $sitemapElement) {
             $url = (string)$sitemapElement->loc;
 
-            $isExcludedByUrlRule = $this->parser->isExcludedByUrlRule($url);
-            $isExcludedByCategoryRule = $this->parser->isExcludedByCategory($url);
+            $isExcluded = $this->parser->isExcluded($url, $this->source->id);
 
             if ($this->isSitemap($url)) {
                 $this->parseSitemapUrls($url, $urls);
@@ -51,7 +50,7 @@ class SitemapUrlCollectorService
                     'source_id' => $this->source->id,
                 ]);
 
-                if ($isExcludedByUrlRule || $isExcludedByCategoryRule) {
+                if ($isExcluded) {
                     $sourceRecipeUrl->update([
                         'is_excluded' => true,
                     ]);

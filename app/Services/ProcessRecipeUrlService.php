@@ -2,12 +2,15 @@
 
 namespace App\Services;
 
-use App\Exceptions\DeepseekDidntFindRecipeException;
+use App\DTO\RecipeDTO;
+use App\Enums\AiProvider;
+use App\Exceptions\AiProviderDidntFindRecipeException;
 use App\Exceptions\RecipeBlockNotFoundException;
 use App\Models\Source\SourceRecipeUrl;
 use App\Notifications\DeepseekDidntFindRecipeNotification;
 use App\Notifications\RecipeBlockNotFoundNotification;
 use App\Notifications\RecipeParsingCompleted;
+use App\Services\AiProviders\AiRecipeParserResolver;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\RecipeAttributes\CategoryService;
 use App\Services\RecipeAttributes\CuisineService;
@@ -22,12 +25,13 @@ use Illuminate\Support\Facades\Notification;
 class ProcessRecipeUrlService
 {
     public function __construct(
-        private readonly RecipeService     $recipeService,
-        private readonly IngredientService $ingredientService,
-        private readonly StepService       $stepService,
-        private readonly CategoryService   $categoryService,
-        private readonly CuisineService    $cuisineService,
-        private readonly Database          $db,
+        private readonly RecipeService          $recipeService,
+        private readonly IngredientService      $ingredientService,
+        private readonly StepService            $stepService,
+        private readonly CategoryService        $categoryService,
+        private readonly CuisineService         $cuisineService,
+        private readonly Database               $db,
+        private readonly AiRecipeParserResolver $aiProviderResolver,
     )
     {
     }
@@ -35,16 +39,36 @@ class ProcessRecipeUrlService
     public function processRecipeUrl(
         SourceRecipeUrl       $sourceRecipeUrl,
         RecipeParserInterface $parser,
+        AiProvider            $aiProvider,
     ): void
     {
         if ($sourceRecipeUrl->is_excluded) {
             return;
         }
 
-        $recipes = $parser->parseRecipes($sourceRecipeUrl->url);
+        $aiService = $this->aiProviderResolver->resolve($aiProvider);
 
+        try {
+            $cleanHtml = $parser->getCleanHtml($sourceRecipeUrl->url);
+            $recipes = $aiService->parse($cleanHtml);
+        } catch (RecipeBlockNotFoundException $exception) {
+            Notification::route('telegram', config('services.telegram.chat_id'))->notify(new RecipeBlockNotFoundNotification($sourceRecipeUrl));
+            throw $exception;
+        } catch (AiProviderDidntFindRecipeException $exception) {
+            Notification::route('telegram', config('services.telegram.chat_id'))->notify(new DeepseekDidntFindRecipeNotification(
+                $sourceRecipeUrl,
+                $exception->getMessage(),
+            ));
+            throw $exception;
+        }
+
+        /** @var RecipeDTO $recipeDTO */
         foreach ($recipes as $recipeDTO) {
             try {
+                if (empty($recipeDTO->ingredientGroups) || empty($recipeDTO->steps)) {
+                    continue;
+                }
+
                 $this->db->beginTransaction();
 
                 $recipeDTO->source_recipe_url_id = $sourceRecipeUrl->id;
@@ -63,19 +87,6 @@ class ProcessRecipeUrlService
                     Log::error('Notification error:' . $e->getMessage());
                     continue;
                 }
-            } catch (RecipeBlockNotFoundException $exception) {
-                Notification::route('telegram', config('services.telegram.chat_id'))->notify(new RecipeBlockNotFoundNotification($sourceRecipeUrl));
-
-                $this->db->rollBack();
-                throw $exception;
-            } catch (DeepseekDidntFindRecipeException $exception) {
-                Notification::route('telegram', config('services.telegram.chat_id'))->notify(new DeepseekDidntFindRecipeNotification(
-                    $sourceRecipeUrl,
-                    $exception->getMessage(),
-                ));
-
-                $this->db->rollBack();
-                throw $exception;
             } catch (Exception $exception) {
                 $this->db->rollBack();
                 throw $exception;

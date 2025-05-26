@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 /**
  * @property int $id
@@ -53,5 +54,21 @@ class RecipeCategory extends Model
     public function scopeChildrenCategories(Builder $query): void
     {
         $query->where('parent_id');
+    }
+
+    public function relatedCategories()
+    {
+        return static::query()
+            ->whereHas('recipes', function ($query) {
+                $query->whereHas('categories', fn($q) => $q->where('id', $this->id));
+            })
+            ->where('id', '!=', $this->id)
+            ->get();
+    }
+
+
+    public function relatedCategoriesCount(): int
+    {
+        return $this->relatedCategories()->count();
     }
 }

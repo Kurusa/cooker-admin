@@ -36,35 +36,6 @@ class FayniReceptyParser extends BaseRecipeParser
         return $recipeNode;
     }
 
-    public function isExcludedByUrlRule(string $url): bool
-    {
-        $disallowedPatterns = [
-            'fayni-recepty.com.ua/yak-',
-            '/blog',
-            'novyi-rik',
-            'novyy-rik',
-            'pisni-stravy-na-pist',
-            'shcho-pryhotuvaty',
-            'sho-pryhotuvaty',
-            'sho-pyhotuvaty',
-            'vse-pro',
-            'vlastyvosti-',
-            'korysni-',
-            'tradytsiyi-',
-            'yak-hotuvaty',
-            'koryst-',
-            'koryst/',
-        ];
-
-        foreach ($disallowedPatterns as $pattern) {
-            if (str_contains($url, $pattern)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function isExcludedByCategory(string $url): bool
     {
         return false;

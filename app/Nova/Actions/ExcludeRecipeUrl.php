@@ -2,7 +2,9 @@
 
 namespace App\Nova\Actions;
 
+use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
 use App\Models\Recipe\Recipe;
+use App\Models\Source\SourceRecipeUrlExcludedRule;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
@@ -24,6 +26,12 @@ class ExcludeRecipeUrl extends Action
         foreach ($models as $model) {
             $model->sourceRecipeUrl->is_excluded = true;
             $model->sourceRecipeUrl->save();
+
+            SourceRecipeUrlExcludedRule::create([
+                'rule' => SourceRecipeUrlExcludedRuleType::EXACT,
+                'source_id' => $model->source->id,
+                'value' => $model->sourceRecipeUrl->url,
+            ]);
         }
 
         return Action::message('Excluded recipe url.');

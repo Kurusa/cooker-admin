@@ -35,26 +35,6 @@ class PatelnyaParser extends BaseRecipeParser
         return $recipeNode;
     }
 
-    public function isExcludedByUrlRule(string $url): bool
-    {
-        $disallowedPatterns = [
-            'yak-',
-            'scho-pr',
-            'top-',
-            'porad',
-            'dijeta-',
-            'sumish',
-        ];
-
-        foreach ($disallowedPatterns as $pattern) {
-            if (str_contains($url, $pattern)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function isExcludedByCategory(string $url): bool
     {
         $html = file_get_contents($url);

@@ -2,8 +2,9 @@
 
 namespace App\Services\Parsers;
 
+use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
 use App\Exceptions\RecipeBlockNotFoundException;
-use App\Services\DeepseekService;
+use App\Models\Source\SourceRecipeUrlExcludedRule;
 use App\Services\Parsers\Contracts\HtmlCleanerInterface;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use DOMDocument;
@@ -22,7 +23,7 @@ abstract class BaseRecipeParser implements RecipeParserInterface
     /**
      * @throws RecipeBlockNotFoundException
      */
-    public function parseRecipes(string $url): array
+    public function getCleanHtml(string $url): string
     {
         $html = file_get_contents($url);
 
@@ -39,12 +40,30 @@ abstract class BaseRecipeParser implements RecipeParserInterface
             throw new RecipeBlockNotFoundException();
         }
 
-        $sourceKey = $this->getSourceKey();
-        $this->saveDebugHtml($cleanHtml, $sourceKey, $url);
+        return $cleanHtml;
+    }
 
-        /** @var DeepseekService $service */
-        $service = app(DeepseekService::class);
-        return $service->parseRecipeFromHtml($cleanHtml);
+    public function isExcluded(string $url, int $sourceId): bool
+    {
+        $rules = SourceRecipeUrlExcludedRule::query()
+            ->where('source_id', $sourceId)
+            ->get();
+
+        /** @var SourceRecipeUrlExcludedRule $rule */
+        foreach ($rules as $rule) {
+            if (
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::EXACT && $url === $rule->value) ||
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::CONTAINS && str_contains($url, $rule->value))
+            ) {
+                return true;
+            }
+        }
+
+        if ($this->isExcludedByCategory($url)) {
+            return true;
+        }
+
+        return false;
     }
 
     protected function saveDebugHtml(

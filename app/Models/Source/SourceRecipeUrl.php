@@ -2,6 +2,7 @@
 
 namespace App\Models\Source;
 
+use App\Enums\AiProvider;
 use App\Models\Recipe\Recipe;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;

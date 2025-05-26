@@ -3,7 +3,7 @@
 namespace App\Services\Parsers\Parsers;
 
 use App\Enums\Recipe\Complexity;
-use App\Services\DeepseekService;
+use App\Services\AiProviders\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 
 class SmachnoParser extends BaseRecipeParser

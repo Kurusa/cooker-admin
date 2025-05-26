@@ -2,10 +2,12 @@
 
 namespace App\Providers;
 
-use App\Services\DeepseekService;
+use App\Services\AiProviders\GeminiService;
 use App\Services\Parsers\Contracts\HtmlCleanerInterface;
+use App\Services\AiProviders\DeepseekService;
 use App\Services\Parsers\HtmlCleaner;
 use App\Services\Parsers\Parsers\FayniReceptyParser;
+use App\Services\Parsers\Parsers\FoodcourtParser;
 use App\Services\Parsers\Parsers\JistyParser;
 use App\Services\Parsers\Parsers\NovaStravaParser;
 use App\Services\Parsers\Parsers\PatelnyaParser;
@@ -33,6 +35,16 @@ class AppServiceProvider extends ServiceProvider
             ]));
         });
 
+        $this->app->singleton(GeminiService::class, function () {
+            return new GeminiService(new Client([
+                'base_uri' => 'https://generativelanguage.googleapis.com/v1beta/models/',
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                ],
+                'timeout' => 30,
+            ]));
+        });
+
         $this->app->singleton(RecipeParserFactory::class, function () {
             $factory = new RecipeParserFactory();
             $factory->registerParser('patelnya', PatelnyaParser::class);
@@ -40,6 +52,7 @@ class AppServiceProvider extends ServiceProvider
             $factory->registerParser('novastrava', NovaStravaParser::class);
             $factory->registerParser('rud', RudParser::class);
             $factory->registerParser('jisty', JistyParser::class);
+            $factory->registerParser('foodcourt', FoodcourtParser::class);
 //            $factory->registerParser('tsn', TsnParser::class);
 //            $factory->registerParser('smachno', SmachnoParser::class);
 //            $factory->registerParser('picante', PicanteParser::class);
@@ -51,8 +64,7 @@ class AppServiceProvider extends ServiceProvider
 //            $factory->registerParser('monchef', MonchefParser::class);
 //            $factory->registerParser('receptytv', ReceptyTvParser::class);
 //            $factory->registerParser('yabpoela', YabpoelaParser::class);
-//            $factory->registerParser('foodcourt', FoodcourtParser::class);
-//            $factory->registerParser('etnocook', EtnocookParser::class);
+//            $factory->registerParser('etnocook', EtnocookParser::class); // китайсько-англійське?
             return $factory;
         });
 

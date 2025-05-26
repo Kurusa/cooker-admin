@@ -48,10 +48,10 @@ class SourceRecipeUrl extends Resource
                 ->displayUsing(fn($value) => "<a href=\"{$value}\" target=\"_blank\">{$value}</a>")
                 ->asHtml(),
 
-            Boolean::make('Is Parsed', fn() => $this->recipes()->exists())
+            Boolean::make('Is parsed', fn() => $this->recipes()->exists())
                 ->exceptOnForms(),
 
-            Boolean::make('Is Excluded', 'is_excluded'),
+            Boolean::make('Is excluded', 'is_excluded'),
 
             Heading::make($iframe ?? '')
                 ->asHtml()

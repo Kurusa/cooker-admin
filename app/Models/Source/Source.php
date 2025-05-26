@@ -56,6 +56,11 @@ class Source extends Model
         return $this->hasMany(SourceRecipeUrl::class);
     }
 
+    public function excludedRules(): HasMany
+    {
+        return $this->hasMany(SourceRecipeUrlExcludedRule::class);
+    }
+
     public function isParsingCompleted(): bool
     {
         return $this->pendingUrlsCount() === 0

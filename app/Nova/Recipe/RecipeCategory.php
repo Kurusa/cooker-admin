@@ -48,6 +48,13 @@ class RecipeCategory extends Resource
 
             HasMany::make('Child categories', 'children', self::class),
 
+            Text::make('Related Categories', function () {
+                return $this->relatedCategories()
+                    ->pluck('title')
+                    ->unique()
+                    ->implode(', ');
+            })->onlyOnDetail(),
+
             self::formattedDateTime('Created at'),
         ];
     }

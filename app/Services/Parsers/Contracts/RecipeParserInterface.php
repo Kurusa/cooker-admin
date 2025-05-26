@@ -7,14 +7,9 @@ use DOMNode;
 
 interface RecipeParserInterface
 {
-    /** @return RecipeDTO[] */
-    public function parseRecipes(string $url): array;
-
     public function extractRecipeNode(): DOMNode;
 
     public function isExcludedByCategory(string $url): bool;
-
-    public function isExcludedByUrlRule(string $url): bool;
 
     public function getSourceKey(): string;
 }

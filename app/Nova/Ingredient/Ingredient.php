@@ -17,6 +17,10 @@ class Ingredient extends Resource
 
     public static $group = 'Ingredients';
 
+    public static $search = [
+        'title',
+    ];
+
     public function fields(Request $request): array
     {
         return [

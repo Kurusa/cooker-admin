@@ -66,28 +66,6 @@ class JistyParser extends BaseRecipeParser
         return false;
     }
 
-    public function isExcludedByUrlRule(string $url): bool
-    {
-        $disallowedPatterns = [
-            '/blog',
-            '/top-',
-            '-faktiv-',
-            '-pravil-',
-            '-productiv-',
-            'restoran-',
-            'kuhar',
-            'posud',
-        ];
-
-        foreach ($disallowedPatterns as $pattern) {
-            if (str_contains($url, $pattern)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function getSourceKey(): string
     {
         return 'jisty';

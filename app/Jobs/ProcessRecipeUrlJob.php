@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Enums\AiProvider;
 use App\Models\Source\SourceRecipeUrl;
 use App\Services\Parsers\RecipeParserFactory;
 use App\Services\ProcessRecipeUrlService;
@@ -10,7 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Redis;
 
 class ProcessRecipeUrlJob implements ShouldQueue
 {
@@ -19,7 +19,8 @@ class ProcessRecipeUrlJob implements ShouldQueue
     public int $timeout = 300;
 
     public function __construct(
-        public readonly int $sourceRecipeUrlId,
+        public readonly int        $sourceRecipeUrlId,
+        public readonly AiProvider $aiProvider,
     )
     {
     }
@@ -32,8 +33,11 @@ class ProcessRecipeUrlJob implements ShouldQueue
         /** @var SourceRecipeUrl $sourceRecipeUrl */
         $sourceRecipeUrl = SourceRecipeUrl::with('source')->findOrFail($this->sourceRecipeUrlId);
 
-        $parser = $parserFactory->make($sourceRecipeUrl->source->title);
+//        if (!$sourceRecipeUrl->lockForAi($this->aiProvider)) {
+//            return;
+//        }
 
-        $service->processRecipeUrl($sourceRecipeUrl, $parser);
+        $parser = $parserFactory->make($sourceRecipeUrl->source->title);
+        $service->processRecipeUrl($sourceRecipeUrl, $parser, $this->aiProvider);
     }
 }

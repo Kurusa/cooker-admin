@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\AiProvider;
 use App\Exceptions\UnknownSourceException;
 use App\Jobs\ProcessRecipeUrlJob;
 use App\Models\Source\Source;
@@ -22,9 +23,6 @@ class ParseSourceRecipesCommand extends Command
         parent::__construct();
     }
 
-    /**
-     * @throws UnknownSourceException
-     */
     public function handle(): void
     {
         /** @var Source $source */
@@ -36,7 +34,10 @@ class ParseSourceRecipesCommand extends Command
         $sourceRecipeUrls = $service->getFilteredSitemapUrls();
 
         foreach ($sourceRecipeUrls as $sourceRecipeUrl) {
-            ProcessRecipeUrlJob::dispatch($sourceRecipeUrl->id);
+            ProcessRecipeUrlJob::dispatch(
+                $sourceRecipeUrl->id,
+                AiProvider::DEEPSEEK,
+            );
         }
     }
 }
