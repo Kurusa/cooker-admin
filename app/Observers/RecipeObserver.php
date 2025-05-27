@@ -31,5 +31,13 @@ class RecipeObserver
         ) {
             $recipe->image_url = str_replace('-150x150.', '.', $recipe->image_url);
         }
+
+        if (
+            $recipe->image_url
+            && str_starts_with($recipe->image_url, '/')
+            && $recipe->source->title === 'picante'
+        ) {
+            $recipe->image_url = 'https://picantecooking.com' . $recipe->image_url;
+        }
     }
 }

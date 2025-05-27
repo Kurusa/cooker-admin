@@ -33,10 +33,6 @@ class ProcessRecipeUrlJob implements ShouldQueue
         /** @var SourceRecipeUrl $sourceRecipeUrl */
         $sourceRecipeUrl = SourceRecipeUrl::with('source')->findOrFail($this->sourceRecipeUrlId);
 
-//        if (!$sourceRecipeUrl->lockForAi($this->aiProvider)) {
-//            return;
-//        }
-
         $parser = $parserFactory->make($sourceRecipeUrl->source->title);
         $service->processRecipeUrl($sourceRecipeUrl, $parser, $this->aiProvider);
     }

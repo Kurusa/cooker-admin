@@ -3,15 +3,11 @@
 namespace App\Notifications;
 
 use App\Models\Source\SourceRecipeUrl;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramMessage;
 
-class DeepseekDidntFindRecipeNotification extends Notification implements ShouldQueue
+class AiProviderDidntFindRecipeNotification extends Notification
 {
-    use Queueable;
-
     public function __construct(
         private readonly SourceRecipeUrl $sourceRecipeUrl,
         private readonly ?string         $deepseekResponse = null,
@@ -28,8 +24,7 @@ class DeepseekDidntFindRecipeNotification extends Notification implements Should
     {
         $text = "<b>[ERROR]</b>\n"
             . "🤖 <b>Deepseek не знайшов рецепт</b>\n"
-            . "<b>URL:</b> {$this->sourceRecipeUrl->url}\n"
-            . "<b>Джерело:</b> " . ($this->sourceRecipeUrl->source?->title ?? '—');
+            . "<b>URL:</b> {$this->sourceRecipeUrl->url}\n";
 
         if ($this->deepseekResponse) {
             $short = mb_strlen($this->deepseekResponse) > 500
@@ -40,7 +35,10 @@ class DeepseekDidntFindRecipeNotification extends Notification implements Should
 
         return TelegramMessage::create()
             ->content($text)
-            ->options(['parse_mode' => 'HTML'])
+            ->options([
+                'parse_mode' => 'HTML',
+                'disable_web_page_preview' => true,
+            ])
             ->token(config('services.telegram.token'));
     }
 }

@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property SourceRecipeUrlExcludedRuleType $rule_type
  * @property string $value
  *
- * @property Source
+ * @property Source $source
  */
 class SourceRecipeUrlExcludedRule extends Model
 {

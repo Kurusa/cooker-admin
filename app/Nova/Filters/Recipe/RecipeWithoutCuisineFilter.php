@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Nova\Filters\Recipe;
+
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Laravel\Nova\Filters\Filter;
+
+class RecipeWithoutCuisineFilter extends Filter
+{
+    public $name = 'Without cuisine';
+
+    public function apply(Request $request, $query, $value): Builder
+    {
+        return $query->whereDoesntHave('cuisines');
+    }
+
+    public function options(Request $request): array
+    {
+        return [
+            'Show' => true,
+        ];
+    }
+}

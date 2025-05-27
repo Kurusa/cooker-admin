@@ -77,7 +77,7 @@ class DeepseekService implements AiRecipeParserServiceInterface
         if (preg_match('/```json\s*(\[\s*{.*?}\s*])\s*```/s', $response, $matches)) {
             $recipes = json_decode($matches[1], true);
         } else {
-            throw new AiProviderDidntFindRecipeException(substr(json_encode($response), 0, 100));
+            throw new AiProviderDidntFindRecipeException(mb_strimwidth($response, 0, 1000, '...'));
         }
 
         try {

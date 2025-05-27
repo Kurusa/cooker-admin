@@ -2,15 +2,16 @@
 
 namespace App\Providers;
 
+use App\Services\AiProviders\DeepseekService;
 use App\Services\AiProviders\GeminiService;
 use App\Services\Parsers\Contracts\HtmlCleanerInterface;
-use App\Services\AiProviders\DeepseekService;
 use App\Services\Parsers\HtmlCleaner;
 use App\Services\Parsers\Parsers\FayniReceptyParser;
 use App\Services\Parsers\Parsers\FoodcourtParser;
 use App\Services\Parsers\Parsers\JistyParser;
 use App\Services\Parsers\Parsers\NovaStravaParser;
 use App\Services\Parsers\Parsers\PatelnyaParser;
+use App\Services\Parsers\Parsers\PicanteParser;
 use App\Services\Parsers\Parsers\RudParser;
 use App\Services\Parsers\RecipeParserFactory;
 use App\Services\Parsers\Steps\RemoveClassesAndAttributesStep;
@@ -53,9 +54,9 @@ class AppServiceProvider extends ServiceProvider
             $factory->registerParser('rud', RudParser::class);
             $factory->registerParser('jisty', JistyParser::class);
             $factory->registerParser('foodcourt', FoodcourtParser::class);
+            $factory->registerParser('picante', PicanteParser::class);
 //            $factory->registerParser('tsn', TsnParser::class);
 //            $factory->registerParser('smachno', SmachnoParser::class);
-//            $factory->registerParser('picante', PicanteParser::class);
 //            $factory->registerParser('retsepty', RetseptyParser::class);
 //            $factory->registerParser('vse-recepty', VseReceptyParser::class);
 //            $factory->registerParser('ua-recept', UaReceptParser::class);

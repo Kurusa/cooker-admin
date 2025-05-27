@@ -3,15 +3,11 @@
 namespace App\Notifications;
 
 use App\Models\Source\SourceRecipeUrl;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramMessage;
 
-class RecipeBlockNotFoundNotification extends Notification implements ShouldQueue
+class RecipeBlockNotFoundNotification extends Notification
 {
-    use Queueable;
-
     public function __construct(
         private readonly SourceRecipeUrl $sourceRecipeUrl,
     )

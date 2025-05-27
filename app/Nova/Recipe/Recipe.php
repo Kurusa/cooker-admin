@@ -6,7 +6,9 @@ use App\Models\Recipe\Recipe as RecipeModel;
 use App\Nova\Actions\ExcludeRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
 use App\Nova\Cuisine;
-use App\Nova\Filters\RecipeHasOneIngredientOrStepFilter;
+use App\Nova\Filters\InvalidImageUrlFilter;
+use App\Nova\Filters\Recipe\RecipeHasOneIngredientOrStepFilter;
+use App\Nova\Filters\Recipe\RecipeWithoutCuisineFilter;
 use App\Nova\Filters\SourceFilter;
 use App\Nova\Ingredient\IngredientGroup;
 use App\Nova\Resource;
@@ -88,7 +90,9 @@ class Recipe extends Resource
     {
         return [
             new SourceFilter,
+            new InvalidImageUrlFilter,
             new RecipeHasOneIngredientOrStepFilter,
+            new RecipeWithoutCuisineFilter,
         ];
     }
 

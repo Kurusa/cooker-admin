@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Enums\AiProvider;
-use App\Exceptions\UnknownSourceException;
 use App\Jobs\ProcessRecipeUrlJob;
 use App\Models\Source\Source;
 use App\Services\Parsers\RecipeParserFactory;

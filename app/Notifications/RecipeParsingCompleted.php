@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Notifications;
 
 use App\Models\Recipe\Recipe;

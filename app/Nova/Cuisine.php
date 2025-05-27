@@ -18,7 +18,6 @@ class Cuisine extends Resource
     public static $title = 'title';
 
     public static $search = [
-        'id',
         'title',
     ];
 
@@ -28,7 +27,7 @@ class Cuisine extends Resource
             ID::make()->sortable(),
 
             Text::make('Title')
-                ->rules('required', 'max:255'),
+                ->sortable(),
 
             Number::make('Recipes count', function () {
                 return $this->recipes()->count();

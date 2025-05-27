@@ -24,7 +24,7 @@ class SourceRecipeUrl extends Resource
 {
     public static string $model = SourceRecipeUrlModel::class;
 
-    public static $perPageViaRelationship = 20;
+    public static $perPageViaRelationship = 100;
 
     public static $group = 'Sources';
 

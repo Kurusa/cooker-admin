@@ -7,7 +7,7 @@ use App\Enums\AiProvider;
 use App\Exceptions\AiProviderDidntFindRecipeException;
 use App\Exceptions\RecipeBlockNotFoundException;
 use App\Models\Source\SourceRecipeUrl;
-use App\Notifications\DeepseekDidntFindRecipeNotification;
+use App\Notifications\AiProviderDidntFindRecipeNotification;
 use App\Notifications\RecipeBlockNotFoundNotification;
 use App\Notifications\RecipeParsingCompleted;
 use App\Services\AiProviders\AiRecipeParserResolver;
@@ -42,6 +42,21 @@ class ProcessRecipeUrlService
         AiProvider            $aiProvider,
     ): void
     {
+        $ch = curl_init($sourceRecipeUrl->url);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_exec($ch);
+
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 404) {
+            $sourceRecipeUrl->update([
+                'is_excluded' => true,
+            ]);
+            return;
+        }
+
         if ($sourceRecipeUrl->is_excluded) {
             return;
         }
@@ -53,13 +68,13 @@ class ProcessRecipeUrlService
             $recipes = $aiService->parse($cleanHtml);
         } catch (RecipeBlockNotFoundException $exception) {
             Notification::route('telegram', config('services.telegram.chat_id'))->notify(new RecipeBlockNotFoundNotification($sourceRecipeUrl));
-            throw $exception;
+            return;
         } catch (AiProviderDidntFindRecipeException $exception) {
-            Notification::route('telegram', config('services.telegram.chat_id'))->notify(new DeepseekDidntFindRecipeNotification(
+            Notification::route('telegram', config('services.telegram.chat_id'))->notify(new AiProviderDidntFindRecipeNotification(
                 $sourceRecipeUrl,
                 $exception->getMessage(),
             ));
-            throw $exception;
+            return;
         }
 
         /** @var RecipeDTO $recipeDTO */

@@ -1,6 +1,7 @@
 <?php
 
 use App\Providers\NovaServiceProvider;
+use Barryvdh\Debugbar\ServiceProvider;
 use Illuminate\Support\Facades\Facade;
 
 return [
@@ -192,6 +193,7 @@ return [
         App\Providers\AppServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         NovaServiceProvider::class,
+        ServiceProvider::class,
     ],
 
     /*

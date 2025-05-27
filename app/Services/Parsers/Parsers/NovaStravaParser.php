@@ -44,6 +44,6 @@ class NovaStravaParser extends BaseRecipeParser
 
     public function getSourceKey(): string
     {
-       return 'novastrava';
+        return 'novastrava';
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Nova\Metrics;
 
 use App\Models\Source\Source;
-use Illuminate\Support\Facades\DB;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Metrics\MetricTableRow;
 use Laravel\Nova\Metrics\Table;
