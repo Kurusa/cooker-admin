@@ -17,9 +17,11 @@ class IngredientService
     public function attachIngredientGroups(array $ingredientGroups, Recipe $recipe): void
     {
         foreach ($ingredientGroups as $groupDTO) {
-            $groupModel = $groupDTO->group
-                ? $recipe->ingredientGroups()->firstOrCreate(['title' => $groupDTO->group])
-                : null;
+            $groupTitle = $groupDTO->group ?: 'загальні інгредієнти';
+
+            $groupModel = $recipe->ingredientGroups()->firstOrCreate([
+                'title' => $groupTitle,
+            ]);
 
             foreach ($groupDTO->ingredients as $ingredientData) {
                 $ingredient = Ingredient::firstOrCreate([

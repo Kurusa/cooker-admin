@@ -7,13 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('cuisines', function (Blueprint $table) {
+        Schema::create('recipe_cuisines', function (Blueprint $table) {
             $table->id();
             $table->string('title')->unique();
             $table->timestamps();
         });
 
-        Schema::create('recipe_cuisines', function (Blueprint $table) {
+        Schema::create('recipe_cuisines_map', function (Blueprint $table) {
             $table->foreignId('cuisine_id')->constrained()->cascadeOnDelete();
             $table->foreignId('recipe_id')->constrained()->cascadeOnDelete();
 
@@ -24,6 +24,6 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::dropIfExists('recipe_cuisines');
-        Schema::dropIfExists('cuisines');
+        Schema::dropIfExists('recipe_cuisines_map');
     }
 };

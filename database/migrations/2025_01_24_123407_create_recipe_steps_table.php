@@ -13,10 +13,7 @@ return new class extends Migration
             $table->foreignId('recipe_id')->constrained('recipes')->cascadeOnDelete();
             $table->text('description');
             $table->text('image_url')->nullable();
-            $table->unsignedBigInteger('step_group_id')->nullable();
             $table->timestamps();
-
-            $table->foreign('step_group_id')->references('id')->on('step_groups')->nullOnDelete();
         });
     }
 

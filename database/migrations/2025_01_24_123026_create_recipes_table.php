@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('complexity')->nullable();
-            $table->text('advice')->nullable();
             $table->integer('time')->nullable();
             $table->integer('portions')->nullable();
             $table->text('image_url')->nullable();

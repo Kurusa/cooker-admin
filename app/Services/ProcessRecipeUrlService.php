@@ -4,9 +4,11 @@ namespace App\Services;
 
 use App\DTO\RecipeDTO;
 use App\Enums\AiProvider;
+use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
 use App\Exceptions\AiProviderDidntFindRecipeException;
 use App\Exceptions\RecipeBlockNotFoundException;
 use App\Models\Source\SourceRecipeUrl;
+use App\Models\Source\SourceRecipeUrlExcludedRule;
 use App\Notifications\AiProviderDidntFindRecipeNotification;
 use App\Notifications\RecipeBlockNotFoundNotification;
 use App\Notifications\RecipeParsingCompleted;
@@ -53,6 +55,11 @@ class ProcessRecipeUrlService
         if ($httpCode === 404) {
             $sourceRecipeUrl->update([
                 'is_excluded' => true,
+            ]);
+            SourceRecipeUrlExcludedRule::create([
+                'source_id' => $sourceRecipeUrl->source->id,
+                'rule_type' => SourceRecipeUrlExcludedRuleType::EXACT,
+                'value' => $sourceRecipeUrl->url,
             ]);
             return;
         }
