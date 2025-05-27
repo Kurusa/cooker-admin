@@ -3,7 +3,6 @@
 namespace App\Models\Recipe;
 
 use App\Enums\Recipe\Complexity;
-use App\Models\Cuisine;
 use App\Models\Ingredient\Ingredient;
 use App\Models\Ingredient\IngredientGroup;
 use App\Models\Source\Source;
@@ -23,7 +22,6 @@ use Illuminate\Support\Facades\DB;
  * @property int $id
  * @property string $title
  * @property Complexity $complexity
- * @property string $advice
  * @property int $time
  * @property int $portions
  * @property int $source_recipe_url_id
@@ -35,7 +33,7 @@ use Illuminate\Support\Facades\DB;
  * @property Collection<RecipeIngredient> $recipeIngredients
  * @property Collection<RecipeCategory> $categories
  * @property Collection<Ingredient> $ingredients
- * @property Collection<Cuisine> $cuisines
+ * @property Collection<RecipeCuisine> $cuisines
  */
 #[ObservedBy([RecipeObserver::class])]
 class Recipe extends Model
@@ -43,7 +41,6 @@ class Recipe extends Model
     protected $fillable = [
         'title',
         'complexity',
-        'advice',
         'time',
         'portions',
         'image_url',
@@ -74,7 +71,12 @@ class Recipe extends Model
 
     public function ingredients(): BelongsToMany
     {
-        return $this->belongsToMany(Ingredient::class, 'recipe_ingredients', 'recipe_id', 'ingredient_unit_id')
+        return $this->belongsToMany(
+            Ingredient::class,
+            'recipe_ingredients',
+            'recipe_id',
+            'ingredient_unit_id',
+        )
             ->withPivot('quantity')
             ->using(RecipeIngredient::class)
             ->with('unit');
@@ -128,7 +130,7 @@ class Recipe extends Model
     public function cuisines(): BelongsToMany
     {
         return $this->belongsToMany(
-            Cuisine::class,
+            RecipeCuisine::class,
             'recipe_cuisines_map',
             'recipe_id',
             'cuisine_id',

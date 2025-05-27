@@ -1,8 +1,7 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Recipe;
 
-use App\Models\Recipe\Recipe;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -10,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
  * @property int $id
  * @property string $title
  */
-class Cuisine extends Model
+class RecipeCuisine extends Model
 {
     protected $fillable = [
         'title',
@@ -18,6 +17,11 @@ class Cuisine extends Model
 
     public function recipes(): BelongsToMany
     {
-        return $this->belongsToMany(Recipe::class, 'recipe_cuisines_map');
+        return $this->belongsToMany(
+            Recipe::class,
+            'recipe_cuisines_map',
+            'cuisine_id',
+            'recipe_id',
+        );
     }
 }

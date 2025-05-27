@@ -2,16 +2,16 @@
 
 namespace App\Notifications;
 
-use App\Models\Cuisine;
 use App\Models\Recipe\Recipe;
+use App\Models\Recipe\RecipeCuisine;
 use Illuminate\Notifications\Notification;
 use NotificationChannels\Telegram\TelegramMessage;
 
 class DuplicateRecipeCuisineAttachNotification extends Notification
 {
     public function __construct(
-        private readonly Recipe  $recipe,
-        private readonly Cuisine $cuisine,
+        private readonly Recipe        $recipe,
+        private readonly RecipeCuisine $cuisine,
     )
     {
     }

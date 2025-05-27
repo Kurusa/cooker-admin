@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $recipe_id
  * @property string $description
  * @property string $image_url
- * @property int $step_group_id
  */
 class RecipeStep extends Model
 {
@@ -20,7 +19,6 @@ class RecipeStep extends Model
         'recipe_id',
         'description',
         'image_url',
-        'step_group_id',
     ];
 
     public function recipe(): BelongsTo

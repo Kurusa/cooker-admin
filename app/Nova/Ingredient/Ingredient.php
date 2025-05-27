@@ -9,10 +9,12 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Tabs\Tab;
+use Lupennat\ExpandableMany\HasExpandableMany;
 
 class Ingredient extends Resource
 {
+    use HasExpandableMany;
+
     public static string $model = IngredientModel::class;
 
     public static $group = 'Ingredients';
@@ -30,10 +32,14 @@ class Ingredient extends Resource
                 ->sortable()
                 ->rules('required', 'max:255'),
 
-            Tab::group('Relations', [
-                HasMany::make('Ingredient Units', 'units', IngredientUnit::class),
-                HasMany::make('Recipe Ingredient Usages', 'recipeIngredients', RecipeIngredient::class),
-            ]),
+            HasMany::make('Ingredient units', 'units', IngredientUnit::class)
+                ->expandable()
+                ->withMeta([
+                    'expandableShowLabel' => 'Show units',
+                    'expandableHideLabel' => 'Hide units',
+                ]),
+
+            HasMany::make('Recipe ingredient usages', 'recipeIngredients', RecipeIngredient::class),
         ];
     }
 }

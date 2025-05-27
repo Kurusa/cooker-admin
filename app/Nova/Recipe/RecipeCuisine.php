@@ -1,9 +1,8 @@
 <?php
 
-namespace App\Nova;
+namespace App\Nova\Recipe;
 
-use App\Models\Cuisine as CuisineModel;
-use App\Nova\Recipe\Recipe;
+use App\Models\Recipe\RecipeCuisine as CuisineModel;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsToMany;
 use Laravel\Nova\Fields\ID;
@@ -11,11 +10,9 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Resource;
 
-class Cuisine extends Resource
+class RecipeCuisine extends Resource
 {
     public static string $model = CuisineModel::class;
-
-    public static $title = 'title';
 
     public static $search = [
         'title',

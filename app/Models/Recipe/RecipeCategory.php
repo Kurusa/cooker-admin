@@ -55,7 +55,7 @@ class RecipeCategory extends Model
         $query->where('parent_id');
     }
 
-    public function relatedCategories()
+    public function relatedCategories(): \Illuminate\Database\Eloquent\Collection
     {
         return static::query()
             ->whereHas('recipes', function ($query) {

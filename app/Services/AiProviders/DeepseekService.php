@@ -2,10 +2,10 @@
 
 namespace App\Services\AiProviders;
 
-use App\DTO\CuisineDTO;
 use App\DTO\IngredientDTO;
 use App\DTO\IngredientGroupDTO;
 use App\DTO\RecipeCategoryDTO;
+use App\DTO\RecipeCuisineDTO;
 use App\DTO\RecipeDTO;
 use App\DTO\StepDTO;
 use App\Enums\Recipe\Complexity;
@@ -89,7 +89,7 @@ class DeepseekService implements AiRecipeParserServiceInterface
                     portions: $response['portions'] ?? 1,
                     imageUrl: $response['image'] ?? '',
                     source_recipe_url_id: null,
-                    cuisines: array_map(fn($cuisine) => new CuisineDTO(title: $cuisine), $response['cuisines'] ?? []),
+                    cuisines: array_map(fn($cuisine) => new RecipeCuisineDTO(title: $cuisine), $response['cuisines'] ?? []),
                     categories: array_map(fn($category) => new RecipeCategoryDTO(title: $category), $response['categories'] ?? []),
                     ingredientGroups: array_map(function ($group) {
                         return new IngredientGroupDTO(

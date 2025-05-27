@@ -5,7 +5,6 @@ namespace App\Nova\Recipe;
 use App\Models\Recipe\Recipe as RecipeModel;
 use App\Nova\Actions\ExcludeRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
-use App\Nova\Cuisine;
 use App\Nova\Filters\InvalidImageUrlFilter;
 use App\Nova\Filters\Recipe\RecipeHasOneIngredientOrStepFilter;
 use App\Nova\Filters\Recipe\RecipeWithoutCuisineFilter;
@@ -23,13 +22,13 @@ use Laravel\Nova\Fields\Heading;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
-use Laravel\Nova\Fields\Textarea;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Tabs\Tab;
+use Lupennat\ExpandableMany\HasExpandableMany;
 
 class Recipe extends Resource
 {
-    use NovaFieldMacros;
+    use NovaFieldMacros, HasExpandableMany;
 
     public static string $model = RecipeModel::class;
 
@@ -55,11 +54,24 @@ class Recipe extends Resource
                 ->sortable()
                 ->rules('required', 'max:255'),
 
+            BelongsToMany::make('Categories', 'categories', RecipeCategory::class)
+                ->expandable()
+                ->withMeta([
+                    'expandableShowLabel' => 'Show categories',
+                    'expandableHideLabel' => 'Hide Categories',
+                ]),
+
             Heading::make("<iframe src=\"{$this->sourceRecipeUrl?->url}\" width=\"100%\" height=\"500\" style=\"border:1px solid #ccc;\"></iframe>")
                 ->asHtml()
                 ->onlyOnDetail(),
 
             Tab::group('Details', [
+                Tab::make('Relations', [
+                    HasMany::make('Ingredients', 'recipeIngredients', RecipeIngredient::class),
+                    HasMany::make('Ingredient Groups', 'ingredientGroups', IngredientGroup::class),
+                    HasMany::make('Steps', 'steps', RecipeStep::class),
+                    //BelongsToMany::make('Cuisines', 'cuisines', Cuisine::class),
+                ]),
                 Tab::make('Main', [
                     Text::make('Complexity', function () {
                         $label = ucfirst($this->complexity?->value);
@@ -68,17 +80,9 @@ class Recipe extends Resource
                     })->asHtml(),
                     Number::make('Time')->help('Minutes'),
                     Number::make('Portions'),
-                    Textarea::make('Advice'),
                     Text::make('image_url')->onlyOnDetail(),
                     BelongsTo::make('Source', 'source'),
                     BelongsTo::make('Source recipe url', 'sourceRecipeUrl', SourceRecipeUrl::class),
-                ]),
-                Tab::make('Relations', [
-                    HasMany::make('Ingredients', 'recipeIngredients', RecipeIngredient::class),
-                    HasMany::make('Ingredient Groups', 'ingredientGroups', IngredientGroup::class),
-                    HasMany::make('Steps', 'steps', RecipeStep::class),
-                    BelongsToMany::make('Cuisines', 'cuisines', Cuisine::class),
-                    BelongsToMany::make('Categories', 'categories', RecipeCategory::class),
                 ]),
             ]),
 
