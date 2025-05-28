@@ -4,11 +4,9 @@ namespace App\Services;
 
 use App\DTO\RecipeDTO;
 use App\Enums\AiProvider;
-use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
 use App\Exceptions\AiProviderDidntFindRecipeException;
 use App\Exceptions\RecipeBlockNotFoundException;
 use App\Models\Source\SourceRecipeUrl;
-use App\Models\Source\SourceRecipeUrlExcludedRule;
 use App\Notifications\AiProviderDidntFindRecipeNotification;
 use App\Notifications\RecipeBlockNotFoundNotification;
 use App\Notifications\RecipeParsingCompleted;
@@ -44,27 +42,7 @@ class ProcessRecipeUrlService
         AiProvider            $aiProvider,
     ): void
     {
-        $ch = curl_init($sourceRecipeUrl->url);
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode === 404) {
-            $sourceRecipeUrl->update([
-                'is_excluded' => true,
-            ]);
-            SourceRecipeUrlExcludedRule::create([
-                'source_id' => $sourceRecipeUrl->source->id,
-                'rule_type' => SourceRecipeUrlExcludedRuleType::EXACT,
-                'value' => $sourceRecipeUrl->url,
-            ]);
-            return;
-        }
-
-        if ($sourceRecipeUrl->is_excluded) {
+        if ($this->shouldSkipParsing($sourceRecipeUrl)) {
             return;
         }
 
@@ -114,5 +92,22 @@ class ProcessRecipeUrlService
                 throw $exception;
             }
         }
+    }
+
+    private function shouldSkipParsing(SourceRecipeUrl $sourceRecipeUrl): bool
+    {
+        $ch = curl_init($sourceRecipeUrl->url);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 404) {
+            $sourceRecipeUrl->update(['is_excluded' => true]);
+            return true;
+        }
+
+        return $sourceRecipeUrl->is_excluded;
     }
 }

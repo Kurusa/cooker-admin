@@ -21,3 +21,23 @@ INNER JOIN recipe_steps rs2
 ON rs1.recipe_id = rs2.recipe_id
 AND rs1.description = rs2.description
 AND rs1.id > rs2.id;
+
+// обєдання категорій
+INSERT INTO recipe_categories_map (recipe_id, category_id)
+SELECT recipe_id, 425
+FROM recipe_categories_map
+WHERE category_id = 292
+  AND recipe_id NOT IN (
+    SELECT recipe_id
+    FROM recipe_categories_map
+    WHERE category_id = 425
+  );
+
+DELETE FROM recipe_categories_map
+WHERE category_id = 292;
+
+DELETE FROM test_recipe_categories
+WHERE id = 292;
+
+DELETE FROM recipe_categories
+WHERE id = 292;

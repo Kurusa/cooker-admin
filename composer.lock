@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f24230d75d732c19f5020c693d7aced5",
+    "content-hash": "82b41ba350105886bc36614f9673c255",
     "packages": [
         {
             "name": "amphp/amp",
@@ -3591,6 +3591,73 @@
                 }
             ],
             "time": "2024-12-08T08:18:47+00:00"
+        },
+        {
+            "name": "lupennat/nova-expandable-many",
+            "version": "dev-nova-5-support",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Kurusa/nova-expandable-many.git",
+                "reference": "4fa05b4c87aefa0ed983d8b53c291efae2dd97f5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Kurusa/nova-expandable-many/zipball/4fa05b4c87aefa0ed983d8b53c291efae2dd97f5",
+                "reference": "4fa05b4c87aefa0ed983d8b53c291efae2dd97f5",
+                "shasum": ""
+            },
+            "require": {
+                "laravel/nova": ">=4.32.6",
+                "php": "^7.4|^8.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.16"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Lupennat\\ExpandableMany\\ExpandableManyServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Lupennat\\ExpandableMany\\": "src/"
+                }
+            },
+            "scripts": {
+                "php-cs-fixer": [
+                    "vendor/bin/php-cs-fixer fix"
+                ],
+                "build": [
+                    "rm -rf .php-cs-fixer.cache",
+                    "rm -rf composer.lock",
+                    "php install.php",
+                    "composer php-cs-fixer src",
+                    "npm ci",
+                    "npm run format",
+                    "npm run prod"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Claudio Pennati",
+                    "email": "claudio.pennati@gmail.com"
+                }
+            ],
+            "description": "Laravel Nova - Expandable Many",
+            "keywords": [
+                "laravel",
+                "nova"
+            ],
+            "support": {
+                "source": "https://github.com/Kurusa/nova-expandable-many/tree/main"
+            },
+            "time": "2024-03-12T17:29:19+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -10462,16 +10529,18 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": {},
+    "stability-flags": {
+        "lupennat/nova-expandable-many": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.1",
+        "ext-curl": "*",
         "ext-dom": "*",
         "ext-libxml": "*",
-        "ext-simplexml": "*",
-        "ext-curl": "*",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "ext-simplexml": "*"
     },
     "platform-dev": {},
     "plugin-api-version": "2.6.0"

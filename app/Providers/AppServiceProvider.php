@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(GeminiService::class, function () {
             return new GeminiService(new Client([
-                'base_uri' => 'https://generativelanguage.googleapis.com/v1beta/models/',
+                'base_uri' => config('services.gemini.base_uri'),
                 'headers' => [
                     'Content-Type' => 'application/json',
                 ],
@@ -48,13 +48,13 @@ class AppServiceProvider extends ServiceProvider
 
         $this->app->singleton(RecipeParserFactory::class, function () {
             $factory = new RecipeParserFactory();
-            $factory->registerParser('patelnya', PatelnyaUrlProcessor::class);
-            $factory->registerParser('fayni', FayniReceptyUrlProcessor::class);
-            $factory->registerParser('novastrava', NovaStravaUrlProcessor::class);
-            $factory->registerParser('rud', RudUrlProcessor::class);
-            $factory->registerParser('jisty', JistyUrlProcessor::class);
-            $factory->registerParser('foodcourt', FoodcourtUrlProcessor::class);
-            $factory->registerParser('picante', PicanteUrlProcessor::class);
+            $factory->registerParser('patelnya', PatelnyaParser::class);
+            $factory->registerParser('fayni', FayniReceptyParser::class);
+            $factory->registerParser('novastrava', NovaStravaParser::class);
+            $factory->registerParser('rud', RudParser::class);
+            $factory->registerParser('jisty', JistyParser::class);
+            $factory->registerParser('foodcourt', FoodcourtParser::class);
+            $factory->registerParser('picante', PicanteParser::class);
 //            $factory->registerParser('tsn', TsnParser::class);
 //            $factory->registerParser('smachno', SmachnoParser::class);
 //            $factory->registerParser('retsepty', RetseptyParser::class);

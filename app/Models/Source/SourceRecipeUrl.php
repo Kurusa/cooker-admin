@@ -3,6 +3,8 @@
 namespace App\Models\Source;
 
 use App\Models\Recipe\Recipe;
+use App\Observers\SourceRecipeUrlObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  * @property Source $source
  */
+#[ObservedBy([SourceRecipeUrlObserver::class])]
 class SourceRecipeUrl extends Model
 {
     protected $fillable = [

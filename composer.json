@@ -6,8 +6,10 @@
     "version": "8.2.1",
     "require": {
         "php": "^8.1",
+        "ext-curl": "*",
         "ext-dom": "*",
         "ext-libxml": "*",
+        "ext-mbstring": "*",
         "ext-simplexml": "*",
         "guzzlehttp/guzzle": "^7.2",
         "laravel-notification-channels/telegram": "^6.0",
@@ -15,9 +17,8 @@
         "laravel/horizon": "^5.32",
         "laravel/nova": "^5.0",
         "laravel/tinker": "^2.7",
-        "spatie/laravel-data": "^4.15",
-        "ext-curl": "*",
-        "ext-mbstring": "*"
+        "lupennat/nova-expandable-many": "dev-nova-5-support",
+        "spatie/laravel-data": "^4.15"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.15",
@@ -72,6 +73,10 @@
         {
             "type": "composer",
             "url": "https://nova.laravel.com"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:Kurusa/nova-expandable-many.git"
         }
     ]
 }
