@@ -2,112 +2,57 @@
 
 namespace App\Services\Parsers\Parsers;
 
-use App\Enums\Recipe\Complexity;
-use App\Services\AiProviders\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CookingTimeFormatter;
+use DOMDocument;
+use DOMNode;
+use DOMXPath;
+use Exception;
 
 class VseReceptyParser extends BaseRecipeParser
 {
-    public function parseTitle(): string
+    public function extractRecipeNode(): DOMNode
     {
-        $class = 'entry-title';
+        $recipeNode = $this->xpath->query("//div[contains(@class, 'type-ranna_recipe')]")->item(0);
 
-        return $this->xpathService->extractCleanSingleValue("//h1[@class='$class']");
-    }
+        $unwantedXpaths = [
+            ".//div[contains(@class, 'tag-share')]",
+            ".//div[contains(@class, 'recipe-author')]",
+            ".//div[contains(@class, 'related-post')]",
+        ];
 
-    public function parseCategories(): array
-    {
-        return $this->xpathService->extractCleanSingleValue("//ul[@class='recipe-categories']/li[@class='ctg-name'][last()]/a");
-    }
+        foreach ($unwantedXpaths as $xpath) {
+            $nodes = $this->xpath->query($xpath, $recipeNode);
 
-    public function parseComplexity(): Complexity
-    {
-        $difficultyNode = $this->xpath->query("//li[@class='single-meta category-meta'][contains(text(), 'Difficulty:')]");
-
-        $text = $difficultyNode->item(0)?->textContent ?? '';
-        $difficulty = strtolower(trim(str_replace('Difficulty:', '', $text)));
-
-        return Complexity::mapParsedValue($difficulty);
-    }
-
-    public function parseCookingTime(): ?int
-    {
-        $timeText = $this->xpath->query("//span[@class='duration']")->item(0)?->textContent;
-
-        return $timeText ? CookingTimeFormatter::formatCookingTime($timeText) : null;
-    }
-
-    public function parsePortions(): int
-    {
-        $rawPortions = $this->xpathService->extractCleanSingleValue("//div[@class='recipe-feature_block recipe-portion']//span[@class='yield']");
-
-        if ($rawPortions) {
-            return (int)str_replace(['порції', 'порцій', 'порція'], '', $rawPortions);
-        }
-
-        return 1;
-    }
-
-    public function parseIngredients(): array
-    {
-        $ingredients = [];
-
-        $ingredientNodes = $this->xpath->query("//div[@class='recipe-ingredients_list']/ul/li");
-
-        foreach ($ingredientNodes as $ingredientNode) {
-            $titleNode = $this->xpath->query("//span[@class='recipe-ingredients_name']", $ingredientNode);
-            $amountNode = $this->xpath->query("//span[@class='recipe-ingredients_amount']", $ingredientNode);
-
-            $name = $titleNode->item(0)?->textContent;
-
-            $valueNode = $this->xpath->query("//span[@class='value']", $amountNode->item(0));
-            $unitNode = $this->xpath->query("//span[@class='type']", $amountNode->item(0));
-
-            $quantity = $valueNode->item(0)?->textContent ?? '';
-            $unit = $unitNode->item(0)?->textContent ?? '';
-
-            $ingredients[] = $name . ': ' . $quantity . ' ' . $unit;
-        }
-
-        $service = app(DeepseekService::class);
-        return $service->parseIngredients($ingredients);
-    }
-
-    public function parseSteps(): array
-    {
-        $steps = [];
-
-        $stepNodes = $this->xpath->query("//div[@class='recipe-steps_list instructions']//div[contains(@class, 'recipe-steps_desc')]");
-
-        foreach ($stepNodes as $stepNode) {
-            $textNode = $this->xpath->query("//p[contains(@class, 'instruction')]", $stepNode);
-            if ($textNode->length > 0) {
-                $steps[] = $textNode->item(0)->textContent;
+            foreach (iterator_to_array($nodes) as $node) {
+                $node->parentNode?->removeChild($node);
             }
         }
 
-        if (empty($steps)) {
-            $stepNodes = $this->xpath->query("//h2[text()='Покроковий рецепт приготування']/following-sibling::ol//li");
+        return $recipeNode;
+    }
 
-            foreach ($stepNodes as $stepNode) {
-                $steps[] = $stepNode->textContent;
-            }
+    public function isExcludedByCategory(string $url): bool
+    {
+        try {
+            $html = file_get_contents($url);
+        } catch (Exception $e) {
+            return true;
         }
 
-        return $steps;
-    }
+        $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+        $dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
 
-    public function parseImage(): string
-    {
-        $class = 'attachment-post-thumbnail size-post-thumbnail wp-post-image lazyload';
+        $descriptionDiv = $xpath->query("//div[contains(@class, 'item-description')]")->item(0);
 
-        $imageNode = $this->xpath->query("//img[@class='$class']")->item(0);
-        return $imageNode?->getAttribute('data-src') ?? '';
-    }
+        if ($descriptionDiv) {
+            $paragraphs = $xpath->query('./p', $descriptionDiv);
 
-    public function isExcludedByUrlRule(string $url): bool
-    {
-        return !str_contains($url, '.com/en/');
+            return $paragraphs->length === 1;
+        }
+
+        return false;
     }
 }

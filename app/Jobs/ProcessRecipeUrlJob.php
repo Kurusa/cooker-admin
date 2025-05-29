@@ -4,13 +4,17 @@ namespace App\Jobs;
 
 use App\Enums\AiProvider;
 use App\Models\Source\SourceRecipeUrl;
+use App\Notifications\RecipeParsingCompleted;
+use App\Notifications\RecipeParsingFailedNotification;
 use App\Services\Parsers\RecipeParserFactory;
 use App\Services\ProcessRecipeUrlService;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Notification;
 
 class ProcessRecipeUrlJob implements ShouldQueue
 {
@@ -35,5 +39,11 @@ class ProcessRecipeUrlJob implements ShouldQueue
 
         $parser = $parserFactory->make($sourceRecipeUrl->source->title);
         $service->processRecipeUrl($sourceRecipeUrl, $parser, $this->aiProvider);
+    }
+
+    public function failed(Exception $exception): void
+    {
+        Notification::route('telegram', config('services.telegram.chat_id'))
+            ->notify(new RecipeParsingFailedNotification($exception->getMessage()));
     }
 }

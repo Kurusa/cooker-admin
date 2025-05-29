@@ -9,6 +9,4 @@ interface RecipeParserInterface
     public function extractRecipeNode(): DOMNode;
 
     public function isExcludedByCategory(string $url): bool;
-
-    public function getSourceKey(): string;
 }

@@ -42,7 +42,7 @@ class ProcessRecipeUrlService
         AiProvider            $aiProvider,
     ): void
     {
-        if ($this->shouldSkipParsing($sourceRecipeUrl)) {
+        if ($sourceRecipeUrl->is_excluded) {
             return;
         }
 
@@ -92,22 +92,5 @@ class ProcessRecipeUrlService
                 throw $exception;
             }
         }
-    }
-
-    private function shouldSkipParsing(SourceRecipeUrl $sourceRecipeUrl): bool
-    {
-        $ch = curl_init($sourceRecipeUrl->url);
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode === 404) {
-            $sourceRecipeUrl->update(['is_excluded' => true]);
-            return true;
-        }
-
-        return $sourceRecipeUrl->is_excluded;
     }
 }

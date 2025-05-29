@@ -65,9 +65,4 @@ class JistyParser extends BaseRecipeParser
 
         return false;
     }
-
-    public function getSourceKey(): string
-    {
-        return 'jisty';
-    }
 }

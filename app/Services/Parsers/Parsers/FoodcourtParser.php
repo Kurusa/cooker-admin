@@ -16,9 +16,4 @@ class FoodcourtParser extends BaseRecipeParser
     {
         return false;
     }
-
-    public function getSourceKey(): string
-    {
-        return 'foodcourt';
-    }
 }

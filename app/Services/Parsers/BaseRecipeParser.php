@@ -4,6 +4,7 @@ namespace App\Services\Parsers;
 
 use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
 use App\Exceptions\RecipeBlockNotFoundException;
+use App\Models\Source\Source;
 use App\Models\Source\SourceRecipeUrlExcludedRule;
 use App\Services\Parsers\Contracts\HtmlCleanerInterface;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
@@ -43,17 +44,16 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         return $cleanHtml;
     }
 
-    public function isExcluded(string $url, int $sourceId): bool
+    public function isExcluded(string $url, Source $source): bool
     {
-        $rules = SourceRecipeUrlExcludedRule::query()
-            ->where('source_id', $sourceId)
-            ->get();
+        $rules = $source->excludedRules;
 
         /** @var SourceRecipeUrlExcludedRule $rule */
         foreach ($rules as $rule) {
             if (
                 ($rule->rule_type === SourceRecipeUrlExcludedRuleType::EXACT && $url === $rule->value) ||
-                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::CONTAINS && str_contains($url, $rule->value))
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::CONTAINS && str_contains($url, $rule->value)) ||
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::REGEX && !preg_match($rule->value, $url))
             ) {
                 return true;
             }
@@ -62,6 +62,17 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         if ($this->isExcludedByCategory($url)) {
             return true;
         }
+//
+//        $ch = curl_init($url);
+//        curl_setopt($ch, CURLOPT_NOBODY, true);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        curl_exec($ch);
+//        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+//        curl_close($ch);
+//
+//        if ($httpCode === 404) {
+//            return true;
+//        }
 
         return false;
     }

@@ -64,9 +64,4 @@ class PatelnyaParser extends BaseRecipeParser
 
         return false;
     }
-
-    public function getSourceKey(): string
-    {
-        return 'patelnya';
-    }
 }

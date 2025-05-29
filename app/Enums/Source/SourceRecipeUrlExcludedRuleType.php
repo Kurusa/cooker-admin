@@ -6,4 +6,5 @@ enum SourceRecipeUrlExcludedRuleType: string
 {
     case EXACT = 'exact';
     case CONTAINS = 'contains';
+    case REGEX = 'regex';
 }

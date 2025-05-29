@@ -67,7 +67,6 @@ class Recipe extends Resource
 
             Tab::group('Details', [
                 Tab::make('Relations', [
-                    HasMany::make('Ingredients', 'recipeIngredients', RecipeIngredient::class),
                     HasMany::make('Ingredient Groups', 'ingredientGroups', IngredientGroup::class),
                     HasMany::make('Steps', 'steps', RecipeStep::class),
                     //BelongsToMany::make('Cuisines', 'cuisines', Cuisine::class),

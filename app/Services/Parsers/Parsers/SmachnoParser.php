@@ -5,86 +5,36 @@ namespace App\Services\Parsers\Parsers;
 use App\Enums\Recipe\Complexity;
 use App\Services\AiProviders\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
+use DOMNode;
 
 class SmachnoParser extends BaseRecipeParser
 {
-    public function parseTitle(): string
+    public function extractRecipeNode(): DOMNode
     {
-        return $this->xpathService->extractCleanSingleValue("//h1[@itemprop='name']");
-    }
+        $recipeNode = $this->xpath->query("//div[contains(@class, 'in_centr')]")->item(0);
 
-    public function parseCategories(): array
-    {
-        return [];
-    }
+        $unwantedXpaths = [
+            ".//div[contains(@class, 'prygot_top')]",
+            ".//div[contains(@class, 'soc')]",
+            ".//div[contains(@class, 'v_statti')]",
+            ".//div[contains(@class, 'prygotuv_zagl')]",
+            ".//span[contains(@class, 'comment_id')]",
+            ".//div[contains(@class, 'comm_div')]",
+        ];
 
-    public function parseComplexity(): Complexity
-    {
-        return Complexity::MEDIUM;
-    }
+        foreach ($unwantedXpaths as $xpath) {
+            $nodes = $this->xpath->query($xpath, $recipeNode);
 
-    public function parseCookingTime(): ?int
-    {
-        return null;
-    }
-
-    public function parsePortions(): int
-    {
-        return 1;
-    }
-
-    public function parseIngredients(): array
-    {
-        $ingredients = [];
-        $ingredientNodes = $this->xpath->query("//span[@itemprop='ingredient']/ul/li");
-
-        foreach ($ingredientNodes as $node) {
-            $nameNode = $this->xpath->query("//span[@itemprop='name']", $node);
-            $amountNode = $this->xpath->query("//span[@itemprop='amount']", $node);
-
-            $name = trim($nameNode->item(0)?->textContent ?? '');
-            $amount = trim($amountNode->item(0)?->textContent ?? '');
-
-            $ingredients[] = $amount ? "{$name}: {$amount}" : $name;
+            foreach (iterator_to_array($nodes) as $node) {
+                $node->parentNode?->removeChild($node);
+            }
         }
 
-        $service = app(DeepseekService::class);
-        return $service->parseIngredients($ingredients);
+        return $recipeNode;
     }
 
-    public function parseSteps(): array
+    public function isExcludedByCategory(string $url): bool
     {
-        $steps = [];
-        $stepNodes = $this->xpath->query("//div[@itemprop='instructions']/div[@class='step']");
-
-        foreach ($stepNodes as $node) {
-            $descriptionNode = $this->xpath->query("//div[@class='step_text']", $node);
-            $imageNode = $this->xpath->query("//img/@src", $node);
-
-            $image = $imageNode->item(0)?->nodeValue;
-
-            $steps[] = [
-                'description' => $descriptionNode->item(0)?->textContent,
-                'imageUrl' => $image ? 'https://www.smachno.in.ua/' . $image : '',
-            ];
-        }
-
-        return $steps;
-    }
-
-    public function parseImage(): string
-    {
-        $imageNode = $this->xpath->query("//img[@itemprop='photo']")->item(0);
-
-        if ($src = $imageNode?->getAttribute('src')) {
-            return 'https://www.smachno.in.ua/' . $src;
-        }
-
-        return '';
-    }
-
-    public function isExcludedByUrlRule(string $url): bool
-    {
-        return !str_contains($url, 'in.ua/ru/') && str_contains($url, '?id=');
+        return false;
     }
 }

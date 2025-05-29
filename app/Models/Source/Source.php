@@ -19,6 +19,7 @@ use Illuminate\Support\Collection;
  * @property Collection<Recipe> $recipes
  * @property Collection<SourceSitemap> $sitemaps
  * @property Collection<SourceRecipeUrl> $recipeUrls
+ * @property Collection<SourceRecipeUrlExcludedRule> $excludedRules
  */
 class Source extends Model
 {

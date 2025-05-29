@@ -183,7 +183,7 @@ return [
     */
 
     'actions' => [
-        'resource' => \Laravel\Nova\Actions\ActionResource::class,
+        'resource' => null,
     ],
 
     /*

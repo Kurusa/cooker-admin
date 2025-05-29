@@ -2,107 +2,35 @@
 
 namespace App\Services\Parsers\Parsers;
 
-use App\Enums\Recipe\Complexity;
-use App\Services\AiProviders\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
-use App\Services\Parsers\Formatters\CookingTimeFormatter;
+use DOMNode;
 
 class AllRecipesParser extends BaseRecipeParser
 {
-    public function parseTitle(): string
+    public function extractRecipeNode(): DOMNode
     {
-        return $this->xpathService->extractCleanSingleValue("//h1[@class='mv-create-title mv-create-title-primary']");
-    }
+        $recipeNode = $this->xpath->query("//div[contains(@class, 'mv-create-wrapper')]")->item(0);
 
-    public function parseCategories(): array
-    {
-        return [$this->xpathService->extractCleanSingleValue("//span[@class='cat-links']/a")];
-    }
-
-    public function parseComplexity(): Complexity
-    {
-        return Complexity::MEDIUM;
-    }
-
-    public function parseCookingTime(): ?int
-    {
-        $timeNodes = $this->xpath->query("//span[@class='mv-time-part mv-time-minutes']");
-
-        $time = $timeNodes->item($timeNodes->length - 1)?->textContent;
-
-        return CookingTimeFormatter::formatCookingTime($time);
-    }
-
-    public function parsePortions(): int
-    {
-        return 1;
-    }
-
-    public function parseIngredients(): array
-    {
-        $listItems = $this->xpath->query("//div[@class='mv-create-ingredients']//ul/li");
-
-        $ingredients = [];
-        foreach ($listItems as $item) {
-            $ingredients[] = $item->textContent;
-        }
-
-        return app(DeepseekService::class)->parseIngredients($ingredients);
-    }
-
-    public function parseSteps(): array
-    {
-        $listItems = $this->xpath->query("//div[@class='mv-create-instructions mv-create-instructions-slot-v2']//ol//p");
-
-        if (!$listItems->length) {
-            $listItems = $this->xpath->query("//div[@class='mv-create-instructions mv-create-instructions-slot-v2']//p");
-        }
-
-        $steps = [];
-        for ($i = 0; $i < $listItems->length; $i += 2) {
-            $title = $listItems->item($i)?->textContent;
-
-            if (!$listItems->item($i + 1)?->getElementsByTagName('img')->length) {
-                $title = $listItems->item($i + 1)?->textContent ?? '';
-                $steps[] = [
-                    'description' => $title,
-                    'image' => '',
-                ];
-                continue;
-            }
-
-            $image = $listItems->item($i + 1)->getElementsByTagName('img')->item(0)?->getAttribute('data-src') ?? '';
-
-            $steps[] = [
-                'description' => $title,
-                'image' => $image
-            ];
-        }
-
-        return $steps;
-    }
-
-    public function parseImage(): string
-    {
-        $imageNode = $this->xpath->query("//figure[@class='post-featured-image']/a/img")->item(0);
-
-        return $imageNode?->getAttribute('data-src') ?? '';
-    }
-
-    public function isExcludedByUrlRule(string $url): bool
-    {
-        $disallowedPatterns = [
-            '/ru/',
-            '/en/',
-            'osoblyvosti',
+        $unwantedXpaths = [
+            ".//div[contains(@class, 'mv-create-nutrition')]",
+            ".//div[contains(@class, 'mv-create-products')]",
+            ".//div[contains(@class, 'mv-create-notes mv-create-notes-slot-v2')]",
+            ".//div[contains(@class, 'mv-create-social')]",
         ];
 
-        foreach ($disallowedPatterns as $pattern) {
-            if (str_contains($url, $pattern)) {
-                return false;
+        foreach ($unwantedXpaths as $xpath) {
+            $nodes = $this->xpath->query($xpath, $recipeNode);
+
+            foreach (iterator_to_array($nodes) as $node) {
+                $node->parentNode?->removeChild($node);
             }
         }
 
-        return true;
+        return $recipeNode;
+    }
+
+    public function isExcludedByCategory(string $url): bool
+    {
+        return false;
     }
 }

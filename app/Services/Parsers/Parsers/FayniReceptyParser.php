@@ -40,9 +40,4 @@ class FayniReceptyParser extends BaseRecipeParser
     {
         return false;
     }
-
-    public function getSourceKey(): string
-    {
-        return 'fayni';
-    }
 }

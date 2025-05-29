@@ -5,11 +5,21 @@ namespace App\Providers;
 use App\Models\User;
 use App\Nova\Dashboards\Main;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Nova\Actions\ActionEvent;
 use Laravel\Nova\Nova;
 use Laravel\Nova\NovaApplicationServiceProvider;
 
 class NovaServiceProvider extends NovaApplicationServiceProvider
 {
+    public function boot(): void
+    {
+        parent::boot();
+
+        ActionEvent::saving(function () {
+            return false;
+        });
+    }
+
     protected function routes(): void
     {
         Nova::routes()

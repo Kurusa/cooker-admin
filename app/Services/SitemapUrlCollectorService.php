@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Source\Source;
 use App\Models\Source\SourceRecipeUrl;
+use App\Models\Source\SourceSitemap;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 
 class SitemapUrlCollectorService
@@ -22,6 +23,7 @@ class SitemapUrlCollectorService
     {
         $urls = [];
 
+        /** @var SourceSitemap $sitemap */
         foreach ($this->source->sitemaps as $sitemap) {
             $this->parseSitemapUrls($sitemap->url, $urls);
         }
@@ -36,11 +38,11 @@ class SitemapUrlCollectorService
         foreach ($sitemapElements as $sitemapElement) {
             $url = (string)$sitemapElement->loc;
 
-            $isExcluded = $this->parser->isExcluded($url, $this->source->id);
-
             if ($this->isSitemap($url)) {
                 $this->parseSitemapUrls($url, $urls);
             } else {
+                $isExcluded = $this->parser->isExcluded($url, $this->source);
+
                 /** @var SourceRecipeUrl $sourceRecipeUrl */
                 $sourceRecipeUrl = SourceRecipeUrl::updateOrCreate([
                     'url' => $url,
