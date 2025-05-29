@@ -77,19 +77,4 @@ abstract class BaseRecipeParser implements RecipeParserInterface
 
         return false;
     }
-
-    protected function saveDebugHtml(
-        string $html,
-        string $sourceKey,
-        string $url,
-    ): void
-    {
-        $dir = storage_path("app/parsed-html/{$sourceKey}");
-        if (!is_dir($dir)) {
-            mkdir($dir, 0777, true);
-        }
-
-        $filename = $dir . '/' . md5($url) . '.html';
-        file_put_contents($filename, $html);
-    }
 }

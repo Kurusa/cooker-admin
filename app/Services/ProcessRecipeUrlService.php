@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\DTO\RecipeDTO;
-use App\Enums\AiProvider;
+use App\Enums\Source\AiProvider;
 use App\Exceptions\AiProviderDidntFindRecipeException;
 use App\Exceptions\RecipeBlockNotFoundException;
 use App\Models\Source\SourceRecipeUrl;

@@ -46,7 +46,7 @@ class SitemapUrlCollectorService
                     'source_id' => $this->source->id,
                 ]);
 
-                CheckIfRecipeUrlIsExcludedJob::dispatch(
+                CheckIfRecipeUrlIsExcludedJob::dispatchSync(
                     $sourceRecipeUrl,
                     $this->source->id,
                 );

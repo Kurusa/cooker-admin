@@ -2,6 +2,8 @@
 
 namespace App\Models\Recipe;
 
+use App\Observers\RecipeStepObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -10,7 +12,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int $recipe_id
  * @property string $description
  * @property string $image_url
+ *
+ * @property Recipe $recipe
  */
+#[ObservedBy([RecipeStepObserver::class])]
 class RecipeStep extends Model
 {
     protected $table = 'recipe_steps';

@@ -2,82 +2,35 @@
 
 namespace App\Services\Parsers\Parsers;
 
-use App\Enums\Recipe\Complexity;
-use App\Services\AiProviders\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
+use DOMDocument;
+use DOMNode;
+use DOMXPath;
 
 class TandiParser extends BaseRecipeParser
 {
-    public function parseTitle(): string
+    public function extractRecipeNode(): DOMNode
     {
-        $class = 'entry-title';
-
-        return $this->xpathService->extractCleanSingleValue("//h1[@class='$class']");
+        return $this->xpath->query("//div[contains(@class, 'td-post-content tagdiv-type')]")->item(0);
     }
 
-    public function parseCategories(): array
+    public function isExcludedByCategory(string $url): bool
     {
-        $class = 'entry-category';
+        $html = file_get_contents($url);
 
-        return $this->xpathService->extractCleanSingleValue("//li[@class='$class']/a/text()");
-    }
+        $dom = new DOMDocument();
+        libxml_use_internal_errors(true);
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
+        $dom->loadHTML($html);
+        $xpath = new DOMXPath($dom);
 
-    public function parseComplexity(): Complexity
-    {
-        return Complexity::MEDIUM;
-    }
+        $nodes = $xpath->query("//ul[contains(@class, 'td-category')]//li[contains(@class, 'entry-category')]//a");
 
-    public function parseCookingTime(): ?int
-    {
-        return null;
-    }
-
-    public function parsePortions(): int
-    {
-        return 1;
-    }
-
-    public function parseIngredients(): array
-    {
-        $ingredientNodes = $this->xpath->query('//p[contains(text(), "Складові:")]/following-sibling::text()');
-
-        $ingredients = [];
-        foreach ($ingredientNodes as $ingredientNode) {
-            $ingredients[] = $ingredientNode->nodeValue;
+        if ($nodes->length === 1) {
+            $text = mb_strtolower(trim($nodes->item(0)->nodeValue));
+            return $text === 'блог';
         }
 
-        return $ingredients;
-        $service = app(DeepseekService::class);
-        return $service->parseIngredients($ingredients);
-    }
-
-    public function parseSteps(): array
-    {
-        $stepNodes = $this->xpath->query('//strong[contains(text(), "Приготування:")]/following-sibling::text()');
-
-        $steps = [];
-        foreach ($stepNodes as $step) {
-            $stepText = $step->nodeValue;
-            if ($stepText === 'смачного!') {
-                continue;
-            }
-
-            $stepText = preg_replace('/^\d+\)\. /', '', $stepText);
-            $steps[] = $stepText;
-        }
-
-        return $steps;
-    }
-
-    public function parseImage(): string
-    {
-        $class = 'entry-thumb td-animation-stack-type0-2';
-
-        return $this->xpath->query("//img[@class='$class']")->item(0)?->getAttribute('src') ?? '';
-    }
-
-    public function isExcludedByUrlRule(string $url): bool
-    {
-        return true;
+        return false;
     }
 }

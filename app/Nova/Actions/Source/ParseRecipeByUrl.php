@@ -2,9 +2,9 @@
 
 namespace App\Nova\Actions\Source;
 
-use App\Enums\AiProvider;
 use App\Jobs\ParseSourceRecipeUrlJob;
 use App\Models\Recipe\Recipe;
+use App\Models\Source\SourceRecipeUrl;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
@@ -24,15 +24,16 @@ class ParseRecipeByUrl extends Action
 
     public function handle(ActionFields $fields, Collection $models): ActionResponse
     {
+        /** @var Recipe|SourceRecipeUrl $model */
         foreach ($models as $model) {
-            $recipeUrlId = $model instanceof Recipe
-                ? $model->sourceRecipeUrl->id
-                : $model->id;
+            $sourceRecipeUrl = $model instanceof Recipe
+                ? $model->sourceRecipeUrl
+                : $model;
 
             if ($fields->run_sync) {
-                ParseSourceRecipeUrlJob::dispatchSync($recipeUrlId, AiProvider::DEEPSEEK);
+                ParseSourceRecipeUrlJob::dispatchSync($sourceRecipeUrl);
             } else {
-                ParseSourceRecipeUrlJob::dispatch($recipeUrlId, AiProvider::DEEPSEEK);
+                ParseSourceRecipeUrlJob::dispatch($sourceRecipeUrl);
             }
         }
 

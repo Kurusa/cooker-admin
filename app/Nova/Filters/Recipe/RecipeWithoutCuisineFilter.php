@@ -12,7 +12,11 @@ class RecipeWithoutCuisineFilter extends Filter
 
     public function apply(Request $request, $query, $value): Builder
     {
-        return $query->whereDoesntHave('cuisines');
+        if ($value === true) {
+            return $query->whereDoesntHave('cuisines');
+        }
+
+        return $query;
     }
 
     public function options(Request $request): array

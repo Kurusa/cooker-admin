@@ -12,8 +12,9 @@ class InvalidImageUrlFilter extends BooleanFilter
 
     public function apply(Request $request, $query, $value): Builder
     {
-        if ($value === 'with') {
-            return $query->whereNotNull('image_url')
+        if ($value === true) {
+            return $query
+                ->whereNotNull('image_url')
                 ->where('image_url', '!=', '')
                 ->where(function ($q) {
                     $q->where('image_url', 'not like', 'http://%')
@@ -27,7 +28,7 @@ class InvalidImageUrlFilter extends BooleanFilter
     public function options(Request $request): array
     {
         return [
-            'with' => 'with',
+            'Show' => true,
         ];
     }
 }

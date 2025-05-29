@@ -2,7 +2,7 @@
 
 namespace App\Services\AiProviders;
 
-use App\Enums\AiProvider;
+use App\Enums\Source\AiProvider;
 use App\Services\AiProviders\Contracts\AiRecipeParserServiceInterface;
 
 class AiRecipeParserResolver

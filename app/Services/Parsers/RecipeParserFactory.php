@@ -27,7 +27,7 @@ class RecipeParserFactory
     public function make(string $sourceTitle): RecipeParserInterface
     {
         if (!isset($this->parsers[$sourceTitle])) {
-            throw new UnknownSourceException();
+            throw new UnknownSourceException('Unknown source: ' . $sourceTitle);
         }
 
         $parserClass = $this->parsers[$sourceTitle];

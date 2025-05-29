@@ -41,3 +41,11 @@ WHERE id = 292;
 
 DELETE FROM recipe_categories
 WHERE id = 292;
+
+// image
+UPDATE recipes
+JOIN source_recipe_urls ON source_recipe_urls.id = recipes.source_recipe_url_id
+JOIN sources ON sources.id = source_recipe_urls.source_id
+SET recipes.image_url = CONCAT('https://ua.yabpoela.net', recipes.image_url)
+WHERE sources.title = 'yabpoela'
+  AND recipes.image_url LIKE '/uploads/%';

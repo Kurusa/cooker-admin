@@ -3,6 +3,8 @@
 namespace App\Models\Source;
 
 use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
+use App\Observers\SourceRecipeUrlExcludedRulesObserver;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -14,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property Source $source
  */
+#[ObservedBy([SourceRecipeUrlExcludedRulesObserver::class])]
 class SourceRecipeUrlExcludedRule extends Model
 {
     protected $fillable = [

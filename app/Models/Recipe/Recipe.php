@@ -25,6 +25,7 @@ use Illuminate\Support\Collection;
  * @property int $portions
  * @property int $source_recipe_url_id
  * @property string|null $image_url
+ * @property bool $is_verified
  *
  * @property Source $source
  * @property SourceRecipeUrl $sourceRecipeUrl
@@ -44,11 +45,12 @@ class Recipe extends Model
         'portions',
         'image_url',
         'source_recipe_url_id',
+        'is_verified',
     ];
 
     protected $casts = [
         'complexity' => Complexity::class,
-        'rating' => 'integer',
+        'is_verified' => 'booleans',
     ];
 
     public function sourceRecipeUrl(): BelongsTo

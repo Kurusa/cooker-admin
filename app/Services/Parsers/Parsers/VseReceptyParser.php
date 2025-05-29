@@ -7,6 +7,7 @@ use DOMDocument;
 use DOMNode;
 use DOMXPath;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class VseReceptyParser extends BaseRecipeParser
 {
@@ -36,6 +37,7 @@ class VseReceptyParser extends BaseRecipeParser
         try {
             $html = file_get_contents($url);
         } catch (Exception $e) {
+            Log::info('isExcludedByCategory error: ' . $e->getMessage() . '. url: ' . $url);
             return true;
         }
 
@@ -50,7 +52,14 @@ class VseReceptyParser extends BaseRecipeParser
         if ($descriptionDiv) {
             $paragraphs = $xpath->query('./p', $descriptionDiv);
 
-            return $paragraphs->length === 1;
+            if ($paragraphs->length === 1) {
+                return true;
+            }
+        }
+
+        $stepsDiv = $xpath->query("//div[contains(@class, 'recipe-steps')]")->length;
+        if (!$stepsDiv) {
+            return true;
         }
 
         return false;

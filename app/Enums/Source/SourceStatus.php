@@ -2,13 +2,13 @@
 
 namespace App\Enums\Source;
 
-enum SourceStatus: string
+enum SourceStatus: int
 {
-    case EMPTY = 'empty';
-    case COLLECTED = 'collected';
-    case PARTIALLY_PARSED = 'partially_parsed';
-    case PARSED = 'parsed';
-    case EXCLUDED_ONLY = 'excluded_only';
+    case EMPTY = 1;
+    case COLLECTED = 2;
+    case PARTIALLY_PARSED = 3;
+    case PARSED = 4;
+    case EXCLUDED_ONLY = 5;
 
     public function getBadgeColor(): string
     {

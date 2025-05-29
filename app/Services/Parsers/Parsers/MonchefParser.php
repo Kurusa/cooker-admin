@@ -2,83 +2,26 @@
 
 namespace App\Services\Parsers\Parsers;
 
-use App\Enums\Recipe\Complexity;
-use App\Services\AiProviders\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
+use DOMNode;
 
 class MonchefParser extends BaseRecipeParser
 {
-    public function parseTitle(): string
+    public function extractRecipeNode(): DOMNode
     {
-        return $this->xpathService->extractCleanSingleValue("//h1[@class='entry-title']");
-    }
+        $recipeNode = $this->xpath->query("//article[contains(@class, 'post type-post status-publish format-standard')]")->item(0);
 
-    public function parseCategories(): array
-    {
-        return [];
-    }
-
-    public function parseComplexity(): Complexity
-    {
-        return Complexity::MEDIUM;
-    }
-
-    public function parseCookingTime(): ?int
-    {
-        return null;
-    }
-
-    public function parsePortions(): int
-    {
-        return 1;
-    }
-
-    public function parseIngredients(): array
-    {
-        $listItems = $this->xpath->query("//div[@class='entry-content']/ul[1]/li");
-
-        $ingredients = [];
-        foreach ($listItems as $item) {
-            $ingredients[] = $item->textContent;
+        $imageNode = $this->xpath->query("//div[contains(@class, 'entry-media')]")?->item(0);
+        if ($imageNode) {
+            $clone = $imageNode->cloneNode(true);
+            $recipeNode->insertBefore($clone, $recipeNode->firstChild);
         }
 
-        return app(DeepseekService::class)->parseIngredients($ingredients);
+        return $recipeNode;
     }
 
-    public function parseSteps(): array
+    public function isExcludedByCategory(string $url): bool
     {
-        $listItems = $this->xpath->query("//div[@class='entry-content']//following::ul/following-sibling::p");
-
-        $steps = [];
-        foreach ($listItems as $item) {
-            $steps[] = [
-                'description' => $item->textContent,
-                'image' => '',
-            ];
-        }
-
-        return $steps;
-    }
-
-    public function parseImage(): string
-    {
-        $imageNode = $this->xpath->query("//div[@class='entry-media-thumb']//@style")->item(0)->nodeValue;
-        $imageUrl = str_replace('background-image: url(', '', $imageNode);
-
-        return str_replace(');', '', $imageUrl);
-    }
-
-    public function isExcludedByUrlRule(string $url): bool
-    {
-        $disallowedPatterns = [
-        ];
-
-        foreach ($disallowedPatterns as $pattern) {
-            if (str_contains($url, $pattern)) {
-                return false;
-            }
-        }
-
-        return true;
+        return false;
     }
 }
