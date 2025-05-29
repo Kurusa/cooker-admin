@@ -17,8 +17,8 @@ class TopIngredients extends Table
 
     public function calculate(NovaRequest $request): array
     {
-        $results = DB::table('recipe_ingredients')
-            ->join('ingredient_units', 'recipe_ingredients.ingredient_unit_id', '=', 'ingredient_units.id')
+        $results = DB::table('recipe_ingredients_map')
+            ->join('ingredient_units', 'recipe_ingredients_map.ingredient_unit_id', '=', 'ingredient_units.id')
             ->select('ingredient_units.ingredient_id', DB::raw('count(*) as used_count'))
             ->groupBy('ingredient_units.ingredient_id')
             ->orderByDesc('used_count')

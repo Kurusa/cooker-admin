@@ -4,10 +4,12 @@ namespace App\Models\Source;
 
 use App\Enums\Source\SourceStatus;
 use App\Models\Recipe\Recipe;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Support\Collection;
+use Laravel\Nova\Http\Requests\NovaRequest;
 
 /**
  * @property int $id
@@ -62,6 +64,13 @@ class Source extends Model
         return $this->hasMany(SourceRecipeUrlExcludedRule::class);
     }
 
+    public function unparsedRecipes(): Collection
+    {
+        return $this->recipeUrls()
+            ->notParsed()
+            ->notExcluded();
+    }
+
     public function isParsingCompleted(): bool
     {
         return $this->pendingUrlsCount() === 0
@@ -70,10 +79,7 @@ class Source extends Model
 
     public function hasUnparsedRecipes(): bool
     {
-        return (bool)$this->recipeUrls()
-            ->notParsed()
-            ->notExcluded()
-            ->count();
+        return $this->unparsedRecipes()->isNotEmpty();
     }
 
     public function totalUrls(): int
@@ -91,9 +97,7 @@ class Source extends Model
 
     public function excludedUrlsCount(): int
     {
-        return $this->recipeUrls()
-            ->isExcluded()
-            ->count();
+        return $this->recipeUrls->filter(fn(SourceRecipeUrl $url) => $url->excludedRule !== null)->count();
     }
 
     public function parsedUrlsCount(): int
@@ -155,5 +159,10 @@ class Source extends Model
         }
 
         return SourceStatus::PARSED;
+    }
+
+    public static function indexQuery(NovaRequest $request, Builder $query): Builder
+    {
+        return $query->with('recipeUrls.excludedRule');
     }
 }

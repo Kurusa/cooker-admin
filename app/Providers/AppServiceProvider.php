@@ -7,6 +7,7 @@ use App\Services\AiProviders\GeminiService;
 use App\Services\Parsers\Contracts\HtmlCleanerInterface;
 use App\Services\Parsers\HtmlCleaner;
 use App\Services\Parsers\Parsers\AllRecipesParser;
+use App\Services\Parsers\Parsers\CookpadParser;
 use App\Services\Parsers\Parsers\FayniReceptyParser;
 use App\Services\Parsers\Parsers\FoodcourtParser;
 use App\Services\Parsers\Parsers\JistyParser;
@@ -16,6 +17,7 @@ use App\Services\Parsers\Parsers\PicanteParser;
 use App\Services\Parsers\Parsers\RudParser;
 use App\Services\Parsers\Parsers\SmachnoParser;
 use App\Services\Parsers\Parsers\VseReceptyParser;
+use App\Services\Parsers\Parsers\YabpoelaParser;
 use App\Services\Parsers\RecipeParserFactory;
 use App\Services\Parsers\Steps\RemoveClassesAndAttributesStep;
 use App\Services\Parsers\Steps\RemoveCommentsStep;
@@ -61,13 +63,14 @@ class AppServiceProvider extends ServiceProvider
             $factory->registerParser('vse-recepty', VseReceptyParser::class);
             $factory->registerParser('allrecipes', AllRecipesParser::class);
             $factory->registerParser('smachno', SmachnoParser::class);
+            $factory->registerParser('yabpoela', YabpoelaParser::class);
 //            $factory->registerParser('tsn', TsnParser::class);
 //            $factory->registerParser('retsepty', RetseptyParser::class);
 //            $factory->registerParser('ua-recept', UaReceptParser::class);
 //            $factory->registerParser('tandi', TandiParser::class);
 //            $factory->registerParser('monchef', MonchefParser::class);
 //            $factory->registerParser('receptytv', ReceptyTvParser::class);
-//            $factory->registerParser('yabpoela', YabpoelaParser::class);
+//            $factory->registerParser('cookpad', CookpadParser::class); // нема sitemap
 //            $factory->registerParser('etnocook', EtnocookParser::class); // китайсько-англійське?
             return $factory;
         });

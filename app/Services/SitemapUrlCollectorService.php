@@ -2,16 +2,15 @@
 
 namespace App\Services;
 
+use App\Jobs\SourceSitemap\CheckIfRecipeUrlIsExcludedJob;
 use App\Models\Source\Source;
 use App\Models\Source\SourceRecipeUrl;
 use App\Models\Source\SourceSitemap;
-use App\Services\Parsers\Contracts\RecipeParserInterface;
 
 class SitemapUrlCollectorService
 {
     public function __construct(
-        private readonly RecipeParserInterface $parser,
-        private readonly Source                $source,
+        private readonly Source $source,
     )
     {
     }
@@ -41,26 +40,16 @@ class SitemapUrlCollectorService
             if ($this->isSitemap($url)) {
                 $this->parseSitemapUrls($url, $urls);
             } else {
-                $isExcluded = $this->parser->isExcluded($url, $this->source);
-
                 /** @var SourceRecipeUrl $sourceRecipeUrl */
                 $sourceRecipeUrl = SourceRecipeUrl::updateOrCreate([
                     'url' => $url,
                     'source_id' => $this->source->id,
-                ], [
-                    'url' => $url,
-                    'source_id' => $this->source->id,
                 ]);
 
-                if ($isExcluded) {
-                    $sourceRecipeUrl->update([
-                        'is_excluded' => true,
-                    ]);
-                } else {
-                    if (!$sourceRecipeUrl->recipes()->exists()) {
-                        $urls[] = $sourceRecipeUrl;
-                    }
-                }
+                CheckIfRecipeUrlIsExcludedJob::dispatch(
+                    $sourceRecipeUrl,
+                    $this->source->id,
+                );
             }
         }
     }

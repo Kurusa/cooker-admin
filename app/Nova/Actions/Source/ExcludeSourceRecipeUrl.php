@@ -22,8 +22,11 @@ class ExcludeSourceRecipeUrl extends Action
     {
         /** @var SourceRecipeUrl $model */
         foreach ($models as $model) {
-            $model->is_excluded = !$model->is_excluded;
-            $model->save();
+            if ($model->is_excluded) {
+                $model->excludedRule->delete();
+            } else {
+                $model->exclude();
+            }
         }
 
         return Action::message('URLs were excluded.');

@@ -2,11 +2,11 @@
 
 namespace App\Nova\Actions\Source;
 
+use App\Jobs\ParseSourceRecipesJob;
 use App\Models\Source\Source;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Artisan;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
@@ -21,13 +21,11 @@ class ParseSourceRecipes extends Action
 
     public function handle(ActionFields $fields, Collection $models): ActionResponse
     {
-        /** @var Source $model */
-        foreach ($models as $model) {
-            Artisan::call('parse:source:recipes', [
-                'sourceId' => $model->id,
-            ]);
-        }
+        /** @var Source $source */
+        $source = $models->first();
 
-        return Action::message('Parsing started.');
+        ParseSourceRecipesJob::dispatch($source);
+
+        return Action::message("Parsing for {$source->title} started.");
     }
 }

@@ -1,34 +1,32 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\SourceSitemap;
 
 use App\Models\Source\SourceRecipeUrl;
 use App\Services\Parsers\RecipeParserFactory;
-use App\Services\ProcessRecipeUrlService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessRecipeUrlJob implements ShouldQueue
+class CheckIfRecipeUrlIsExcludedJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public int $timeout = 300;
-
     public function __construct(
-        public readonly SourceRecipeUrl $sourceRecipeUrl,
+        private readonly SourceRecipeUrl $sourceRecipeUrl,
     )
     {
     }
 
-    public function handle(
-        RecipeParserFactory     $parserFactory,
-        ProcessRecipeUrlService $service,
-    ): void
+    public function handle(RecipeParserFactory $parserFactory): void
     {
         $parser = $parserFactory->make($this->sourceRecipeUrl->source->title);
-        $service->processRecipeUrl($this->sourceRecipeUrl, $parser);
+        $isExcluded = $parser->isExcluded($this->sourceRecipeUrl);
+
+        if ($isExcluded && !$this->sourceRecipeUrl->recipes()->count()) {
+            $this->sourceRecipeUrl->exclude();
+        }
     }
 }

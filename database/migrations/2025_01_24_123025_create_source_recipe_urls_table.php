@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('source_id')->constrained('sources')->cascadeOnDelete();
             $table->string('url');
-            $table->boolean('is_excluded')->default(false);
             $table->timestamps();
         });
     }

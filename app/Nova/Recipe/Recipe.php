@@ -3,7 +3,6 @@
 namespace App\Nova\Recipe;
 
 use App\Models\Recipe\Recipe as RecipeModel;
-use App\Nova\Actions\ExcludeRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
 use App\Nova\Filters\InvalidImageUrlFilter;
 use App\Nova\Filters\Recipe\RecipeHasOneIngredientOrStepFilter;
@@ -103,7 +102,6 @@ class Recipe extends Resource
     {
         return [
             new ParseRecipeByUrl,
-            new ExcludeRecipeUrl,
         ];
     }
 }

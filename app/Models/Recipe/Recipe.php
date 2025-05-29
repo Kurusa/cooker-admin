@@ -16,7 +16,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
 /**
  * @property int $id
@@ -73,7 +72,7 @@ class Recipe extends Model
     {
         return $this->belongsToMany(
             Ingredient::class,
-            'recipe_ingredients',
+            'recipe_ingredients_map',
             'recipe_id',
             'ingredient_unit_id',
         )
@@ -85,31 +84,6 @@ class Recipe extends Model
     public function recipeIngredients(): HasMany
     {
         return $this->hasMany(RecipeIngredient::class);
-    }
-
-    public function getDetailedIngredients(): array
-    {
-        $query = "
-            SELECT
-                recipes.id AS recipe_id,
-                ingredients.title AS ingredient_title,
-                recipe_ingredients.quantity,
-                units.title AS unit_title
-            FROM
-                recipes
-            LEFT JOIN
-                recipe_ingredients ON recipes.id = recipe_ingredients.recipe_id
-            LEFT JOIN
-                ingredient_units ON recipe_ingredients.ingredient_unit_id = ingredient_units.id
-            LEFT JOIN
-                ingredients ON ingredient_units.ingredient_id = ingredients.id
-            LEFT JOIN
-                units ON ingredient_units.unit_id = units.id
-            WHERE
-                recipes.id = :recipe_id
-        ";
-
-        return DB::select($query, ['recipe_id' => $this->id]);
     }
 
     public function categories(): BelongsToMany

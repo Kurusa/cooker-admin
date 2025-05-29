@@ -2,13 +2,13 @@
 
 namespace App\Models\Source;
 
+use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
 use App\Models\Recipe\Recipe;
-use App\Observers\SourceRecipeUrlObserver;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
@@ -17,18 +17,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $is_excluded
  *
  * @property Source $source
+ * @property SourceRecipeUrlExcludedRule $excludedRule
  */
-#[ObservedBy([SourceRecipeUrlObserver::class])]
 class SourceRecipeUrl extends Model
 {
     protected $fillable = [
         'source_id',
         'url',
-        'is_excluded',
     ];
 
-    public $casts = [
-        'is_excluded' => 'boolean',
+    protected $with = [
+        'excludedRule',
     ];
 
     public function source(): BelongsTo
@@ -39,6 +38,16 @@ class SourceRecipeUrl extends Model
     public function recipes(): HasMany
     {
         return $this->hasMany(Recipe::class, 'source_recipe_url_id');
+    }
+
+    public function excludedRule(): HasOne
+    {
+        return $this->hasOne(SourceRecipeUrlExcludedRule::class, 'value', 'url');
+    }
+
+    public function getIsExcludedAttribute(): bool
+    {
+        return $this->excludedRule()->exists();
     }
 
     public function scopeIsParsed(Builder $query): void
@@ -53,11 +62,20 @@ class SourceRecipeUrl extends Model
 
     public function scopeIsExcluded(Builder $query): void
     {
-        $query->where('is_excluded', 1);
+        $query->whereHas('excludedRule');
     }
 
     public function scopeNotExcluded(Builder $query): void
     {
-        $query->where('is_excluded', 0);
+        $query->whereDoesntHave('excludedRule');
+    }
+
+    public function exclude()
+    {
+        return $this->excludedRule()->create([
+            'rule_type' => SourceRecipeUrlExcludedRuleType::EXACT,
+            'source_id' => $this->source_id,
+            'value' => $this->url,
+        ]);
     }
 }

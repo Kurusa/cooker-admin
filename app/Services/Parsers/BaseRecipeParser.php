@@ -4,7 +4,7 @@ namespace App\Services\Parsers;
 
 use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
 use App\Exceptions\RecipeBlockNotFoundException;
-use App\Models\Source\Source;
+use App\Models\Source\SourceRecipeUrl;
 use App\Models\Source\SourceRecipeUrlExcludedRule;
 use App\Services\Parsers\Contracts\HtmlCleanerInterface;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
@@ -44,22 +44,23 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         return $cleanHtml;
     }
 
-    public function isExcluded(string $url, Source $source): bool
+    public function isExcluded(SourceRecipeUrl $sourceRecipeUrl): bool
     {
-        $rules = $source->excludedRules;
+        $rules = $sourceRecipeUrl->source->excludedRules;
 
         /** @var SourceRecipeUrlExcludedRule $rule */
         foreach ($rules as $rule) {
             if (
-                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::EXACT && $url === $rule->value) ||
-                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::CONTAINS && str_contains($url, $rule->value)) ||
-                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::REGEX && !preg_match($rule->value, $url))
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::EXACT && $sourceRecipeUrl->url === $rule->value) ||
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::CONTAINS && str_contains($sourceRecipeUrl->url, $rule->value)) ||
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::NOT_CONTAINS && !str_contains($sourceRecipeUrl->url, $rule->value)) ||
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::REGEX && !preg_match($rule->value, $sourceRecipeUrl->url))
             ) {
                 return true;
             }
         }
 
-        if ($this->isExcludedByCategory($url)) {
+        if ($this->isExcludedByCategory($sourceRecipeUrl->url)) {
             return true;
         }
 //

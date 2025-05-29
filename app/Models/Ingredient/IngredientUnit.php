@@ -46,7 +46,7 @@ class IngredientUnit extends Model
     {
         return $this->belongsToMany(
             Recipe::class,
-            'recipe_ingredients',
+            'recipe_ingredients_map',
             'ingredient_unit_id',
             'recipe_id'
         )->withPivot('quantity');

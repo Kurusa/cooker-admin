@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\Pivot;
  */
 class RecipeIngredient extends Pivot
 {
-    protected $table = 'recipe_ingredients';
+    protected $table = 'recipe_ingredients_map';
 
     protected $fillable = [
         'recipe_id',

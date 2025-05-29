@@ -39,14 +39,13 @@ class ProcessRecipeUrlService
     public function processRecipeUrl(
         SourceRecipeUrl       $sourceRecipeUrl,
         RecipeParserInterface $parser,
-        AiProvider            $aiProvider,
     ): void
     {
         if ($sourceRecipeUrl->is_excluded) {
             return;
         }
 
-        $aiService = $this->aiProviderResolver->resolve($aiProvider);
+        $aiService = $this->aiProviderResolver->resolve(AiProvider::DEEPSEEK);
 
         try {
             $cleanHtml = $parser->getCleanHtml($sourceRecipeUrl->url);
