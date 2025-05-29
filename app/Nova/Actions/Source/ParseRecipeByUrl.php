@@ -3,7 +3,7 @@
 namespace App\Nova\Actions\Source;
 
 use App\Enums\AiProvider;
-use App\Jobs\ProcessRecipeUrlJob;
+use App\Jobs\ParseSourceRecipeUrlJob;
 use App\Models\Recipe\Recipe;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -30,9 +30,9 @@ class ParseRecipeByUrl extends Action
                 : $model->id;
 
             if ($fields->run_sync) {
-                ProcessRecipeUrlJob::dispatchSync($recipeUrlId, AiProvider::DEEPSEEK);
+                ParseSourceRecipeUrlJob::dispatchSync($recipeUrlId, AiProvider::DEEPSEEK);
             } else {
-                ProcessRecipeUrlJob::dispatch($recipeUrlId, AiProvider::DEEPSEEK);
+                ParseSourceRecipeUrlJob::dispatch($recipeUrlId, AiProvider::DEEPSEEK);
             }
         }
 

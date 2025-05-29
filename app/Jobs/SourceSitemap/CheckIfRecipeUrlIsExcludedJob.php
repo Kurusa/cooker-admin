@@ -18,6 +18,7 @@ class CheckIfRecipeUrlIsExcludedJob implements ShouldQueue
         private readonly SourceRecipeUrl $sourceRecipeUrl,
     )
     {
+        $this->onQueue('excluded_check');
     }
 
     public function handle(RecipeParserFactory $parserFactory): void

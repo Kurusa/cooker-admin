@@ -17,6 +17,8 @@ class CheckSelectedUrlsForExclusion extends Action implements ShouldQueue
 
     public $name = 'Check for exclusion';
 
+    public $showInline = true;
+
     public function handle(ActionFields $fields, Collection $models): void
     {
         /** @var SourceRecipeUrl $sourceRecipeUrl */

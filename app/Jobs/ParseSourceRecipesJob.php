@@ -20,15 +20,16 @@ class ParseSourceRecipesJob implements ShouldQueue
         private readonly Source $source,
     )
     {
+        $this->onQueue('parsing');
     }
 
     public function handle(): void
     {
-        $sourceRecipeUrls = $this->source->unparsedRecipes();
+        $sourceRecipeUrls = $this->source->unparsedRecipes()->get();
 
         /** @var SourceRecipeUrl $sourceRecipeUrl */
         foreach ($sourceRecipeUrls as $sourceRecipeUrl) {
-            ProcessRecipeUrlJob::dispatch($sourceRecipeUrl);
+            ParseSourceRecipeUrlJob::dispatch($sourceRecipeUrl);
         }
     }
 }

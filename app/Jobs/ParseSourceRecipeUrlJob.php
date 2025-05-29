@@ -11,7 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 
-class ProcessRecipeUrlJob implements ShouldQueue
+class ParseSourceRecipeUrlJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -21,6 +21,7 @@ class ProcessRecipeUrlJob implements ShouldQueue
         public readonly SourceRecipeUrl $sourceRecipeUrl,
     )
     {
+        $this->onQueue('parsing');
     }
 
     public function handle(

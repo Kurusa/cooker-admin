@@ -64,7 +64,7 @@ class Source extends Model
         return $this->hasMany(SourceRecipeUrlExcludedRule::class);
     }
 
-    public function unparsedRecipes(): Collection
+    public function unparsedRecipes(): HasMany
     {
         return $this->recipeUrls()
             ->notParsed()
