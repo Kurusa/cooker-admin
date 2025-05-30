@@ -3,7 +3,6 @@
 namespace App\Services\Parsers\Steps;
 
 use App\Services\Parsers\Contracts\CleanerStepInterface;
-use DOMAttr;
 use DOMElement;
 use DOMNode;
 

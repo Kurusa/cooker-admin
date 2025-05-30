@@ -16,7 +16,7 @@ class RecipesPerDay extends Trend
 
     public function calculate(NovaRequest $request): TrendResult
     {
-        $count = match ((int) $request->range) {
+        $count = match ((int)$request->range) {
             60 => $this->countByMinutes($request, Recipe::class),
             24 => $this->countByHours($request, Recipe::class),
             default => $this->countByDays($request, Recipe::class),
