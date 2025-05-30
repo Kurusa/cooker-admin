@@ -18,10 +18,6 @@ class RecipeIngredient extends Resource
 
     public static $title = 'id';
 
-    public static $group = 'Recipes';
-
-    public static $search = ['id'];
-
     public function fields(Request $request): array
     {
         return [

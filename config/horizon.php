@@ -184,8 +184,8 @@ return [
             'connection' => 'redis',
             'queue' => ['parsing'],
             'balance' => 'auto',
-            'processes' => 2,
-            'tries' => 3,
+            'processes' => 40,
+            'tries' => 1,
         ],
 
         'supervisor-default' => [
@@ -193,17 +193,17 @@ return [
             'queue' => ['default', 'excluded_check'],
             'balance' => 'auto',
             'processes' => 2,
-            'tries' => 3,
+            'tries' => 1,
         ],
     ],
 
     'environments' => [
         '*' => [
             'supervisor-parsing' => [
-                'maxProcesses' => 2,
+                'maxProcesses' => 40,
             ],
             'supervisor-default' => [
-                'maxProcesses' => 2,
+                'maxProcesses' => 10,
             ],
         ],
     ],

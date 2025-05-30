@@ -11,7 +11,6 @@
         "ext-libxml": "*",
         "ext-mbstring": "*",
         "ext-simplexml": "*",
-        "digital-creative/chartjs-widget": "^1.0",
         "guzzlehttp/guzzle": "^7.2",
         "laravel-notification-channels/telegram": "^6.0",
         "laravel/framework": "^12.0",
@@ -65,7 +64,8 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
-            "pestphp/pest-plugin": true
+            "pestphp/pest-plugin": true,
+            "php-http/discovery": true
         }
     },
     "minimum-stability": "dev",

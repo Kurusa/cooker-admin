@@ -3,7 +3,7 @@
 namespace App\Nova\Recipe;
 
 use App\Models\Recipe\Recipe as RecipeModel;
-use App\Nova\Actions\Source\ParseRecipeByUrl;
+use App\Nova\Actions\Source\VerifySourceRecipeUrl;
 use App\Nova\Filters\InvalidImageUrlFilter;
 use App\Nova\Filters\Recipe\RecipeHasOneIngredientOrStepFilter;
 use App\Nova\Filters\Recipe\RecipeWithoutCuisineFilter;
@@ -16,13 +16,13 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\Avatar;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\BelongsToMany;
+use Laravel\Nova\Fields\Boolean;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\Heading;
 use Laravel\Nova\Fields\ID;
 use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Tabs\Tab;
 use Lupennat\ExpandableMany\HasExpandableMany;
 
 class Recipe extends Resource
@@ -32,8 +32,6 @@ class Recipe extends Resource
     public static string $model = RecipeModel::class;
 
     public static $title = 'title';
-
-    public static $group = 'Recipes';
 
     public static $search = [
         'id',
@@ -45,44 +43,50 @@ class Recipe extends Resource
         return [
             ID::make()->sortable(),
 
+            Boolean::make('Is verified'),
+
             Avatar::make('Image')->thumbnail(function () {
                 return $this->image_url;
             }),
 
+            Text::make('image_url')
+                ->onlyOnDetail(),
+
             Text::make('Title')
-                ->sortable()
-                ->rules('required', 'max:255'),
+                ->sortable(),
 
-            BelongsToMany::make('Categories', 'categories', RecipeCategory::class)
-                ->expandable()
-                ->withMeta([
-                    'expandableShowLabel' => 'Show categories',
-                    'expandableHideLabel' => 'Hide Categories',
-                ]),
+            Text::make('Categories', function () {
+                return $this->categories->map(function ($category) {
+                    return "<span style='display: inline-block; background: #f1f5f9; color: #0f172a; border-radius: 12px; padding: 2px 10px; margin: 0 4px 4px 0; font-size: 12px; font-weight: 500;'>{$category->title}</span>";
+                })->implode('');
+            })->asHtml(),
 
-            Heading::make("<iframe src=\"{$this->sourceRecipeUrl?->url}\" width=\"100%\" height=\"500\" style=\"border:1px solid #ccc;\"></iframe>")
+            Text::make('Complexity', function () {
+                $label = ucfirst($this->complexity?->value);
+                $color = $this->complexity?->getBadgeColor();
+                return "<span style='background:{$color};color:white;padding:4px 8px;border-radius:6px;font-weight:600;font-size:12px;'>{$label}</span>";
+            })->asHtml(),
+
+            Number::make('Time')->help('Minutes'),
+
+            Number::make('Portions'),
+
+            BelongsTo::make('Source', 'source'),
+
+            BelongsTo::make('Source recipe url id', 'sourceRecipeUrl', SourceRecipeUrl::class),
+
+            Text::make('Source recipe url', function () {
+                return "🔗 <a href=\"{$this->url}\" target=\"_blank\" style=\"color: #3490dc; text-decoration: underline;\">{$this->url}</a>";
+            })->asHtml(),
+
+            Heading::make("<iframe src=\"{$this->url}\" width=\"100%\" height=\"500\" style=\"border:1px solid #ccc;\"></iframe>")
                 ->asHtml()
                 ->onlyOnDetail(),
 
-            Tab::group('Details', [
-                Tab::make('Relations', [
-                    HasMany::make('Ingredient Groups', 'ingredientGroups', IngredientGroup::class),
-                    HasMany::make('Steps', 'steps', RecipeStep::class),
-                    //BelongsToMany::make('Cuisines', 'cuisines', Cuisine::class),
-                ]),
-                Tab::make('Main', [
-                    Text::make('Complexity', function () {
-                        $label = ucfirst($this->complexity?->value);
-                        $color = $this->complexity?->getBadgeColor();
-                        return "<span style='background:{$color};color:white;padding:4px 8px;border-radius:6px;font-weight:600;font-size:12px;'>{$label}</span>";
-                    })->asHtml(),
-                    Number::make('Time')->help('Minutes'),
-                    Number::make('Portions'),
-                    Text::make('image_url')->onlyOnDetail(),
-                    BelongsTo::make('Source', 'source'),
-                    BelongsTo::make('Source recipe url', 'sourceRecipeUrl', SourceRecipeUrl::class),
-                ]),
-            ]),
+            HasMany::make('Ingredient Groups', 'ingredientGroups', IngredientGroup::class),
+
+            HasMany::make('Steps', 'steps', RecipeStep::class),
+            //BelongsToMany::make('Cuisines', 'cuisines', Cuisine::class),
 
             self::formattedDateTime('Created at'),
         ];
@@ -101,7 +105,7 @@ class Recipe extends Resource
     public function actions(NovaRequest $request): array
     {
         return [
-            new ParseRecipeByUrl,
+            new VerifySourceRecipeUrl,
         ];
     }
 }

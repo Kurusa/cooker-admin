@@ -16,7 +16,13 @@ class RecipesPerDay extends Trend
 
     public function calculate(NovaRequest $request): TrendResult
     {
-        return $this->countByDays($request, Recipe::class)
+        $count = match ((int) $request->range) {
+            60 => $this->countByMinutes($request, Recipe::class),
+            24 => $this->countByHours($request, Recipe::class),
+            default => $this->countByDays($request, Recipe::class),
+        };
+
+        return $count
             ->showLatestValue()
             ->showSumValue();
     }
@@ -24,14 +30,10 @@ class RecipesPerDay extends Trend
     public function ranges(): array
     {
         return [
+            60 => 'Last hour',
+            24 => 'Today',
             7 => '7 днів',
             30 => '30 днів',
-            60 => '60 днів',
-            90 => '90 днів',
-            365 => '365 днів',
-            'TODAY' => 'Сьогодні',
-            'MTD' => 'Цього місяця',
-            'YTD' => 'Цього року',
         ];
     }
 }

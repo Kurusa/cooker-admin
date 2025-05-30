@@ -15,8 +15,6 @@ class SourceSitemap extends Resource
 
     public static $title = 'url';
 
-    public static $group = 'Sources';
-
     public static $search = [
         'id',
         'url',
@@ -30,8 +28,8 @@ class SourceSitemap extends Resource
             BelongsTo::make('Source', 'source', Source::class)
                 ->sortable(),
 
-            Text::make('URL', 'url')->sortable()->rules('required', 'url')
-                ->displayUsing(fn($value) => "<a href=\"{$value}\" target=\"_blank\">{$value}</a>")
+            Text::make('URL', 'url')->sortable()
+                ->displayUsing(fn($value) => "🔗 <a href=\"{$value}\" target=\"_blank\" style=\"color: #3490dc; text-decoration: underline;\">{$value}</a>")
                 ->asHtml(),
         ];
     }

@@ -7,37 +7,63 @@ use DOMAttr;
 use DOMElement;
 use DOMNode;
 
+/**
+ * Removes standard presentational and semantic attributes such as "class", "style", "id", etc.
+ * Removes all custom "data-" attributes except for a small allowlist (e.g., "data-src", "data-wpfc-original-src").
+ * Removes any attribute whose value contains the word "gif"
+ */
 class RemoveClassesAndAttributesStep implements CleanerStepInterface
 {
+    protected array $standardAttributesToRemove = [
+        'class',
+        'id',
+        'style',
+        'aria-hidden',
+        'aria-label',
+        'title',
+        'itemprop',
+        'itemscope',
+        'itemtype',
+        'datetime',
+    ];
+
+    protected array $preservedDataAttributes = [
+        'data-wpfc-original-src',
+        'data-src',
+    ];
+
     public function handle(DOMNode $node): void
     {
         if ($node instanceof DOMElement) {
-            $node->removeAttribute('class');
-            $node->removeAttribute('id');
-            $node->removeAttribute('style');
-            $node->removeAttribute('aria-hidden');
-            $node->removeAttribute('aria-label');
-            $node->removeAttribute('title');
-            $node->removeAttribute('itemprop');
-            $node->removeAttribute('datetime');
-
-            /** @var DOMAttr $attribute */
-            foreach (iterator_to_array($node->attributes) as $attribute) {
-                if ($attribute->nodeName == 'data-wpfc-original-src' || $attribute->nodeName == 'data-src') {
-                    continue;
-                }
-
-                if (
-                    str_starts_with($attribute->nodeName, 'data-') ||
-                    str_contains($attribute->value, 'gif')
-                ) {
-                    $node->removeAttribute($attribute->nodeName);
-                }
-            }
+            $this->removeStandardAttributes($node);
+            $this->removeUnwantedCustomAttributes($node);
         }
 
         foreach ($node->childNodes as $child) {
             $this->handle($child);
+        }
+    }
+
+    protected function removeStandardAttributes(DOMElement $node): void
+    {
+        foreach ($this->standardAttributesToRemove as $attr) {
+            $node->removeAttribute($attr);
+        }
+    }
+
+    protected function removeUnwantedCustomAttributes(DOMElement $node): void
+    {
+        foreach (iterator_to_array($node->attributes) as $attribute) {
+            if (in_array($attribute->nodeName, $this->preservedDataAttributes, true)) {
+                continue;
+            }
+
+            if (
+                str_starts_with($attribute->nodeName, 'data-') ||
+                str_contains($attribute->value, 'gif')
+            ) {
+                $node->removeAttribute($attribute->nodeName);
+            }
         }
     }
 }

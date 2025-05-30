@@ -26,6 +26,7 @@ use Illuminate\Support\Collection;
  * @property int $source_recipe_url_id
  * @property string|null $image_url
  * @property bool $is_verified
+ * @property string $url
  *
  * @property Source $source
  * @property SourceRecipeUrl $sourceRecipeUrl
@@ -50,7 +51,7 @@ class Recipe extends Model
 
     protected $casts = [
         'complexity' => Complexity::class,
-        'is_verified' => 'booleans',
+        'is_verified' => 'boolean',
     ];
 
     public function sourceRecipeUrl(): BelongsTo
@@ -118,14 +119,14 @@ class Recipe extends Model
         return $this->hasMany(IngredientGroup::class);
     }
 
-    public function hasImage(): bool
+    public function getUrlAttribute(): ?string
     {
-        return !empty($this->image_url);
+        return $this->sourceRecipeUrl?->url;
     }
 
-    public function getUrlAttribute(): string
+    public function getIsVerifiedAttribute(): bool
     {
-        return $this->sourceRecipeUrl->url;
+        return (bool)$this->sourceRecipeUrl->is_verified;
     }
 
     protected static function boot(): void

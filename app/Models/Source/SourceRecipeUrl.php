@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property string $source_id
  * @property string $url
  * @property bool $is_excluded
+ * @property bool $is_verified
  *
  * @property Source $source
  * @property SourceRecipeUrlExcludedRule $excludedRule
@@ -27,10 +28,15 @@ class SourceRecipeUrl extends Model
     protected $fillable = [
         'source_id',
         'url',
+        'is_verified',
     ];
 
     protected $with = [
         'excludedRule',
+    ];
+
+    public $casts = [
+        'is_verified' => 'boolean',
     ];
 
     public function source(): BelongsTo

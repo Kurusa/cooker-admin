@@ -6,21 +6,26 @@ use App\Services\Parsers\Contracts\CleanerStepInterface;
 use DOMNode;
 use DOMXPath;
 
+/**
+ * Removes global unwanted nodes from the DOM. The entire tag and its contents are removed.
+ */
 class RemoveGlobalJunkNodesStep implements CleanerStepInterface
 {
+    protected array $globalXpaths = [
+        './/style',
+        './/script',
+        './/svg',
+    ];
+
     public function handle(DOMNode $node): void
     {
-        $globalXpaths = [
-            './/style',
-            './/script',
-            './/svg',
-        ];
+        $xpath = new DOMXPath($node->ownerDocument);
 
-        foreach ($globalXpaths as $xpath) {
-            $nodes = (new DOMXPath($node->ownerDocument))->query($xpath, $node);
+        foreach ($this->globalXpaths as $expression) {
+            $nodes = $xpath->query($expression, $node);
 
-            foreach (iterator_to_array($nodes) as $node) {
-                $node->parentNode?->removeChild($node);
+            foreach (iterator_to_array($nodes) as $junkNode) {
+                $junkNode->parentNode?->removeChild($junkNode);
             }
         }
     }

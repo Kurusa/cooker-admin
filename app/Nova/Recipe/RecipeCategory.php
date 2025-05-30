@@ -23,8 +23,6 @@ class RecipeCategory extends Resource
 
     public static $title = 'title';
 
-    public static $group = 'Recipes';
-
     public static $search = [
         'id',
         'title',

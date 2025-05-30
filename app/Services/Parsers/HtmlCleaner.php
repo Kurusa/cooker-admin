@@ -26,6 +26,7 @@ class HtmlCleaner implements HtmlCleanerInterface
         $html = preg_replace('/>\s+</', '><', $html);
         $html = preg_replace('/\s{2,}/', ' ', $html);
         $html = preg_replace('/[\r\n\t]+/', '', $html);
+        $html = preg_replace('#<noscript\b[^>]*>.*?</noscript>#is', '', $html);
 
         return trim($html);
     }

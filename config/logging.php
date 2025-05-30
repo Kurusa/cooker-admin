@@ -70,14 +70,6 @@ return [
             'days' => 14,
         ],
 
-        'slack' => [
-            'driver' => 'slack',
-            'url' => env('LOG_SLACK_WEBHOOK_URL'),
-            'username' => 'Laravel Log',
-            'emoji' => ':boom:',
-            'level' => env('LOG_LEVEL', 'critical'),
-        ],
-
         'papertrail' => [
             'driver' => 'monolog',
             'level' => env('LOG_LEVEL', 'debug'),
@@ -116,6 +108,12 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'parser_log' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/parser_log.log'),
+            'level' => 'info',
         ],
     ],
 

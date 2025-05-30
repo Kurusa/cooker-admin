@@ -10,6 +10,13 @@ class RecipeStepObserver
     public function creating(RecipeStep $recipeStep): void
     {
         if (
+            $recipeStep->recipe->source->title === SourceEnum::RUD->value
+            && str_contains($recipeStep->description, "тм 'рудь'")
+        ) {
+            $recipeStep->description = str_replace("тм 'рудь'", '', $recipeStep->description);
+        }
+
+        if (
             $recipeStep->image_url
             && str_starts_with($recipeStep->image_url, 'files/')
             && $recipeStep->recipe->source->title === SourceEnum::SMACHNO->value

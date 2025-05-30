@@ -33,9 +33,4 @@ class TopCategories extends Table
                 ->subtitle("Рецептів: {$row->recipes_count}");
         })->all();
     }
-
-    public function uriKey(): string
-    {
-        return 'top-categories';
-    }
 }

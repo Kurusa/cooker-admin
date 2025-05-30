@@ -14,8 +14,8 @@ class SourceFilter extends Filter
     public function apply(Request $request, $query, $value): Builder
     {
         if ($request->resource === 'recipes') {
-            return $query->whereHas('sourceRecipeUrl', function ($q) use ($value) {
-                $q->where('source_id', $value);
+            return $query->whereHas('sourceRecipeUrl', function ($query) use ($value) {
+                $query->where('source_id', $value);
             });
         }
 
@@ -28,9 +28,12 @@ class SourceFilter extends Filter
 
     public function options(Request $request): array
     {
-        return Source::query()
+        return Source::withCount('recipes')
             ->orderBy('title')
-            ->pluck('id', 'title')
+            ->get()
+            ->mapWithKeys(function ($source) {
+                return [$source->title . ' (' . $source->recipes_count . ')' => $source->id];
+            })
             ->toArray();
     }
 }

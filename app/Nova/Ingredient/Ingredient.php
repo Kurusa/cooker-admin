@@ -17,8 +17,6 @@ class Ingredient extends Resource
 
     public static string $model = IngredientModel::class;
 
-    public static $group = 'Ingredients';
-
     public static $search = [
         'title',
     ];

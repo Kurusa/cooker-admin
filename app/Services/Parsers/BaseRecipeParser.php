@@ -10,6 +10,8 @@ use App\Services\Parsers\Contracts\HtmlCleanerInterface;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use DOMDocument;
 use DOMXPath;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 abstract class BaseRecipeParser implements RecipeParserInterface
 {
@@ -40,6 +42,8 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         if (strlen($cleanHtml) <= 100) {
             throw new RecipeBlockNotFoundException();
         }
+
+        Log::channel('parser_log')->info(now() . ' | ' . strlen($cleanHtml) . ' characters. url: ' . $url);
 
         return $cleanHtml;
     }

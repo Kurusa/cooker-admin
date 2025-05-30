@@ -73,6 +73,7 @@ class DeepseekService implements AiRecipeParserServiceInterface
         }
 
         $response = $data['choices'][0]['message']['content'];
+Log::info(json_encode($response));
 
         if (preg_match('/```json\s*(\[\s*{.*?}\s*])\s*```/s', $response, $matches)) {
             $recipes = json_decode($matches[1], true);

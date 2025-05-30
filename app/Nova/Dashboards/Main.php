@@ -15,10 +15,10 @@ class Main extends Dashboard
     {
         return [
             new RecipesPerDay,
-            new RecipesBySource,
-            new TopCategories,
-            new TopIngredients,
-            new TopIngredientUnits,
+//            new RecipesBySource,
+//            new TopCategories,
+//            new TopIngredients,
+//            new TopIngredientUnits,
         ];
     }
 }

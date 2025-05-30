@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Nova\Actions;
+namespace App\Nova\Actions\Source;
 
 use App\Jobs\SourceSitemap\CheckIfRecipeUrlIsExcludedJob;
 use App\Models\Source\SourceRecipeUrl;

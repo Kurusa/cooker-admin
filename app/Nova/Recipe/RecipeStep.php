@@ -18,8 +18,6 @@ class RecipeStep extends Resource
 
     public static $title = 'description';
 
-    public static $group = 'Recipes';
-
     public static $search = [
         'id',
         'description',

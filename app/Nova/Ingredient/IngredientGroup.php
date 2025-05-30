@@ -17,8 +17,6 @@ class IngredientGroup extends Resource
 
     public static string $model = IngredientGroupModel::class;
 
-    public static $group = 'Ingredients';
-
     public function fields(Request $request): array
     {
         return [

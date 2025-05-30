@@ -3,9 +3,10 @@
 namespace App\Nova\Source;
 
 use App\Models\Source\SourceRecipeUrl as SourceRecipeUrlModel;
-use App\Nova\Actions\CheckSelectedUrlsForExclusion;
+use App\Nova\Actions\Source\CheckSelectedUrlsForExclusion;
 use App\Nova\Actions\Source\ExcludeSourceRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
+use App\Nova\Actions\Source\VerifySourceRecipeUrl;
 use App\Nova\Filters\SourceFilter;
 use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlExcludedFilter;
 use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlHasMoreThanOneRecipeFilter;
@@ -27,8 +28,6 @@ class SourceRecipeUrl extends Resource
 
     public static $perPageViaRelationship = 100;
 
-    public static $group = 'Sources';
-
     public static $search = [
         'url',
     ];
@@ -45,9 +44,11 @@ class SourceRecipeUrl extends Resource
             BelongsTo::make('Source', 'source', Source::class)
                 ->sortable(),
 
-            Text::make('URL', 'url')->sortable()->rules('required', 'url')
-                ->displayUsing(fn($value) => "<a href=\"{$value}\" target=\"_blank\">{$value}</a>")
+            Text::make('URL', 'url')->sortable()
+                ->displayUsing(fn($value) => "🔗 <a href=\"{$value}\" target=\"_blank\" style=\"color: #3490dc; text-decoration: underline;\">{$value}</a>")
                 ->asHtml(),
+
+            Boolean::make('Is verified'),
 
             Boolean::make('Is parsed', fn() => $this->recipes()->exists())
                 ->exceptOnForms(),
@@ -75,6 +76,7 @@ class SourceRecipeUrl extends Resource
     public function actions(NovaRequest $request): array
     {
         return [
+            new VerifySourceRecipeUrl,
             new ExcludeSourceRecipeUrl,
             new ParseRecipeByUrl,
             new CheckSelectedUrlsForExclusion,

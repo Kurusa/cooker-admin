@@ -25,9 +25,17 @@ class JistyParser extends BaseRecipeParser
             $wrapper->appendChild($contentNode->cloneNode(true));
         }
 
-        $comments = $this->xpath->query(".//div[@id='comments']", $wrapper);
-        foreach (iterator_to_array($comments) as $comment) {
-            $comment->parentNode?->removeChild($comment);
+        $unwantedXpaths = [
+            ".//div[contains(@class, 'author-bio')]",
+            ".//div[contains(@class, 'entry-bottom')]",
+        ];
+
+        foreach ($unwantedXpaths as $xpath) {
+            $nodes = $this->xpath->query($xpath, $wrapper);
+
+            foreach (iterator_to_array($nodes) as $node) {
+                $node->parentNode?->removeChild($node);
+            }
         }
 
         return $wrapper;

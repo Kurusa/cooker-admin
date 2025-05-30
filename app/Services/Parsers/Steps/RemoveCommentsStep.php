@@ -5,6 +5,9 @@ namespace App\Services\Parsers\Steps;
 use App\Services\Parsers\Contracts\CleanerStepInterface;
 use DOMNode;
 
+/**
+ * Removes all HTML comments from the DOM tree recursively.
+ */
 class RemoveCommentsStep implements CleanerStepInterface
 {
     public function handle(DOMNode $node): void

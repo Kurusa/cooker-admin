@@ -20,8 +20,6 @@ class Source extends Resource
 {
     public static string $model = SourceModel::class;
 
-    public static $group = 'Sources';
-
     public static $title = 'title';
 
     public static $search = [
@@ -38,7 +36,7 @@ class Source extends Resource
             Text::make('Title')->sortable()->rules('required', 'max:255'),
 
             Text::make('URL')->sortable()->rules('required', 'url')
-                ->displayUsing(fn($value) => "<a href=\"{$value}\" target=\"_blank\">{$value}</a>")
+                ->displayUsing(fn($value) => "🔗 <a href=\"{$value}\" target=\"_blank\" style=\"color: #3490dc; text-decoration: underline;\">{$value}</a>")
                 ->asHtml(),
 
             Text::make('Status', function () {

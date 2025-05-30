@@ -30,9 +30,4 @@ class RecipesBySource extends Table
                     ->iconClass('text-blue-500');
             })->all();
     }
-
-    public function uriKey(): string
-    {
-        return 'recipes-by-source-table';
-    }
 }

@@ -13,6 +13,8 @@ use App\Services\Parsers\Steps\RemoveCommentsStep;
 use App\Services\Parsers\Steps\RemoveEmptyDivsStep;
 use App\Services\Parsers\Steps\RemoveGlobalJunkNodesStep;
 use App\Services\Parsers\Steps\RemoveImageAttributesStep;
+use App\Services\Parsers\Steps\RemoveSpecificTagsStep;
+use App\Services\Parsers\Steps\RemoveSvgAttributesStep;
 use GuzzleHttp\Client;
 use Illuminate\Support\ServiceProvider;
 
@@ -54,9 +56,11 @@ class AppServiceProvider extends ServiceProvider
             return new HtmlCleaner([
                 new RemoveClassesAndAttributesStep(),
                 new RemoveCommentsStep(),
-                new RemoveEmptyDivsStep(),
                 new RemoveGlobalJunkNodesStep(),
                 new RemoveImageAttributesStep(),
+                new RemoveSpecificTagsStep(),
+                new RemoveSvgAttributesStep(),
+                new RemoveEmptyDivsStep(),
             ]);
         });
     }

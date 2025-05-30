@@ -15,8 +15,6 @@ class Unit extends Resource
 
     public static $title = 'title';
 
-    public static $group = 'Ingredients';
-
     public static $search = [
         'id',
         'title',
