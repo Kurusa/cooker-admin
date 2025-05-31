@@ -8,3 +8,5 @@ Route::get('/error', function () {
 });
 
 Route::get('/debug', [DebugController::class, 'debug']);
+
+Route::post('/import/telegram-recipe', [TelegramRecipeController::class, 'import']);

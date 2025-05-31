@@ -64,5 +64,25 @@ class RecipeObserver
         ) {
             $recipe->image_url = 'https://ua.yabpoela.net' . $recipe->image_url;
         }
+
+        if (
+            $recipe->image_url
+            && str_starts_with($recipe->image_url, '/uploads')
+            && $recipe->source->title === SourceEnum::FOODNET->value
+        ) {
+            $recipe->image_url = 'https://food.net.ua' . $recipe->image_url;
+        }
+
+        if (
+            $recipe->image_url
+            && (
+                str_starts_with($recipe->image_url, '/uploads')
+                || str_starts_with($recipe->image_url, '/foto')
+                || str_starts_with($recipe->image_url, '/paska')
+            )
+            && $recipe->source->title === SourceEnum::SHEFKUHAR->value
+        ) {
+            $recipe->image_url = 'https://shefkuhar.com.ua' . $recipe->image_url;
+        }
     }
 }

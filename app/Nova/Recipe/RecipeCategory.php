@@ -4,6 +4,7 @@ namespace App\Nova\Recipe;
 
 use App\Models\Recipe\RecipeCategory as CategoryModel;
 use App\Nova\Actions\MergeRecipeCategories;
+use App\Nova\Filters\HasChildrenRecipeCategories;
 use App\Nova\Traits\NovaFieldMacros;
 use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
@@ -14,10 +15,11 @@ use Laravel\Nova\Fields\Number;
 use Laravel\Nova\Fields\Text;
 use Laravel\Nova\Http\Requests\NovaRequest;
 use Laravel\Nova\Resource;
+use Lupennat\ExpandableMany\HasExpandableMany;
 
 class RecipeCategory extends Resource
 {
-    use NovaFieldMacros;
+    use NovaFieldMacros, HasExpandableMany;
 
     public static string $model = CategoryModel::class;
 
@@ -36,23 +38,19 @@ class RecipeCategory extends Resource
             Text::make('Title')
                 ->sortable(),
 
-            Number::make('Recipes count', function () {
-                return $this->recipes()->count();
-            }),
+            Number::make('Recipes count', fn() => $this->recipes_with_children_count),
 
             BelongsToMany::make('Recipes', 'recipes', Recipe::class),
 
-            BelongsTo::make('Parent category', 'parent', self::class)
-                ->nullable(),
+            BelongsToMany::make('Parent Categories', 'parents', self::class),
 
-            HasMany::make('Child categories', 'children', self::class),
-
-            Text::make('Related Categories', function () {
-                return $this->relatedCategories()
-                    ->pluck('title')
-                    ->unique()
-                    ->implode(', ');
-            })->onlyOnDetail(),
+            BelongsToMany::make('Child Categories', 'children', self::class)
+                ->expandable(function (BelongsToMany $field, $resource) {
+                    $resource->loadCount('children');
+                    $field->withMeta([
+                        'expandableShowLabel' => 'Show ' . $resource->children_count . ' children',
+                    ]);
+                }),
 
             self::formattedDateTime('Created at'),
         ];
@@ -62,6 +60,13 @@ class RecipeCategory extends Resource
     {
         return [
             new MergeRecipeCategories,
+        ];
+    }
+
+    public function filters(NovaRequest $request): array
+    {
+        return [
+            new HasChildrenRecipeCategories,
         ];
     }
 }

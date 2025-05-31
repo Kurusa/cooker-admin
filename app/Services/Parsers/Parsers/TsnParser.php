@@ -34,7 +34,6 @@ class TsnParser extends BaseRecipeParser
 
         $timeText = trim($timeNode->item(0)->textContent);
 
-        return CookingTimeFormatter::formatCookingTime($timeText);
     }
 
     public function parsePortions(): int

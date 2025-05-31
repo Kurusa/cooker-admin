@@ -2,7 +2,6 @@
 
 namespace App\DTO;
 
-use App\Services\Parsers\Formatters\CleanText;
 use Spatie\LaravelData\Data;
 
 class StepDTO extends Data
@@ -12,6 +11,5 @@ class StepDTO extends Data
         public string $image = '',
     )
     {
-        $this->description = CleanText::cleanText($this->description);
     }
 }

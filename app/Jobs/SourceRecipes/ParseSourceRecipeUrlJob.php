@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\SourceRecipes;
 
 use App\Models\Source\SourceRecipeUrl;
 use App\Services\Parsers\RecipeParserFactory;

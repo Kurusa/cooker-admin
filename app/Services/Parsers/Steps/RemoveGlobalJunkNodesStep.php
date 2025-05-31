@@ -15,6 +15,7 @@ class RemoveGlobalJunkNodesStep implements CleanerStepInterface
         './/style',
         './/script',
         './/svg',
+        './/meta',
     ];
 
     public function handle(DOMNode $node): void

@@ -5,6 +5,7 @@ namespace App\Models\Recipe;
 use App\Enums\Recipe\Complexity;
 use App\Models\Ingredient\Ingredient;
 use App\Models\Ingredient\IngredientGroup;
+use App\Models\Ingredient\IngredientUnit;
 use App\Models\Source\Source;
 use App\Models\Source\SourceRecipeUrl;
 use App\Observers\RecipeObserver;
@@ -27,14 +28,15 @@ use Illuminate\Support\Collection;
  * @property string|null $image_url
  * @property bool $is_verified
  * @property string $url
+ * @property array $ingredientTitles
  *
  * @property Source $source
  * @property SourceRecipeUrl $sourceRecipeUrl
- * @property string $ingredient_list
  * @property Collection<RecipeIngredient> $recipeIngredients
  * @property Collection<RecipeCategory> $categories
- * @property Collection<Ingredient> $ingredients
+ * @property Collection<IngredientUnit> $ingredientUnits
  * @property Collection<RecipeCuisine> $cuisines
+ * @property Collection<RecipeStep> $steps
  */
 #[ObservedBy([RecipeObserver::class])]
 class Recipe extends Model
@@ -71,17 +73,15 @@ class Recipe extends Model
         );
     }
 
-    public function ingredients(): BelongsToMany
+    public function ingredientUnits(): BelongsToMany
     {
         return $this->belongsToMany(
-            Ingredient::class,
+            IngredientUnit::class,
             'recipe_ingredients_map',
             'recipe_id',
-            'ingredient_unit_id',
-        )
-            ->withPivot('quantity')
-            ->using(RecipeIngredient::class)
-            ->with('unit');
+            'ingredient_unit_id'
+        )->withPivot('quantity')
+            ->using(RecipeIngredient::class);
     }
 
     public function recipeIngredients(): HasMany
@@ -117,6 +117,15 @@ class Recipe extends Model
     public function ingredientGroups(): HasMany
     {
         return $this->hasMany(IngredientGroup::class);
+    }
+
+    public function getIngredientTitlesAttribute(): array
+    {
+        return $this->ingredientUnits
+            ->map(fn(IngredientUnit $unit) => $unit->ingredient->title)
+            ->unique()
+            ->values()
+            ->all();
     }
 
     public function getUrlAttribute(): ?string

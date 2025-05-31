@@ -11,7 +11,6 @@ use App\Services\Parsers\Contracts\RecipeParserInterface;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 abstract class BaseRecipeParser implements RecipeParserInterface
 {

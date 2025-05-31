@@ -47,5 +47,25 @@ class RecipeStepObserver
         ) {
             $recipeStep->image_url = 'https://picantecooking.com' . $recipeStep->image_url;
         }
+
+        if (
+            $recipeStep->image_url
+            && str_starts_with($recipeStep->image_url, '/uploads')
+            && $recipeStep->recipe->source->title === SourceEnum::FOODNET->value
+        ) {
+            $recipeStep->image_url = 'https://food.net.ua' . $recipeStep->image_url;
+        }
+
+        if (
+            $recipeStep->image_url
+            && (
+                str_starts_with($recipeStep->image_url, '/uploads')
+                || str_starts_with($recipeStep->image_url, '/foto')
+                || str_starts_with($recipeStep->image_url, '/paska')
+            )
+            && $recipeStep->recipe->source->title === SourceEnum::SHEFKUHAR->value
+        ) {
+            $recipeStep->image_url = 'https://shefkuhar.com.ua' . $recipeStep->image_url;
+        }
     }
 }

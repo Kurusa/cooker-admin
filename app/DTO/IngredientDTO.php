@@ -2,7 +2,6 @@
 
 namespace App\DTO;
 
-use App\Services\Parsers\Formatters\CleanText;
 use Spatie\LaravelData\Data;
 
 class IngredientDTO extends Data
@@ -14,6 +13,5 @@ class IngredientDTO extends Data
         public ?string $originalTitle = null,
     )
     {
-        $this->title = CleanText::cleanText($this->title);
     }
 }

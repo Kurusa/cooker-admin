@@ -7,7 +7,9 @@ use App\Services\Parsers\Parsers\CookeryParser;
 use App\Services\Parsers\Parsers\EasycookingParser;
 use App\Services\Parsers\Parsers\FayniReceptyParser;
 use App\Services\Parsers\Parsers\FoodcourtParser;
+use App\Services\Parsers\Parsers\FoodlezParser;
 use App\Services\Parsers\Parsers\FoodNetParser;
+use App\Services\Parsers\Parsers\GoldrecipesParser;
 use App\Services\Parsers\Parsers\GospodynkaParser;
 use App\Services\Parsers\Parsers\JistyParser;
 use App\Services\Parsers\Parsers\LubystokParser;
@@ -56,6 +58,8 @@ enum SourceEnum: string
     case MYROSLAVAPAVLIUCHOK = 'myroslavapavliuchok';
     case GOSPODYNKA = 'gospodynka';
     case VITER = 'viter';
+    case GOLDRECIPES = 'goldrecipes';
+    case FOODLEZ = 'foodlez';
 
     // case ETNOCOOK = 'etnocook'; китайсько-англійське
     // case COOKORAMA = 'cookorama'; нема sitemap
@@ -94,6 +98,8 @@ enum SourceEnum: string
             self::MYROSLAVAPAVLIUCHOK => MyroslavapavliuchokParser::class,
             self::GOSPODYNKA => GospodynkaParser::class,
             self::VITER => ViterParser::class,
+            self::GOLDRECIPES => GoldrecipesParser::class,
+            self::FOODLEZ => FoodlezParser::class,
         };
     }
 }

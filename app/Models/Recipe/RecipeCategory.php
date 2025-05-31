@@ -16,7 +16,7 @@ use Illuminate\Support\Collection;
  *
  * @property Collection<Recipe> $recipes
  * @property Collection<RecipeCategory> $children
- * @property RecipeCategory $parent
+ * @property Collection<RecipeCategory> $parents
  */
 class RecipeCategory extends Model
 {
@@ -35,14 +35,24 @@ class RecipeCategory extends Model
         );
     }
 
-    public function parent(): BelongsTo
+    public function parents(): BelongsToMany
     {
-        return $this->belongsTo(RecipeCategory::class, 'parent_id');
+        return $this->belongsToMany(
+            RecipeCategory::class,
+            'recipe_category_parent_map',
+            'category_id',
+            'parent_id'
+        );
     }
 
-    public function children(): HasMany
+    public function children(): BelongsToMany
     {
-        return $this->hasMany(RecipeCategory::class, 'parent_id');
+        return $this->belongsToMany(
+            RecipeCategory::class,
+            'recipe_category_parent_map',
+            'parent_id',
+            'category_id'
+        );
     }
 
     public function scopeParentCategories(Builder $query): void
@@ -52,22 +62,13 @@ class RecipeCategory extends Model
 
     public function scopeChildrenCategories(Builder $query): void
     {
-        $query->where('parent_id');
+        $query->whereNotNull('parent_id');
     }
 
-    public function relatedCategories(): \Illuminate\Database\Eloquent\Collection
+    public function getRecipesWithChildrenCountAttribute(): int
     {
-        return static::query()
-            ->whereHas('recipes', function ($query) {
-                $query->whereHas('categories', fn($q) => $q->where('id', $this->id));
-            })
-            ->where('id', '!=', $this->id)
-            ->get();
-    }
+        $categoryIds = $this->children()->pluck('id')->push($this->id);
 
-
-    public function relatedCategoriesCount(): int
-    {
-        return $this->relatedCategories()->count();
+        return Recipe::whereHas('categories', fn($q) => $q->whereIn('id', $categoryIds))->count();
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Nova\Actions\Source;
 
-use App\Jobs\ParseSourceRecipesJob;
+use App\Jobs\SourceRecipes\ParseSourceRecipesJob;
 use App\Models\Source\Source;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;

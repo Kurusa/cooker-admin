@@ -12,7 +12,7 @@ class InvalidImageUrlFilter extends BooleanFilter
 
     public function apply(Request $request, $query, $value): Builder
     {
-        if ($value === true) {
+        if ($value['Show'] === true) {
             return $query
                 ->whereNotNull('image_url')
                 ->where('image_url', '!=', '')
@@ -28,7 +28,7 @@ class InvalidImageUrlFilter extends BooleanFilter
     public function options(Request $request): array
     {
         return [
-            'Show' => true,
+            'Show' => 'Show',
         ];
     }
 }

@@ -18,7 +18,7 @@ class RemoveEmptyDivsStep implements CleanerStepInterface
                 $this->handle($child);
 
                 if (
-                    $child->tagName === 'div'
+                    ($child->tagName === 'div' || $child->tagName === 'span')
                     && !$child->hasChildNodes()
                     && trim($child->textContent) === ''
                 ) {

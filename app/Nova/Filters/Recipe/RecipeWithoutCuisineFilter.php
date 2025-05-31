@@ -4,15 +4,15 @@ namespace App\Nova\Filters\Recipe;
 
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
-use Laravel\Nova\Filters\Filter;
+use Laravel\Nova\Filters\BooleanFilter;
 
-class RecipeWithoutCuisineFilter extends Filter
+class RecipeWithoutCuisineFilter extends BooleanFilter
 {
     public $name = 'Without cuisine';
 
     public function apply(Request $request, $query, $value): Builder
     {
-        if ($value === true) {
+        if ($value['Show'] === true) {
             return $query->whereDoesntHave('cuisines');
         }
 
@@ -22,7 +22,7 @@ class RecipeWithoutCuisineFilter extends Filter
     public function options(Request $request): array
     {
         return [
-            'Show' => true,
+            'Show' => 'Show',
         ];
     }
 }

@@ -13,6 +13,7 @@ use App\Services\Parsers\Steps\RemoveCommentsStep;
 use App\Services\Parsers\Steps\RemoveEmptyDivsStep;
 use App\Services\Parsers\Steps\RemoveGlobalJunkNodesStep;
 use App\Services\Parsers\Steps\RemoveImageAttributesStep;
+use App\Services\Parsers\Steps\RemoveJsEventAttributesStep;
 use App\Services\Parsers\Steps\RemoveSpecificTagsStep;
 use App\Services\Parsers\Steps\RemoveSvgAttributesStep;
 use GuzzleHttp\Client;
@@ -60,6 +61,7 @@ class AppServiceProvider extends ServiceProvider
                 new RemoveImageAttributesStep(),
                 new RemoveSpecificTagsStep(),
                 new RemoveSvgAttributesStep(),
+                new RemoveJsEventAttributesStep(),
                 new RemoveEmptyDivsStep(),
             ]);
         });
