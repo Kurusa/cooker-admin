@@ -73,6 +73,18 @@ class Recipe extends Model
         );
     }
 
+    public function ingredients(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            Ingredient::class,
+            'recipe_ingredients_map',
+            'recipe_id',
+            'ingredient_unit_id',
+        )
+            ->withPivot('quantity')
+            ->using(RecipeIngredient::class);
+    }
+
     public function ingredientUnits(): BelongsToMany
     {
         return $this->belongsToMany(

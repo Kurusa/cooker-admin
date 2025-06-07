@@ -11,6 +11,7 @@ use App\Nova\Filters\SourceFilter;
 use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlExcludedFilter;
 use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlHasMoreThanOneRecipeFilter;
 use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlParsedFilter;
+use App\Nova\Filters\SourceRecipeUrl\SourceRecipeUrlVerifiedFilter;
 use App\Nova\Recipe\Recipe;
 use App\Nova\Resource;
 use Illuminate\Http\Request;
@@ -67,9 +68,10 @@ class SourceRecipeUrl extends Resource
     {
         return [
             new SourceFilter,
-            new SourceRecipeUrlHasMoreThanOneRecipeFilter,
+            new SourceRecipeUrlVerifiedFilter,
             new SourceRecipeUrlParsedFilter,
             new SourceRecipeUrlExcludedFilter,
+            new SourceRecipeUrlHasMoreThanOneRecipeFilter,
         ];
     }
 

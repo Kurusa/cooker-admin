@@ -69,6 +69,16 @@ class SourceRecipeUrl extends Model
         $query->whereDoesntHave('recipes');
     }
 
+    public function scopeVerified(Builder $query): void
+    {
+        $query->where('is_verified', true);
+    }
+
+    public function scopeNotVerified(Builder $query): void
+    {
+        $query->whereNull('is_verified');
+    }
+
     public function scopeIsExcluded(Builder $query): void
     {
         $query->whereHas('excludedRule');

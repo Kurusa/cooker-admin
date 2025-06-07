@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Enums\Source\SourceEnum;
 use App\Services\AiProviders\DeepseekService;
 use App\Services\AiProviders\GeminiService;
+use App\Services\AiProviders\OpenAiService;
 use App\Services\Parsers\Contracts\HtmlCleanerInterface;
 use App\Services\Parsers\HtmlCleaner;
 use App\Services\Parsers\RecipeParserFactory;
@@ -28,6 +29,16 @@ class AppServiceProvider extends ServiceProvider
                 'base_uri' => config('services.deepseek.base_uri'),
                 'headers' => [
                     'Authorization' => 'Bearer ' . config('services.deepseek.api_key'),
+                    'Content-Type' => 'application/json',
+                ],
+            ]));
+        });
+
+        $this->app->singleton(OpenAiService::class, function () {
+            return new OpenAIService(new Client([
+                'base_uri' => config('services.openai.base_uri'),
+                'headers' => [
+                    'Authorization' => 'Bearer ' . config('services.openai.api_key'),
                     'Content-Type' => 'application/json',
                 ],
             ]));

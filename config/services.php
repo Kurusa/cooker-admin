@@ -18,6 +18,11 @@ return [
         'base_uri' => 'https://generativelanguage.googleapis.com',
     ],
 
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+        'base_uri' => 'https://api.openai.com/v1/',
+    ],
+
     'telegram' => [
         'chat_id' => env('TELEGRAM_CHAT_ID'),
         'token' => env('TELEGRAM_BOT_TOKEN'),

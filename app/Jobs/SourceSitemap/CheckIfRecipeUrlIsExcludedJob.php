@@ -28,7 +28,11 @@ class CheckIfRecipeUrlIsExcludedJob implements ShouldQueue
         $parser = $parserFactory->make($this->sourceRecipeUrl->source->title);
         $isExcluded = $parser->isExcluded($this->sourceRecipeUrl);
 
-        if ($isExcluded && !$this->sourceRecipeUrl->recipes()->count()) {
+        if (
+            $isExcluded
+            && !$this->sourceRecipeUrl->recipes()->count()
+            && !$this->sourceRecipeUrl->is_excluded
+        ) {
             $this->sourceRecipeUrl->exclude();
         }
     }

@@ -17,6 +17,8 @@ class IngredientGroup extends Resource
 
     public static string $model = IngredientGroupModel::class;
 
+    public static $displayInNavigation = false;
+
     public function fields(Request $request): array
     {
         return [
@@ -26,11 +28,12 @@ class IngredientGroup extends Resource
                 ->nullable(),
 
             HasMany::make('Ingredients', 'ingredients', RecipeIngredient::class)
-                ->expandable()
-                ->withMeta([
-                    'expandableShowLabel' => 'Show ingredients',
-                    'expandableHideLabel' => 'Hide ingredients',
-                ]),
+                ->expandable(function (HasMany $field, $resource) {
+                    $field->withMeta([
+                        'expandableShowLabel' => 'Show ingredients (' . $resource->ingredients()->count() . ')',
+                        'expandableHideLabel' => 'Hide ingredients',
+                    ]);
+                }),
         ];
     }
 }

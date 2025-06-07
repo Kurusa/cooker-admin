@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DebugController;
+use App\Http\Controllers\UnitController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/error', function () {
@@ -8,5 +9,4 @@ Route::get('/error', function () {
 });
 
 Route::get('/debug', [DebugController::class, 'debug']);
-
-Route::post('/import/telegram-recipe', [TelegramRecipeController::class, 'import']);
+Route::post('/units/merge', [UnitController::class, 'merge'])->name('units.merge');

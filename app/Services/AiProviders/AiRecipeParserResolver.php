@@ -10,6 +10,7 @@ class AiRecipeParserResolver
     public function __construct(
         private readonly DeepseekService $deepseekService,
         private readonly GeminiService   $geminiService,
+        private readonly OpenAiService   $openAiService,
     )
     {
     }
@@ -19,6 +20,7 @@ class AiRecipeParserResolver
         return match ($provider) {
             AiProvider::DEEPSEEK => $this->deepseekService,
             AiProvider::GEMINI => $this->geminiService,
+            AiProvider::OPENAI => $this->openAiService,
         };
     }
 }

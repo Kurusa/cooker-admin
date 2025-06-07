@@ -8,12 +8,12 @@
 @foreach($recipe->ingredientGroups as $group)
 <b>{{ $group->title }}:</b>
 @foreach($group->ingredients as $ingredient)
-    @include('partials.ingredient', ['ingredient' => $ingredient])
+    @include('notifications.partials.ingredient', ['ingredient' => $ingredient])
 @endforeach
 @endforeach
 @else
 @foreach($recipe->recipeIngredients as $ingredient)
-@include('partials.ingredient', ['ingredient' => $ingredient])
+@include('notifications.partials.ingredient', ['ingredient' => $ingredient])
 @endforeach
 @endif
 

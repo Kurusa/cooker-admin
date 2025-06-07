@@ -1,0 +1,40 @@
+.unit-badge {
+    cursor: grab;
+    user-select: none;
+}
+
+.unit-panel {
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    padding: 1.5rem;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    min-height: 400px;
+}
+
+.unit-panel h5 {
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.unit-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.droppable {
+    min-height: 300px;
+    border: 2px dashed #6c757d;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.droppable.hover {
+    background-color: #e2e6ea;
+}
+
+.unit-badge.bg-soft {
+    background-color: #92052f !important;
+    color: #fff;
+}

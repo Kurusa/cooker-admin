@@ -28,6 +28,8 @@ class RecipeIngredient extends Pivot
         'ingredient_group_id',
     ];
 
+    public $timestamps = false;
+
     public function recipe(): BelongsTo
     {
         return $this->belongsTo(Recipe::class);

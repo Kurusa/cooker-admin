@@ -56,10 +56,8 @@ class PatelnyaParser extends BaseRecipeParser
 
         $categoryValue = $xpath->query("//div[@class='title-detail']/a/span | .//div[@id='crumbs']/a/span[last()]")->item(0)->nodeValue;
 
-        foreach ($excludedCategories as $excludedCategory) {
-            if (str_contains(mb_strtolower($categoryValue), $excludedCategory)) {
-                return true;
-            }
+        if (in_array(mb_strtolower($categoryValue), $excludedCategories, true)) {
+            return true;
         }
 
         return false;

@@ -9,10 +9,13 @@ use Illuminate\Http\Request;
 use Laravel\Nova\Fields\BelongsTo;
 use Laravel\Nova\Fields\HasMany;
 use Laravel\Nova\Fields\ID;
+use Laravel\Nova\Fields\Text;
 
 class IngredientUnit extends Resource
 {
     public static string $model = IngredientUnitModel::class;
+
+    public static $displayInNavigation = false;
 
     public function fields(Request $request): array
     {
@@ -25,6 +28,10 @@ class IngredientUnit extends Resource
 
             BelongsTo::make('Unit', 'unit', Unit::class)
                 ->rules('required'),
+
+            Text::make('Ingredient Name', function () {
+                return $this->ingredient?->title;
+            })->onlyOnIndex(),
 
             HasMany::make('Usages', 'recipeIngredients', RecipeIngredient::class),
         ];

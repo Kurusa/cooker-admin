@@ -8,7 +8,6 @@ class RecipeCategoryDTO extends Data
 {
     public function __construct(
         public string $title,
-        public array  $parent_titles = [],
     )
     {
     }

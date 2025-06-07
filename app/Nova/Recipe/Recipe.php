@@ -3,7 +3,7 @@
 namespace App\Nova\Recipe;
 
 use App\Models\Recipe\Recipe as RecipeModel;
-use App\Nova\Actions\Source\VerifySourceRecipeUrl;
+use App\Models\Recipe\RecipeCategory as RecipeCategoryModel;
 use App\Nova\Filters\InvalidImageUrlFilter;
 use App\Nova\Filters\Recipe\RecipeHasOneIngredientOrStepFilter;
 use App\Nova\Filters\Recipe\RecipeWithoutCuisineFilter;
@@ -55,7 +55,7 @@ class Recipe extends Resource
                 ->sortable(),
 
             Text::make('Categories', function () {
-                return $this->categories->map(function ($category) {
+                return $this->categories->map(function (RecipeCategoryModel $category) {
                     return "<span style='display: inline-block; background: #f1f5f9; color: #0f172a; border-radius: 12px; padding: 2px 10px; margin: 0 4px 4px 0; font-size: 12px; font-weight: 500;'>{$category->title}</span>";
                 })->implode('');
             })->asHtml(),
@@ -98,13 +98,6 @@ class Recipe extends Resource
             new InvalidImageUrlFilter,
             new RecipeHasOneIngredientOrStepFilter,
             new RecipeWithoutCuisineFilter,
-        ];
-    }
-
-    public function actions(NovaRequest $request): array
-    {
-        return [
-            new VerifySourceRecipeUrl,
         ];
     }
 }

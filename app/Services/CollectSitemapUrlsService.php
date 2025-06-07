@@ -7,7 +7,7 @@ use App\Models\Source\Source;
 use App\Models\Source\SourceRecipeUrl;
 use App\Models\Source\SourceSitemap;
 
-class SitemapUrlCollectorService
+class CollectSitemapUrlsService
 {
     public function __construct(
         private readonly Source $source,
@@ -15,34 +15,27 @@ class SitemapUrlCollectorService
     {
     }
 
-    /**
-     * @return array<SourceRecipeUrl>
-     */
-    public function getFilteredSitemapUrls(): array
+    public function collectSitemapUrls(): void
     {
-        $urls = [];
-
         /** @var SourceSitemap $sitemap */
         foreach ($this->source->sitemaps as $sitemap) {
-            $this->parseSitemapUrls($sitemap->url, $urls);
+            $this->crawlSitemap($sitemap->url);
         }
-
-        return $urls;
     }
 
-    private function parseSitemapUrls(string $sitemapUrl, array &$urls): void
+    private function crawlSitemap(string $sitemapUrl): void
     {
         $sitemapElements = simplexml_load_file($sitemapUrl);
 
         foreach ($sitemapElements as $sitemapElement) {
-            $url = (string)$sitemapElement->loc;
+            $sitemapUrl = (string)$sitemapElement->loc;
 
-            if ($this->isSitemap($url)) {
-                $this->parseSitemapUrls($url, $urls);
+            if ($this->isSitemap($sitemapUrl)) {
+                $this->crawlSitemap($sitemapUrl);
             } else {
                 /** @var SourceRecipeUrl $sourceRecipeUrl */
                 $sourceRecipeUrl = SourceRecipeUrl::updateOrCreate([
-                    'url' => $url,
+                    'url' => $sitemapUrl,
                     'source_id' => $this->source->id,
                 ]);
 

@@ -18,12 +18,12 @@ class RecipeIngredient extends Resource
 
     public static $title = 'id';
 
+    public static $displayInNavigation = false;
+
     public function fields(Request $request): array
     {
         return [
             ID::make()->sortable(),
-
-            BelongsTo::make('Recipe', 'recipe', Recipe::class),
 
             Text::make('Ingredient', function () {
                 return $this->ingredientUnit?->ingredient?->title ?? '—';
@@ -34,6 +34,8 @@ class RecipeIngredient extends Resource
             Text::make('Unit', function () {
                 return $this->ingredientUnit?->unit?->title ?? '—';
             }),
+
+            BelongsTo::make('Recipe', 'recipe', Recipe::class),
         ];
     }
 }
