@@ -71,17 +71,6 @@ class Source extends Model
             ->notExcluded();
     }
 
-    public function isParsingCompleted(): bool
-    {
-        return $this->pendingUrlsCount() === 0
-            && $this->totalUrls() > 0;
-    }
-
-    public function hasUnparsedRecipes(): bool
-    {
-        return $this->unparsedRecipes()->isNotEmpty();
-    }
-
     public function totalUrls(): int
     {
         return $this->recipeUrls
@@ -159,10 +148,5 @@ class Source extends Model
         }
 
         return SourceStatus::PARSED;
-    }
-
-    public static function indexQuery(NovaRequest $request, Builder $query): Builder
-    {
-        return $query->with('recipeUrls.excludedRule');
     }
 }

@@ -55,9 +55,9 @@ class Source extends Resource
                 Tab::make('Stats', [
                     new Panel('Stats', [
                         Number::make('Total URLs', fn() => $this->totalUrls()),
-                        Number::make('Parsed URLs', fn() => $this->parsedUrlsCount()),
-                        Number::make('Pending URLs', fn() => $this->pendingUrlsCount()),
                         Number::make('Excluded URLs', fn() => $this->excludedUrlsCount()),
+                        Number::make('Pending URLs', fn() => $this->pendingUrlsCount()),
+                        Number::make('Parsed URLs', fn() => $this->parsedUrlsCount()),
                         Number::make('Parsed %', fn() => $this->percentageParsed())->displayUsing(fn($val) => $val . '%'),
                     ]),
                 ]),

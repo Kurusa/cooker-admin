@@ -66,8 +66,8 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         if ($this->isExcludedByCategory($sourceRecipeUrl->url)) {
             return true;
         }
-//
-//        $ch = curl_init($url);
+
+//        $ch = curl_init($sourceRecipeUrl->url);
 //        curl_setopt($ch, CURLOPT_NOBODY, true);
 //        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 //        curl_exec($ch);

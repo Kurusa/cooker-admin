@@ -6,10 +6,12 @@ use App\DTO\RecipeDTO;
 use App\Enums\Source\AiProvider;
 use App\Exceptions\AiProviderDidntFindRecipeException;
 use App\Exceptions\RecipeBlockNotFoundException;
+use App\Jobs\SourceSitemap\CheckIfRecipeUrlIsExcludedJob;
 use App\Models\Source\SourceRecipeUrl;
 use App\Notifications\AiProviderDidntFindRecipeNotification;
 use App\Notifications\RecipeBlockNotFoundNotification;
 use App\Notifications\RecipeParsingCompleted;
+use App\Notifications\RecipeParsingFailedNotification;
 use App\Services\AiProviders\AiRecipeParserResolver;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use App\Services\RecipeAttributes\CategoryService;
@@ -17,10 +19,12 @@ use App\Services\RecipeAttributes\CuisineService;
 use App\Services\RecipeAttributes\IngredientService;
 use App\Services\RecipeAttributes\RecipeService;
 use App\Services\RecipeAttributes\StepService;
+use Error;
 use Exception;
 use Illuminate\Database\ConnectionInterface as Database;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
+use Throwable;
 
 class ProcessRecipeUrlService
 {
@@ -41,6 +45,8 @@ class ProcessRecipeUrlService
         RecipeParserInterface $parser,
     ): void
     {
+        CheckIfRecipeUrlIsExcludedJob::dispatchSync($sourceRecipeUrl);
+
         if ($sourceRecipeUrl->is_excluded) {
             return;
         }
@@ -86,9 +92,17 @@ class ProcessRecipeUrlService
                     Log::error('Notification error:' . $e->getMessage());
                     continue;
                 }
-            } catch (Exception $exception) {
+            } catch (Error $error) {
                 $this->db->rollBack();
-                throw $exception;
+
+                try {
+                    Notification::route('telegram', config('services.telegram.chat_id'))->notify(new RecipeParsingFailedNotification($error->getMessage()));
+                } catch (Exception $e) {
+                    Log::error('Notification error:' . $e->getMessage());
+                    continue;
+                }
+
+                continue;
             }
         }
     }
