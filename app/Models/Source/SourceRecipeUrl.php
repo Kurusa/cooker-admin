@@ -7,6 +7,7 @@ use App\Models\Recipe\Recipe;
 use App\Observers\SourceRecipeUrlObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,13 +15,23 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int $id
- * @property string $source_id
+ * @property int $source_id
  * @property string $url
- * @property bool $is_excluded
- * @property bool $is_verified
+ * @property bool|null $is_verified
+ * @property-read bool $is_excluded
  *
- * @property Source $source
- * @property SourceRecipeUrlExcludedRule $excludedRule
+ * @property-read Source $source
+ * @property-read Collection|Recipe[] $recipes
+ * @property-read SourceRecipeUrlExcludedRule|null $excludedRule
+ *
+ * @method static Builder|static isParsed()
+ * @method static Builder|static notParsed()
+ * @method static Builder|static verified()
+ * @method static Builder|static notVerified()
+ * @method static Builder|static isExcluded()
+ * @method static Builder|static notExcluded()
+ *
+ * @mixin Builder
  */
 #[ObservedBy([SourceRecipeUrlObserver::class])]
 class SourceRecipeUrl extends Model

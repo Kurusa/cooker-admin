@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * @property int $id
+ * @property string $type
  * @property string $title
  */
 class RecipeCuisine extends Model
 {
     protected $fillable = [
+        'type',
         'title',
     ];
 

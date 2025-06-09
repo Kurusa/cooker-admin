@@ -6,12 +6,33 @@ use App\Http\Requests\MergeUnitsRequest;
 use App\Models\Ingredient\IngredientUnit;
 use App\Models\Recipe\RecipeIngredient;
 use App\Models\Unit;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 class UnitController extends BaseController
 {
+    public function view(): View
+    {
+        /** @var Collection $units */
+        $units = Unit::withCount('ingredientUnits')
+            ->orderBy('title')
+            ->get()
+            ->map(function (Unit $unit) {
+                return [
+                    'id' => $unit->id,
+                    'title' => $unit->title,
+                    'ingredient_count' => $unit->ingredient_units_count,
+                ];
+            });
+
+        return view('drag-units', [
+            'units' => $units,
+        ]);
+    }
+
     public function merge(MergeUnitsRequest $request): JsonResponse
     {
         $mainUnitId = $request->get('main_unit_id');

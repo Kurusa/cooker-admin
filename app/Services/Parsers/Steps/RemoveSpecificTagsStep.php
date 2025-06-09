@@ -22,18 +22,27 @@ class RemoveSpecificTagsStep implements CleanerStepInterface
         'strong',
         'ins',
         'figure',
+        'article',
+        'span',
+        'ol',
+        'i',
+        'li',
+        'h3',
+        'h1',
     ];
 
     public function handle(DOMNode $node): void
     {
         foreach (iterator_to_array($node->childNodes) as $child) {
-            if ($child instanceof DOMElement && in_array(strtolower($child->tagName), $this->tagsToRemove)) {
-                while ($child->firstChild) {
-                    $child->parentNode->insertBefore($child->firstChild, $child);
-                }
-                $child->parentNode?->removeChild($child);
-            } else {
+            if ($child instanceof DOMElement) {
                 $this->handle($child);
+
+                if (in_array(strtolower($child->tagName), $this->tagsToRemove, true)) {
+                    while ($child->firstChild) {
+                        $child->parentNode->insertBefore($child->firstChild, $child);
+                    }
+                    $child->parentNode?->removeChild($child);
+                }
             }
         }
     }

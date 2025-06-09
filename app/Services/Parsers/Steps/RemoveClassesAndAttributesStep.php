@@ -26,6 +26,8 @@ class RemoveClassesAndAttributesStep implements CleanerStepInterface
         'datetime',
         'target',
         'fetchpriority',
+        'start',
+        'rel',
     ];
 
     protected array $preservedDataAttributes = [

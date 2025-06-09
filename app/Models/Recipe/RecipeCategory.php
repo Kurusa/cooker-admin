@@ -10,7 +10,6 @@ use Illuminate\Support\Collection;
 /**
  * @property int $id
  * @property string $title
- * @property int $parent_id
  *
  * @property Collection<Recipe> $recipes
  * @property Collection<RecipeCategory> $children
@@ -20,7 +19,6 @@ class RecipeCategory extends Model
 {
     protected $fillable = [
         'title',
-        'parent_id',
     ];
 
     public function recipes(): BelongsToMany
@@ -68,5 +66,15 @@ class RecipeCategory extends Model
         $categoryIds = $this->children()->pluck('id')->push($this->id);
 
         return Recipe::whereHas('categories', fn($q) => $q->whereIn('id', $categoryIds))->count();
+    }
+
+    public function getHasChildrenAttribute(): bool
+    {
+        return $this->children()->exists();
+    }
+
+    public function getChildrenCountAttribute(): int
+    {
+        return $this->children()->count();
     }
 }

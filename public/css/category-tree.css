@@ -1,0 +1,84 @@
+#tree-container {
+    min-height: 600px;
+    padding: 40px;
+    background: #f2f4f8;
+    border-radius: 12px;
+    border: 1px solid #d6dee8;
+    overflow-x: auto;
+}
+
+.Treant .node {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    text-align: left;
+}
+
+.Treant .node .badge {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+    cursor: pointer;
+    white-space: nowrap;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: all 0.2s ease-in-out;
+}
+
+.Treant .expanded .badge {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.Treant .collapsed .badge {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+.Treant .leaf .badge {
+    background-color: #e2e3e5;
+    color: #41464b;
+}
+
+.Treant .badge:hover {
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+    transform: scale(1.02);
+}
+
+.Treant .collapse-switch {
+    position: absolute;
+    top: 50%;
+    right: -12px;
+    width: 20px;
+    height: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    line-height: 18px;
+    transform: translateY(-50%);
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+.Treant .collapsed .collapse-switch::after {
+    content: "+";
+}
+
+.Treant .expanded .collapse-switch::after {
+    content: "–";
+}
+
+.Treant .badge {
+    background-color: #bcd0c7;
+    color: #0f5132;
+}

@@ -35,5 +35,12 @@ class CheckIfRecipeUrlIsExcludedJob implements ShouldQueue
         ) {
             $this->sourceRecipeUrl->exclude();
         }
+
+        if (
+            !$isExcluded
+            && $this->sourceRecipeUrl->is_excluded
+        ) {
+            $this->sourceRecipeUrl->excludedRule()->delete();
+        }
     }
 }

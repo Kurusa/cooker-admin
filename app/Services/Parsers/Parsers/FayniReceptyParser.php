@@ -27,12 +27,6 @@ class FayniReceptyParser extends BaseRecipeParser
             }
         }
 
-        $categoriesNode = $this->xpath->query("//p[contains(@class, 'ast-terms-link')]")?->item(0);
-        if ($categoriesNode) {
-            $clone = $categoriesNode->cloneNode(true);
-            $recipeNode->insertBefore($clone, $recipeNode->firstChild);
-        }
-
         return $recipeNode;
     }
 

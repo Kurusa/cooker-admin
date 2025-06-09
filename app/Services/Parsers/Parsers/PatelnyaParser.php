@@ -16,6 +16,8 @@ class PatelnyaParser extends BaseRecipeParser
         $unwantedXpaths = [
             ".//div[contains(@class, 'leave-comment-wrap margin-top-30')]",
             ".//div[contains(@class, 'data-middle fl color-656464 margin-top-15')]",
+            ".//div[contains(@class, 'tags margin-top-20')]",
+            ".//div[contains(@class, 'title-ingredient-red font-size-18')]",
         ];
 
         foreach ($unwantedXpaths as $xpath) {
@@ -24,12 +26,6 @@ class PatelnyaParser extends BaseRecipeParser
             foreach (iterator_to_array($nodes) as $node) {
                 $node->parentNode?->removeChild($node);
             }
-        }
-
-        $categoriesNode = $this->xpath->query("//p[contains(@class, 'ast-terms-link')]")?->item(0);
-        if ($categoriesNode) {
-            $clone = $categoriesNode->cloneNode(true);
-            $recipeNode->insertBefore($clone, $recipeNode->firstChild);
         }
 
         return $recipeNode;
@@ -50,7 +46,6 @@ class PatelnyaParser extends BaseRecipeParser
             'новини',
             'дієти',
             'конкурси',
-            'здорове харчування',
             'кулінарні таблиці',
         ];
 

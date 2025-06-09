@@ -10,11 +10,13 @@ use App\DTO\RecipeDTO;
 use App\DTO\StepDTO;
 use App\Enums\Recipe\Complexity;
 use App\Exceptions\AiProviderDidntFindRecipeException;
+use App\Models\Recipe\RecipeCuisine;
 use App\Services\AiProviders\Contracts\AiRecipeParserServiceInterface;
 use Exception;
 use GuzzleHttp\Client;
-use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class DeepseekService implements AiRecipeParserServiceInterface
 {
@@ -24,6 +26,18 @@ class DeepseekService implements AiRecipeParserServiceInterface
 
     public function parse(string $html): array
     {
+        $categories = DB::table('recipe_categories')
+            ->whereIn('id', function ($query) {
+                $query->select('category_id')
+                    ->from('recipe_category_parent_map');
+            })
+            ->pluck('title')
+            ->toArray();
+
+        $cuisines = RecipeCuisine::all()
+            ->pluck('title')
+            ->toArray();
+
         $response = $this->client->post('/chat/completions', [
             'json' => [
                 'model' => 'deepseek-chat',
@@ -32,18 +46,30 @@ class DeepseekService implements AiRecipeParserServiceInterface
                     [
                         'role' => 'user',
                         'content' => "На цій сторінці можуть бути один або кілька рецептів.Розпізнай кожен із них і поверни масив об'єктів у форматі
-JSON без жодних описів і пояснень.Кожен об'єкт має ключі:title(string),cuisine(string)-кухня світу,до якої відноситься рецепт.визнач сам,якщо не вказано.
-categories-масив стрінгів.також вкажи сам, якщо не вказано.відкидай неінформативні категорії,типу інгредієнтів чи просто тегів.complexity(string):easy
-|medium|hard(визнач сам,якщо не вказано),cookingTime(int):загальний час у хвилинах,portions(int):кількість порцій(визнач сам,якщо не вказано),
-image(string):URL головного зображення рецепта,ingredientGroups(array<object>):якщо інгредієнти розбиті по групам,кожен такий розділ–окремий об'єкт з
-ключами:-group (string)–назва групи(наприклад,'для тіста'),-ingredients(array<object>):title,unit,quantity(завжди int або float,це обовязково.не може бути
-стрінгою.дроби переводь у float).Якщо груп немає–поверни один елемент зі group =''та всі інгредієнти всередині.-steps(array<object>):кожен об'єкт з
-description,image.Обов'язкові правила:Уніфікуй одиниці виміру лише за написанням,НЕ конвертуючи значення(г,кг,мл,л,склянка,чашка тощо;cups не перетворюй
-у л).не присвоюй юніт,якщо к-сть дорівнює нулю.'За бажанням','для тіста','для прикраси'тощо-це не юніт,вказуй порожній.Завжди перекладай українською,у
-називному відмінку,нижній регістр,без дублікатів.русняве/суржик-переводь українською.Якщо к-сть є,а одиниці немає і це штуковий інгредієнт(яйця,огірки
-тощо),став unit=шт.Для спецій типу сіль,перець тощо,якщо к-сть і одиниця не вказані—не додавай quantity і unit.Прибери будь-які префікси виду крок N
-чи їхні варіації на початку описів кроків.Ігноруй неінформативні кроки,що містять лише слова типу'Подаємо','Смачного','Enjoy'.Якщо на сторінці один
-рецепт поверни масив із одним об'єктом.Якщо рецепта немає кроків чи інгредієнтів,поверни порожню відповідь.HTML:" . $html,
+JSON без жодних описів і пояснень.Кожен об'єкт має ключі:
+title(string)
+якщо не вказано.Використовуй загальновідомі категорії рецептів,відкидай неінформативні категорії,наприклад інгредієнти чи просто теги.
+відкидай неінформативні категорії,типу інгредієнтів чи просто тегів
+complexity(string):easy|medium|hard.визнач сам,якщо не вказано
+cookingTime(int):загальний час у хвилинах
+portions(int):кількість порцій.визнач сам,якщо не вказано
+image(string):URL головного зображення рецепта
+ingredientGroups(array<object>):об'єкт з ключами
+-group(string):e.x,'для тіста'
+-ingredients(array<object>):title(видаляй лишні символи типу дужок),unit,quantity(завжди int або float,це обовязково.не може бути стрінгою.
+дроби переводь у float).if груп немає–поверни 1 елемент зі group =''та всі інгредієнти всередині
+-cuisines(array<string>):кухня,яка найкраще описує рецепт.Вибирай ТІЛЬКИ з цього списку:
+[\"" . implode('","', $cuisines) . "\"].
+-categories(array<string>):масив категорій, які найкраще описують рецепт.Вибирай ТІЛЬКИ з цього списку:
+[\"" . implode('","', $categories) . "\"].
+-steps(array<object>):кожен об'єкт з description,image
+Обов'язкові правила:якщо є юніт 'півчогось(склянки)'-перетворюй у 'склянка'.приводь до називного відмінку,або скороченого варіанту-'ст. ложки'-'ст. л.'.
+якщо к-ть=0,невказуй unit.якщо є unit і к-сть,але немає назви інгредієнту-це помилка.'За бажанням','для тіста','для прикраси'тощо-це не юніт,
+вказуй порожній.Завжди все українською,у називному відмінку,нижній регістр,без дублікатів.русняве/суржик-переводь українською.
+Якщо к-сть є,а одиниці немає і це штуковий інгредієнт(яйця,огірки тощо),став unit=шт.Для спецій типу сіль,перець тощо,якщо к-сть і unit не вказані—
+не додавай quantity і unit.Прибери будь-які префікси виду крок N чи варіації на початку описів кроків.Ігноруй неінформативні кроки,що містять лише
+слова типу'Подаємо','Смачного','Enjoy'.Якщо на сторінці один рецепт поверни масив із одним об'єктом.Якщо рецепта немає кроків чи інгредієнтів,
+поверни порожню відповідь.HTML:" . $html,
                     ],
                 ],
                 'stream' => false,
@@ -75,7 +101,6 @@ description,image.Обов'язкові правила:Уніфікуй один
                                 title: $ingredient['title'],
                                 quantity: isset($ingredient['quantity']) ? (float)$ingredient['quantity'] : null,
                                 unit: $ingredient['unit'] ?? null,
-                                originalTitle: $ingredient['originalTitle'] ?? null,
                             ), $group['ingredients'] ?? [])
                         );
                     }, $response['ingredientGroups'] ?? [
@@ -90,13 +115,14 @@ description,image.Обов'язкові правила:Уніфікуй один
                     ), $response['steps'] ?? []),
                 );
             }, $recipes);
-        } catch (Exception $exception) {
+        } catch (Throwable $exception) {
             Log::error('Exception when building response from Deepseek', [
                 'response' => $response,
+                'recipes' => $recipes,
                 'error' => $exception->getMessage(),
             ]);
 
-            throw $exception;
+            return [];
         }
     }
 
@@ -120,10 +146,5 @@ description,image.Обов'язкові правила:Уніфікуй один
         } else {
             throw new AiProviderDidntFindRecipeException(mb_strimwidth($response, 0, 1000, '...'));
         }
-    }
-
-    public function categorizeRecipes(Collection $recipes): array
-    {
-        // TODO: Implement categorizeRecipes() method.
     }
 }
