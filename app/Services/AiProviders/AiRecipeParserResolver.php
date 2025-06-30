@@ -2,7 +2,7 @@
 
 namespace App\Services\AiProviders;
 
-use App\Enums\Source\AiProvider;
+use App\Enums\AiProviderEnum;
 use App\Services\AiProviders\Contracts\AiRecipeParserServiceInterface;
 
 class AiRecipeParserResolver
@@ -15,12 +15,12 @@ class AiRecipeParserResolver
     {
     }
 
-    public function resolve(AiProvider $provider): AiRecipeParserServiceInterface
+    public function resolve(AiProviderEnum $provider): AiRecipeParserServiceInterface
     {
         return match ($provider) {
-            AiProvider::DEEPSEEK => $this->deepseekService,
-            AiProvider::GEMINI => $this->geminiService,
-            AiProvider::OPENAI => $this->openAiService,
+            AiProviderEnum::DEEPSEEK => $this->deepseekService,
+            AiProviderEnum::GEMINI => $this->geminiService,
+            AiProviderEnum::OPENAI => $this->openAiService,
         };
     }
 }

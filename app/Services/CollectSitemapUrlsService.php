@@ -6,45 +6,70 @@ use App\Jobs\SourceSitemap\CheckIfRecipeUrlIsExcludedJob;
 use App\Models\Source\Source;
 use App\Models\Source\SourceRecipeUrl;
 use App\Models\Source\SourceSitemap;
+use Exception;
+use SimpleXMLElement;
 
 class CollectSitemapUrlsService
 {
-    public function __construct(
-        private readonly Source $source,
-    )
-    {
-    }
-
-    public function collectSitemapUrls(): void
+    public function collectSitemapUrls(Source $source): void
     {
         /** @var SourceSitemap $sitemap */
-        foreach ($this->source->sitemaps as $sitemap) {
-            $this->crawlSitemap($sitemap->url);
+        foreach ($source->sitemaps as $sitemap) {
+            $this->crawlSitemap($source, $sitemap->url);
         }
     }
 
-    private function crawlSitemap(string $sitemapUrl): void
+    private function crawlSitemap(
+        Source $source,
+        string $sitemapUrl
+    ): void
     {
-        $sitemapElements = simplexml_load_file($sitemapUrl);
+        try {
+            $sitemapElements = simplexml_load_file($sitemapUrl);
+        } catch (Exception) {
+            $sitemapElements = $this->loadSitemapWithCurl($sitemapUrl);
+        }
 
-        foreach ($sitemapElements as $sitemapElement) {
+        $urls = $sitemapElements->url ?? $sitemapElements;
+
+        foreach ($urls as $sitemapElement) {
             $sitemapUrl = (string)$sitemapElement->loc;
 
             if ($this->isSitemap($sitemapUrl)) {
-                $this->crawlSitemap($sitemapUrl);
+                $this->crawlSitemap($source, $sitemapUrl);
             } else {
                 /** @var SourceRecipeUrl $sourceRecipeUrl */
                 $sourceRecipeUrl = SourceRecipeUrl::updateOrCreate([
                     'url' => $sitemapUrl,
-                    'source_id' => $this->source->id,
+                    'source_id' => $source->id,
                 ]);
 
                 CheckIfRecipeUrlIsExcludedJob::dispatchSync(
                     $sourceRecipeUrl,
-                    $this->source->id,
+                    $source->id,
                 );
             }
         }
+    }
+
+    private function loadSitemapWithCurl(string $url): ?SimpleXMLElement
+    {
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; RecipeBot/1.0)',
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_TIMEOUT => 10,
+        ]);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        if ($response === false) {
+            return null;
+        }
+
+        return simplexml_load_string($response) ?: null;
     }
 
     private function isSitemap(string $url): bool

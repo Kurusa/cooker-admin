@@ -12,5 +12,6 @@ class IngredientDTO extends Data
         public ?string $unit = null,
     )
     {
+        $this->quantity = ($this->quantity && $this->unit) ? $this->quantity : null;
     }
 }

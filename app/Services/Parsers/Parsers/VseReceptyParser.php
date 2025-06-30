@@ -13,21 +13,13 @@ class VseReceptyParser extends BaseRecipeParser
 {
     public function extractRecipeNode(): DOMNode
     {
-        $recipeNode = $this->xpath->query("//div[contains(@class, 'type-ranna_recipe')]")->item(0);
+        $recipeNode = $this->xpath->query("//div[contains(@class, 'item-description')]")->item(0);
 
-        $unwantedXpaths = [
-            ".//div[contains(@class, 'tag-share')]",
-            ".//div[contains(@class, 'recipe-author')]",
-            ".//div[contains(@class, 'related-post')]",
-        ];
+        $span = $this->dom->createElement('span', 'Мій текст');
 
-        foreach ($unwantedXpaths as $xpath) {
-            $nodes = $this->xpath->query($xpath, $recipeNode);
-
-            foreach (iterator_to_array($nodes) as $node) {
-                $node->parentNode?->removeChild($node);
-            }
-        }
+        $recipeNode->appendChild(
+            $this->xpath->query("//img[contains(@class, 'attachment-post-thumbnail')]")->item(0)
+        );
 
         return $recipeNode;
     }

@@ -2,7 +2,7 @@
 
 namespace App\Services\Parsers\Parsers;
 
-use App\Enums\Recipe\Complexity;
+use App\Enums\Recipe\ComplexityEnum;
 use App\Services\AiProviders\DeepseekService;
 use App\Services\Parsers\BaseRecipeParser;
 use App\Services\Parsers\Formatters\CookingTimeFormatter;
@@ -19,9 +19,9 @@ class TsnParser extends BaseRecipeParser
         return $this->xpathService->extractCleanSingleValue("//span[@class='post-cat bg-warning']");
     }
 
-    public function parseComplexity(): Complexity
+    public function parseComplexity(): ComplexityEnum
     {
-        return Complexity::MEDIUM;
+        return ComplexityEnum::MEDIUM;
     }
 
     public function parseCookingTime(): ?int

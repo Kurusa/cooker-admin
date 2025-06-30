@@ -17,7 +17,9 @@ class CuisineService
         foreach ($cuisines as $cuisineData) {
             $cuisine = RecipeCuisine::find($cuisineData->title);
 
-            $recipe->cuisines()->attach($cuisine->id);
+            if ($cuisine) {
+                $recipe->cuisines()->attach($cuisine->id);
+            }
         }
     }
 }

@@ -5,7 +5,7 @@ namespace App\Services\Parsers\Parsers;
 use App\Services\Parsers\BaseRecipeParser;
 use DOMNode;
 
-class SmakotaInfoParser extends BaseRecipeParser
+class SmakotainfoParser extends BaseRecipeParser
 {
     public function extractRecipeNode(): DOMNode
     {

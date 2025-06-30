@@ -14,7 +14,7 @@ class RecipeParserFactory
     public function registerParser(string $sourceTitle, string $parserClass): void
     {
         if (!is_subclass_of($parserClass, RecipeParserInterface::class)) {
-            throw new InvalidArgumentException('Parser class must implement RecipeParserInterface');
+            throw new InvalidArgumentException("Parser class {$parserClass} must implement RecipeParserInterface");
         }
 
         $this->parsers[$sourceTitle] = $parserClass;

@@ -2,7 +2,7 @@
 
 namespace App\Enums\Recipe;
 
-enum Complexity: string
+enum ComplexityEnum: string
 {
     case EASY = 'easy';
     case MEDIUM = 'medium';

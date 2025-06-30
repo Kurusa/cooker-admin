@@ -6,5 +6,5 @@ use Exception;
 
 class AiProviderDidntFindRecipeException extends Exception
 {
-    protected $message = 'Deepseek didnt find recipe.';
+    protected $message = 'Ai provider didnt find recipe.';
 }

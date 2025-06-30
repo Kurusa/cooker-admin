@@ -7,9 +7,9 @@ use DOMElement;
 use DOMNode;
 
 /**
- * Removes all <div> elements that are completely empty (no child nodes or text).
+ * Removes all elements that are completely empty (no child nodes or text).
  */
-class RemoveEmptyDivsStep implements CleanerStepInterface
+class RemoveEmptyElementsStep implements CleanerStepInterface
 {
     public function handle(DOMNode $node): void
     {
@@ -17,11 +17,7 @@ class RemoveEmptyDivsStep implements CleanerStepInterface
             if ($child instanceof DOMElement) {
                 $this->handle($child);
 
-                if (
-                    ($child->tagName === 'div' || $child->tagName === 'span')
-                    && !$child->hasChildNodes()
-                    && trim($child->textContent) === ''
-                ) {
+                if (!$child->hasChildNodes() && trim($child->textContent) === '') {
                     $child->parentNode?->removeChild($child);
                 }
             }

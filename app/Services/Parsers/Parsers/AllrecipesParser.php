@@ -5,16 +5,17 @@ namespace App\Services\Parsers\Parsers;
 use App\Services\Parsers\BaseRecipeParser;
 use DOMNode;
 
-class FoodNetParser extends BaseRecipeParser
+class AllrecipesParser extends BaseRecipeParser
 {
     public function extractRecipeNode(): DOMNode
     {
-        $recipeNode = $this->xpath->query("//div[contains(@class, 'page__col-left')]")->item(0);
+        $recipeNode = $this->xpath->query("//div[contains(@class, 'mv-create-wrapper')]")->item(0);
 
         $unwantedXpaths = [
-            ".//footer",
-            ".//div[contains(@class, 'page__date')]",
-            ".//div[contains(@class, 'page__meta d-flex ai-center')]",
+            ".//div[contains(@class, 'mv-create-nutrition')]",
+            ".//div[contains(@class, 'mv-create-products')]",
+            ".//div[contains(@class, 'mv-create-notes mv-create-notes-slot-v2')]",
+            ".//div[contains(@class, 'mv-create-social')]",
         ];
 
         foreach ($unwantedXpaths as $xpath) {

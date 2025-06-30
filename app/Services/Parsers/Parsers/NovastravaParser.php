@@ -7,7 +7,7 @@ use DOMDocument;
 use DOMNode;
 use DOMXPath;
 
-class NovaStravaParser extends BaseRecipeParser
+class NovastravaParser extends BaseRecipeParser
 {
     public function extractRecipeNode(): DOMNode
     {

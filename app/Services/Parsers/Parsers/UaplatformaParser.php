@@ -5,17 +5,14 @@ namespace App\Services\Parsers\Parsers;
 use App\Services\Parsers\BaseRecipeParser;
 use DOMNode;
 
-class AllRecipesParser extends BaseRecipeParser
+class UaplatformaParser extends BaseRecipeParser
 {
     public function extractRecipeNode(): DOMNode
     {
-        $recipeNode = $this->xpath->query("//div[contains(@class, 'mv-create-wrapper')]")->item(0);
+        $recipeNode = $this->xpath->query("//div[contains(@class, 'blog-post blog-post-single hentry clearfix')]")->item(0);
 
         $unwantedXpaths = [
-            ".//div[contains(@class, 'mv-create-nutrition')]",
-            ".//div[contains(@class, 'mv-create-products')]",
-            ".//div[contains(@class, 'mv-create-notes mv-create-notes-slot-v2')]",
-            ".//div[contains(@class, 'mv-create-social')]",
+            ".//time[contains(@class, 'entry-date published')]",
         ];
 
         foreach ($unwantedXpaths as $xpath) {

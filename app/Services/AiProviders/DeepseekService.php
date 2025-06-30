@@ -8,7 +8,7 @@ use App\DTO\RecipeCategoryDTO;
 use App\DTO\RecipeCuisineDTO;
 use App\DTO\RecipeDTO;
 use App\DTO\StepDTO;
-use App\Enums\Recipe\Complexity;
+use App\Enums\Recipe\ComplexityEnum;
 use App\Exceptions\AiProviderDidntFindRecipeException;
 use App\Models\Recipe\RecipeCuisine;
 use App\Services\AiProviders\Contracts\AiRecipeParserServiceInterface;
@@ -87,7 +87,7 @@ ingredientGroups(array<object>):об'єкт з ключами
             return array_map(function (array $response) {
                 return new RecipeDTO(
                     title: $response['title'],
-                    complexity: Complexity::from($response['complexity']),
+                    complexity: ComplexityEnum::from($response['complexity']),
                     time: $response['cookingTime'] ?? null,
                     portions: $response['portions'] ?? 1,
                     imageUrl: $response['image'] ?? '',

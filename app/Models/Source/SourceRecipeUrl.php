@@ -2,7 +2,7 @@
 
 namespace App\Models\Source;
 
-use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
+use App\Enums\Source\SourceRecipeUrlExcludedRuleTypeEnum;
 use App\Models\Recipe\Recipe;
 use App\Observers\SourceRecipeUrlObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -103,7 +103,7 @@ class SourceRecipeUrl extends Model
     public function exclude()
     {
         return $this->excludedRule()->create([
-            'rule_type' => SourceRecipeUrlExcludedRuleType::EXACT,
+            'rule_type' => SourceRecipeUrlExcludedRuleTypeEnum::MANUAL_CONTAINS,
             'source_id' => $this->source_id,
             'value' => $this->url,
         ]);

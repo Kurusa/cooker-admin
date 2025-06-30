@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Enums\Source;
+namespace App\Enums;
 
-enum AiProvider: string
+enum AiProviderEnum: string
 {
     case DEEPSEEK = 'deepseek';
     case GEMINI = 'gemini';

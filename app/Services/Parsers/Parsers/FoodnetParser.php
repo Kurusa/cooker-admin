@@ -5,18 +5,16 @@ namespace App\Services\Parsers\Parsers;
 use App\Services\Parsers\BaseRecipeParser;
 use DOMNode;
 
-class FayniReceptyParser extends BaseRecipeParser
+class FoodnetParser extends BaseRecipeParser
 {
     public function extractRecipeNode(): DOMNode
     {
-        $recipeNode = $this->xpath->query("//div[contains(@class, 'wprm-recipe wprm-recipe-template-cutout')]")->item(0);
+        $recipeNode = $this->xpath->query("//div[contains(@class, 'page__col-left')]")->item(0);
 
         $unwantedXpaths = [
-            ".//div[contains(@class, 'wprm-recipe-rating')]",
-            ".//a[contains(@class, 'wprm-recipe-print')]",
-            ".//a[contains(@class, 'wprm-recipe-pin')]",
-            ".//a[contains(@class, 'wprm-recipe-jump-to-comments')]",
-            ".//div[contains(@class, 'wprm-spacer')]",
+            ".//footer",
+            ".//div[contains(@class, 'page__date')]",
+            ".//div[contains(@class, 'page__meta d-flex ai-center')]",
         ];
 
         foreach ($unwantedXpaths as $xpath) {

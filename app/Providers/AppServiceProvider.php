@@ -11,7 +11,7 @@ use App\Services\Parsers\HtmlCleaner;
 use App\Services\Parsers\RecipeParserFactory;
 use App\Services\Parsers\Steps\RemoveClassesAndAttributesStep;
 use App\Services\Parsers\Steps\RemoveCommentsStep;
-use App\Services\Parsers\Steps\RemoveEmptyDivsStep;
+use App\Services\Parsers\Steps\RemoveEmptyElementsStep;
 use App\Services\Parsers\Steps\RemoveGlobalJunkNodesStep;
 use App\Services\Parsers\Steps\RemoveImageAttributesStep;
 use App\Services\Parsers\Steps\RemoveJsEventAttributesStep;
@@ -73,7 +73,7 @@ class AppServiceProvider extends ServiceProvider
                 new RemoveSpecificTagsStep(),
                 new RemoveSvgAttributesStep(),
                 new RemoveJsEventAttributesStep(),
-                new RemoveEmptyDivsStep(),
+                new RemoveEmptyElementsStep(),
             ]);
         });
     }

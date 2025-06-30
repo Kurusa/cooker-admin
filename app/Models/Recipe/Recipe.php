@@ -2,7 +2,7 @@
 
 namespace App\Models\Recipe;
 
-use App\Enums\Recipe\Complexity;
+use App\Enums\Recipe\ComplexityEnum;
 use App\Models\Ingredient\Ingredient;
 use App\Models\Ingredient\IngredientGroup;
 use App\Models\Ingredient\IngredientUnit;
@@ -21,7 +21,7 @@ use Illuminate\Support\Collection;
 /**
  * @property int $id
  * @property string $title
- * @property Complexity $complexity
+ * @property ComplexityEnum $complexity
  * @property int $time
  * @property int $portions
  * @property int $source_recipe_url_id
@@ -52,7 +52,7 @@ class Recipe extends Model
     ];
 
     protected $casts = [
-        'complexity' => Complexity::class,
+        'complexity' => ComplexityEnum::class,
         'is_verified' => 'boolean',
     ];
 

@@ -102,24 +102,9 @@ return [
         'recent' => 60,
         'pending' => 60,
         'completed' => 60,
-        'recent_failed' => 10080,
-        'failed' => 10080,
-        'monitored' => 10080,
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
-    | Silenced Jobs
-    |--------------------------------------------------------------------------
-    |
-    | Silencing a job will instruct Horizon to not place the job in the list
-    | of completed jobs within the Horizon dashboard. This setting may be
-    | used to fully remove any noisy jobs from the completed jobs list.
-    |
-    */
-
-    'silenced' => [
-        // App\Jobs\ExampleJob::class,
+        'recent_failed' => 600,
+        'failed' => 600,
+        'monitored' => 600,
     ],
 
     /*
@@ -192,7 +177,7 @@ return [
             'connection' => 'redis',
             'queue' => ['default', 'excluded_check'],
             'balance' => 'auto',
-            'processes' => 2,
+            'processes' => 20,
             'tries' => 1,
         ],
     ],
@@ -203,7 +188,7 @@ return [
                 'maxProcesses' => 40,
             ],
             'supervisor-default' => [
-                'maxProcesses' => 10,
+                'maxProcesses' => 20,
             ],
         ],
     ],

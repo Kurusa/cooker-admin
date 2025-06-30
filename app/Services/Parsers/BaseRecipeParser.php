@@ -2,7 +2,7 @@
 
 namespace App\Services\Parsers;
 
-use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
+use App\Enums\Source\SourceRecipeUrlExcludedRuleTypeEnum;
 use App\Exceptions\RecipeBlockNotFoundException;
 use App\Models\Source\SourceRecipeUrl;
 use App\Models\Source\SourceRecipeUrlExcludedRule;
@@ -10,6 +10,7 @@ use App\Services\Parsers\Contracts\HtmlCleanerInterface;
 use App\Services\Parsers\Contracts\RecipeParserInterface;
 use DOMDocument;
 use DOMXPath;
+use Exception;
 use Illuminate\Support\Facades\Log;
 
 abstract class BaseRecipeParser implements RecipeParserInterface
@@ -41,7 +42,7 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         if (strlen($cleanHtml) <= 100) {
             throw new RecipeBlockNotFoundException();
         }
-
+        dd($cleanHtml);
         Log::channel('parser_log')->info(now() . ' | ' . strlen($cleanHtml) . ' characters. url: ' . $url);
 
         return $cleanHtml;
@@ -54,10 +55,10 @@ abstract class BaseRecipeParser implements RecipeParserInterface
         /** @var SourceRecipeUrlExcludedRule $rule */
         foreach ($rules as $rule) {
             if (
-                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::EXACT && $sourceRecipeUrl->url === $rule->value) ||
-                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::CONTAINS && str_contains($sourceRecipeUrl->url, $rule->value)) ||
-                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::NOT_CONTAINS && !str_contains($sourceRecipeUrl->url, $rule->value)) ||
-                ($rule->rule_type === SourceRecipeUrlExcludedRuleType::REGEX && !preg_match($rule->value, $sourceRecipeUrl->url))
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleTypeEnum::EXACT && $sourceRecipeUrl->url === $rule->value) ||
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleTypeEnum::CONTAINS && str_contains($sourceRecipeUrl->url, $rule->value)) ||
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleTypeEnum::NOT_CONTAINS && !str_contains($sourceRecipeUrl->url, $rule->value)) ||
+                ($rule->rule_type === SourceRecipeUrlExcludedRuleTypeEnum::REGEX && !preg_match($rule->value, $sourceRecipeUrl->url))
             ) {
                 return true;
             }
@@ -67,16 +68,13 @@ abstract class BaseRecipeParser implements RecipeParserInterface
             return true;
         }
 
-//        $ch = curl_init($sourceRecipeUrl->url);
-//        curl_setopt($ch, CURLOPT_NOBODY, true);
-//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-//        curl_exec($ch);
-//        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-//        curl_close($ch);
-//
-//        if ($httpCode === 404) {
-//            return true;
-//        }
+        try {
+            file_get_contents($sourceRecipeUrl->url);
+        } catch (Exception $e) {
+            if (str_contains($e->getMessage(), '404 Not Found')) {
+                return true;
+            }
+        }
 
         return false;
     }

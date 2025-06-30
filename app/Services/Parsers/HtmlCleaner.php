@@ -16,10 +16,10 @@ class HtmlCleaner implements HtmlCleanerInterface
 
     public function cleanup(DOMNode $node): string
     {
-        /** @var CleanerStepInterface $step */
-        foreach ($this->steps as $step) {
-            $step->handle($node);
-        }
+//        /** @var CleanerStepInterface $step */
+//        foreach ($this->steps as $step) {
+//            $step->handle($node);
+//        }
 
         $html = str_replace(["\n", "\r", "\t"], '', $node->ownerDocument->saveHTML($node));
 

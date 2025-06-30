@@ -2,7 +2,7 @@
 
 namespace App\Models\Source;
 
-use App\Enums\Source\SourceStatus;
+use App\Enums\Source\SourceStatusEnum;
 use App\Models\Recipe\Recipe;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -124,7 +124,7 @@ class Source extends Model
         return "{$parsed} recipes (out of {$total}) — {$percent}%";
     }
 
-    public function getStatus(): SourceStatus
+    public function getStatus(): SourceStatusEnum
     {
         $total = $this->totalUrls();
         $excluded = $this->excludedUrlsCount();
@@ -132,21 +132,21 @@ class Source extends Model
         $pending = $this->pendingUrlsCount();
 
         if ($total === 0) {
-            return SourceStatus::EMPTY;
+            return SourceStatusEnum::EMPTY;
         }
 
         if ($parsed === 0 && $excluded === $total) {
-            return SourceStatus::EXCLUDED_ONLY;
+            return SourceStatusEnum::EXCLUDED_ONLY;
         }
 
         if ($parsed === 0 && $pending > 0) {
-            return SourceStatus::COLLECTED;
+            return SourceStatusEnum::COLLECTED;
         }
 
         if ($parsed > 0 && $pending > 0) {
-            return SourceStatus::PARTIALLY_PARSED;
+            return SourceStatusEnum::PARTIALLY_PARSED;
         }
 
-        return SourceStatus::PARSED;
+        return SourceStatusEnum::PARSED;
     }
 }

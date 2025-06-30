@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\DTO\RecipeDTO;
-use App\Enums\Source\AiProvider;
+use App\Enums\AiProviderEnum;
 use App\Exceptions\AiProviderDidntFindRecipeException;
 use App\Exceptions\RecipeBlockNotFoundException;
 use App\Jobs\SourceSitemap\CheckIfRecipeUrlIsExcludedJob;
@@ -24,7 +24,6 @@ use Exception;
 use Illuminate\Database\ConnectionInterface as Database;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
-use Throwable;
 
 class ProcessRecipeUrlService
 {
@@ -46,12 +45,13 @@ class ProcessRecipeUrlService
     ): void
     {
         CheckIfRecipeUrlIsExcludedJob::dispatchSync($sourceRecipeUrl);
+        $sourceRecipeUrl->refresh();
 
         if ($sourceRecipeUrl->is_excluded) {
             return;
         }
 
-        $aiService = $this->aiProviderResolver->resolve(AiProvider::DEEPSEEK);
+        $aiService = $this->aiProviderResolver->resolve(AiProviderEnum::DEEPSEEK);
 
         try {
             $cleanHtml = $parser->getCleanHtml($sourceRecipeUrl->url);

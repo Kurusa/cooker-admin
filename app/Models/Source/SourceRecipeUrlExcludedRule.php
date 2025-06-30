@@ -2,7 +2,7 @@
 
 namespace App\Models\Source;
 
-use App\Enums\Source\SourceRecipeUrlExcludedRuleType;
+use App\Enums\Source\SourceRecipeUrlExcludedRuleTypeEnum;
 use App\Observers\SourceRecipeUrlExcludedRulesObserver;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property int $source_id
- * @property SourceRecipeUrlExcludedRuleType $rule_type
+ * @property SourceRecipeUrlExcludedRuleTypeEnum $rule_type
  * @property string $value
  *
  * @property Source $source
@@ -26,7 +26,7 @@ class SourceRecipeUrlExcludedRule extends Model
     ];
 
     protected $casts = [
-        'rule_type' => SourceRecipeUrlExcludedRuleType::class,
+        'rule_type' => SourceRecipeUrlExcludedRuleTypeEnum::class,
     ];
 
     public function source(): BelongsTo

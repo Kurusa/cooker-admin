@@ -3,10 +3,10 @@
 namespace App\Nova\Actions\Source;
 
 use App\Models\Source\Source;
+use App\Services\CollectSitemapUrlsService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Artisan;
 use Laravel\Nova\Actions\Action;
 use Laravel\Nova\Actions\ActionResponse;
 use Laravel\Nova\Fields\ActionFields;
@@ -21,11 +21,12 @@ class CollectSourceSitemapUrls extends Action
 
     public function handle(ActionFields $fields, Collection $models): ActionResponse
     {
-        /** @var Source $model */
-        foreach ($models as $model) {
-            Artisan::call('collect:source:sitemap-urls', [
-                'sourceId' => $model->id,
-            ]);
+        /** @var CollectSitemapUrlsService $collectSitemapUrlsService */
+        $collectSitemapUrlsService = app(CollectSitemapUrlsService::class);
+
+        /** @var Source $source */
+        foreach ($models as $source) {
+            $collectSitemapUrlsService->collectSitemapUrls($source);
         }
 
         return Action::message('Collection finished.');

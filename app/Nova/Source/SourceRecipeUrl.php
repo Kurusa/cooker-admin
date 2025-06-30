@@ -3,7 +3,6 @@
 namespace App\Nova\Source;
 
 use App\Models\Source\SourceRecipeUrl as SourceRecipeUrlModel;
-use App\Nova\Actions\Source\CheckSelectedUrlsForExclusion;
 use App\Nova\Actions\Source\ExcludeSourceRecipeUrl;
 use App\Nova\Actions\Source\ParseRecipeByUrl;
 use App\Nova\Actions\Source\VerifySourceRecipeUrl;
@@ -81,7 +80,6 @@ class SourceRecipeUrl extends Resource
             new VerifySourceRecipeUrl,
             new ExcludeSourceRecipeUrl,
             new ParseRecipeByUrl,
-            new CheckSelectedUrlsForExclusion,
         ];
     }
 

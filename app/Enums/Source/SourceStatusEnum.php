@@ -2,7 +2,7 @@
 
 namespace App\Enums\Source;
 
-enum SourceStatus: int
+enum SourceStatusEnum: int
 {
     case EMPTY = 1;
     case COLLECTED = 2;
